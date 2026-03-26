@@ -184,11 +184,10 @@ def fig_energy_vs_iter(data, method="lbfgs", label=None, outdir=HERE):
     E_rel  = (E - E.min()) * 1000   # mEh, always >= 0 at the global minimum
     color  = COLOR.get(method, COLOR["lbfgs"])
     label  = label or method.upper()
-    every  = 1 if len(iters) <= 30 else max(1, len(iters) // 20)
 
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
     ax.plot(iters, E_rel, color=color, lw=LINEWIDTH,
-            marker="o", ms=MARKERSIZE, markevery=every,
+            marker="o", ms=MARKERSIZE,
             label=label, clip_on=False)
     ax.set_xlabel("Iteration")
     ax.set_ylabel("ΔE / mEh")
@@ -205,15 +204,14 @@ def fig_force_vs_iter(data, method="lbfgs", label=None, outdir=HERE):
     iters  = data["iters"]
     maxf   = data["max_force"]
     rmsf   = data["rms_force"]
-    every  = 1 if len(iters) <= 30 else max(1, len(iters) // 20)
     label  = label or method.upper()
 
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
     ax.semilogy(iters, maxf, color=COLOR["maxf"], lw=LINEWIDTH,
-                marker="o", ms=MARKERSIZE, markevery=every, label="Max Force")
+                marker="o", ms=MARKERSIZE, label="Max Force")
     ax.semilogy(iters, rmsf, color=COLOR["rmsf"], lw=LINEWIDTH,
                 linestyle="--", marker="s", ms=MARKERSIZE,
-                markevery=every, label="RMS Force")
+                label="RMS Force")
 
     if data["maxf_thresh"]:
         ax.axhline(data["maxf_thresh"], color=COLOR["threshold"], lw=1.0,
@@ -257,12 +255,11 @@ def fig_comparison(datasets, labels=None, outdir=HERE, outname="energy_compariso
 
     for i, (data, path) in enumerate(datasets):
         E_rel = (data["energy"] - data["energy"].min()) * 1000
-        every = 1 if len(data["iters"]) <= 30 else max(1, len(data["iters"]) // 20)
         color = _METHOD_COLORS[i % len(_METHOD_COLORS)]
         ls    = _LINESTYLES[i % len(_LINESTYLES)]
         mk    = _MARKERS[i % len(_MARKERS)]
         ax.plot(data["iters"], E_rel, color=color, lw=LINEWIDTH,
-                marker=mk, ms=MARKERSIZE, markevery=every,
+                marker=mk, ms=MARKERSIZE,
                 label=resolved_labels[i], linestyle=ls)
 
     ax.set_xlabel("Iteration")
