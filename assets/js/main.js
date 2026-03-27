@@ -5,11 +5,33 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   // ----- 1. Sidebar Tree Toggle -----
-  document.querySelectorAll('.sidebar-tree .tree-section, .sidebar-tree .tree-label').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-      // Don't toggle when clicking a link inside tree-label
-      if (e.target.tagName === 'A') return;
+  document.querySelectorAll('.sidebar-tree .tree-section').forEach(function (el) {
+    el.addEventListener('click', function () {
       var li = el.closest('li');
+      if (li) li.classList.toggle('open');
+    });
+  });
+
+  document.querySelectorAll('.sidebar-tree .tree-label').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      var li = el.closest('li');
+      var link = el.querySelector('a');
+      var clickedLink = e.target.closest('a');
+      var clickedChevron = e.target.closest('.chevron');
+
+      if (clickedLink) return;
+
+      if (clickedChevron) {
+        e.preventDefault();
+        if (li) li.classList.toggle('open');
+        return;
+      }
+
+      if (link && link.getAttribute('href')) {
+        window.location.href = link.getAttribute('href');
+        return;
+      }
+
       if (li) li.classList.toggle('open');
     });
   });
