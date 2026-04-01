@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Geometry Optimization - MAPLE</title>
+  <title>CG Optimization - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 <body>
@@ -53,14 +53,14 @@
                 <li><a href="../../setup/settings.html">Settings</a></li>
                 <li><a href="../../setup/coordinates.html">Coordinates</a></li>
                 <li>
-                    <span class="tree-label"><span class="chevron"></span> <a href="../../setup/models.html">ML Models</a></span>
-                    <ul class="children">
-                      <li><a href="../../setup/model_uma.html">UMA</a></li>
-                      <li><a href="../../setup/model_ani.html">ANI</a></li>
-                      <li><a href="../../setup/model_aimnet.html">AIMNet2</a></li>
-                      <li><a href="../../setup/model_mace.html">MACE</a></li>
-                    </ul>
-                  </li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../../setup/models.html">ML Models</a></span>
+                  <ul class="children">
+                    <li><a href="../../setup/model_uma.html">UMA</a></li>
+                    <li><a href="../../setup/model_ani.html">ANI</a></li>
+                    <li><a href="../../setup/model_aimnet.html">AIMNet2</a></li>
+                    <li><a href="../../setup/model_mace.html">MACE</a></li>
+                  </ul>
+                </li>
               </ul>
             </li>
             <li class="open">
@@ -69,12 +69,12 @@
                 <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
                 <li><a href="../../tasks/frequency.html">Frequency</a></li>
                 <li class="open">
-                  <span class="tree-label"><span class="chevron"></span> <a href="optimization.html" class="active">Optimization</a></span>
+                  <span class="tree-label"><span class="chevron"></span> <a href="optimization.html">Optimization</a></span>
                   <ul class="children">
                     <li><a href="opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="opt_rfo.html">RFO</a></li>
                     <li><a href="opt_sd.html">SD</a></li>
-                    <li><a href="opt_cg.html">CG</a></li>
+                    <li><a href="opt_cg.html" class="active">CG</a></li>
                     <li><a href="opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
@@ -92,18 +92,15 @@
                   <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
                   <ul class="children">
                     <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
-                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
                   </ul>
                 </li>
                 <li>
                   <span class="tree-label"><span class="chevron"></span> <a href="../irc/irc.html">IRC</a></span>
                   <ul class="children">
                     <li><a href="../irc/irc_gs.html">GS</a></li>
-                    <li><a href="../irc/irc_lqa.html">LQA</a></li>
-                    <li><a href="../irc/irc_hpc.html">HPC</a></li>
-                    <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
                   </ul>
                 </li>
+
               </ul>
             </li>
             <li>
@@ -127,65 +124,102 @@
           <span class="separator">/</span>
           <a href="../../documentation.html">Tasks</a>
           <span class="separator">/</span>
-          <span class="current">Optimization</span>
+          <a href="optimization.html">Optimization</a>
+          <span class="separator">/</span>
+          <span class="current">CG</span>
         </nav>
 
-        <h1>Geometry Optimization</h1>
+        <h1>Conjugate Gradient (CG)</h1>
 
         <h2 id="overview">Overview</h2>
-        <p>Geometry optimization minimizes the molecular energy by iteratively adjusting nuclear positions until the forces acting on all atoms fall below predefined convergence thresholds. Starting from an initial structure, the optimizer walks downhill on the potential energy surface to locate the nearest local minimum.</p>
-        <p>MAPLE provides several optimization algorithms suited to different problem types, ranging from efficient quasi-Newton methods to simple gradient-based approaches. The default optimizer, L-BFGS, is appropriate for the vast majority of systems.</p>
+        <p>The conjugate gradient optimizer builds a search direction that is conjugate to all previous directions, avoiding the zigzagging characteristic of steepest descent. Each step reuses gradient history through a scalar coefficient &beta; (the beta formula), making CG substantially more efficient than pure SD on smooth energy surfaces. Invoked with <code>method=cg</code> inside <code>#opt()</code>.</p>
+        <p>MAPLE implements the Polak–Ribière-Plus (PRP+) formula by default, with automatic direction restart when the gradient changes significantly. Optional DIIS acceleration can be applied periodically to further speed convergence.</p>
 
-        <h2 id="available-methods">Available Methods</h2>
+        <h2 id="parameters">Parameters</h2>
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Method</th>
-                <th>Keyword</th>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
                 <th>Description</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><a href="opt_lbfgs.html"><strong>L-BFGS</strong></a></td>
-                <td><code>lbfgs</code></td>
-                <td>Limited-memory BFGS quasi-Newton method. <strong>Default and recommended</strong> for most systems.</td>
+                <td><code>max_step</code></td>
+                <td>float</td>
+                <td><code>0.2</code></td>
+                <td>Maximum step length in Angstrom.</td>
               </tr>
               <tr>
-                <td><a href="opt_rfo.html"><strong>RFO</strong></a></td>
-                <td><code>rfo</code></td>
-                <td>Rational Function Optimization with trust radius control. More robust for difficult cases.</td>
+                <td><code>max_iter</code></td>
+                <td>int</td>
+                <td><code>256</code></td>
+                <td>Maximum number of optimization cycles.</td>
               </tr>
               <tr>
-                <td><a href="opt_sd.html"><strong>SD</strong></a></td>
-                <td><code>sd</code></td>
-                <td>Steepest descent. Simplest first-order method; follows the negative gradient.</td>
+                <td><code>cg_restart_threshold</code></td>
+                <td>float</td>
+                <td><code>0.2</code></td>
+                <td>Restart CG directions when the gradient change ratio exceeds this value.</td>
               </tr>
               <tr>
-                <td><a href="opt_cg.html"><strong>CG</strong></a></td>
-                <td><code>cg</code></td>
-                <td>Conjugate gradient. Improved convergence over SD with minimal additional cost.</td>
+                <td><code>cg_beta_method</code></td>
+                <td>str</td>
+                <td><code>"prp+"</code></td>
+                <td>Conjugate gradient beta formula. <code>prp+</code> (Polak–Ribière-Plus) is recommended for molecular optimization.</td>
               </tr>
               <tr>
-                <td><a href="opt_sdcg.html"><strong>SDCG</strong></a></td>
-                <td><code>sdcg</code></td>
-                <td>Hybrid steepest-descent / conjugate-gradient. Starts with SD, switches to CG automatically.</td>
+                <td><code>diis_enabled</code></td>
+                <td>bool</td>
+                <td><code>True</code></td>
+                <td>Enable DIIS extrapolation acceleration.</td>
+              </tr>
+              <tr>
+                <td><code>diis_store_every</code></td>
+                <td>int</td>
+                <td><code>5</code></td>
+                <td>Store a DIIS snapshot every N steps.</td>
+              </tr>
+              <tr>
+                <td><code>diis_min_snapshots</code></td>
+                <td>int</td>
+                <td><code>3</code></td>
+                <td>Minimum snapshots required before DIIS extrapolation is attempted.</td>
+              </tr>
+              <tr>
+                <td><code>diis_memory</code></td>
+                <td>int</td>
+                <td><code>6</code></td>
+                <td>Maximum number of DIIS snapshots stored.</td>
+              </tr>
+              <tr>
+                <td><code>write_traj</code></td>
+                <td>bool</td>
+                <td><code>False</code></td>
+                <td>Write intermediate geometries to a trajectory file.</td>
+              </tr>
+              <tr>
+                <td><code>traj_every</code></td>
+                <td>int</td>
+                <td><code>1</code></td>
+                <td>Write trajectory frame every N steps.</td>
+              </tr>
+              <tr>
+                <td><code>verbose</code></td>
+                <td>int</td>
+                <td><code>1</code></td>
+                <td>Output verbosity level.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="quick-usage">Quick Usage</h2>
-        <p>To run a geometry optimization, add the <code>#opt</code> directive to your input file. The method can be specified in parentheses:</p>
-        <pre><code>#opt(method=lbfgs)</code></pre>
-        <p>If no method is specified, L-BFGS is used by default:</p>
-        <pre><code>#opt</code></pre>
-
         <h2 id="input-example">Input Example</h2>
-        <p>A complete input file for a geometry optimization using the UMA model on a GPU device:</p>
         <pre><code>#model=uma
-#opt(method=lbfgs)
+#opt(method=cg)
 #device=gpu0
 
 C      -0.77812600     -1.06756100      0.32105900
@@ -211,63 +245,39 @@ H       1.27300500     -0.44722400      2.08057900
 H       2.85034500      1.29869700     -0.81432200
 H       2.96000900     -0.36880600     -1.38891000</code></pre>
 
-        <h2 id="common-parameters">Common Parameters</h2>
-        <p>These parameters are shared across all optimization methods. Individual methods may accept additional method-specific parameters.</p>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Parameter</th>
-                <th>Default</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>method</code></td>
-                <td><code>lbfgs</code></td>
-                <td>Optimization algorithm to use (see table above).</td>
-              </tr>
-              <tr>
-                <td><code>level</code></td>
-                <td><code>medium</code></td>
-                <td>Convergence level preset. Options: <code>extratight</code>, <code>tight</code>, <code>medium</code> (default), <code>loose</code>, <code>extraloose</code>, <code>superloose</code>.</td>
-              </tr>
-              <tr>
-                <td><code>max_iter</code></td>
-                <td><code>256</code></td>
-                <td>Maximum number of optimization cycles before the calculation is terminated.</td>
-              </tr>
-              <tr>
-                <td><code>write_traj</code></td>
-                <td><code>false</code></td>
-                <td>Write intermediate geometries to a trajectory file.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2 id="output-files">Output Files</h2>
-        <p>A successful optimization produces the following output files:</p>
+        <h2 id="when-to-use">When to Use</h2>
         <ul>
-          <li><strong><code>*_opt.xyz</code></strong> &mdash; The final optimized geometry in XYZ format. This is the primary result file.</li>
-          <li><strong><code>*_traj.xyz</code></strong> &mdash; The full optimization trajectory containing the geometry at each iteration (only produced when <code>write_traj=true</code>). Useful for visualizing the optimization path in molecular viewers.</li>
-          <li><strong><code>*.out</code></strong> &mdash; The main output log containing energies, forces, convergence diagnostics, and timing information at each step.</li>
+          <li><strong>Smooth energy surfaces:</strong> CG converges much faster than SD on well-behaved surfaces by exploiting gradient history to build conjugate search directions.</li>
+          <li><strong>Memory-constrained environments:</strong> CG stores only the previous gradient vector, making it more memory-efficient than L-BFGS for very large systems.</li>
+          <li><strong>Starting from a reasonable geometry:</strong> CG is most effective when the initial forces are moderate. For severely distorted structures, consider starting with <a href="opt_sd.html">SD</a> or the automatic <a href="opt_sdcg.html">SD/CG</a> fusion.</li>
         </ul>
 
-        <div class="admonition tip">
+        <h2 id="convergence">Convergence Behaviour</h2>
+        <p>The figures below show a typical CG run on a 22-atom organic molecule (UMA model). Compared to steepest descent, CG avoids zigzagging by building conjugate search directions, leading to smoother convergence near the minimum.</p>
+        <div class="figure-row">
+          <figure class="doc-figure">
+            <img src="../../assets/images/opt/cg/energy_vs_iter_cg.png" alt="CG energy vs iteration">
+            <figcaption>Fig. 1 — Energy convergence (CG)</figcaption>
+          </figure>
+          <figure class="doc-figure">
+            <img src="../../assets/images/opt/cg/force_vs_iter_cg.png" alt="CG force vs iteration">
+            <figcaption>Fig. 2 — Force convergence (CG)</figcaption>
+          </figure>
+        </div>
+
+        <div class="admonition note">
           <div class="admonition-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            Tip
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Note
           </div>
           <div class="admonition-body">
-            <p>For routine optimizations, the default L-BFGS method with <code>level=medium</code> is sufficient. Switch to <code>level=tight</code> when computing vibrational frequencies on the optimized geometry to ensure accurate Hessian evaluation.</p>
+            <p>For most use cases, <a href="opt_sdcg.html">SD/CG</a> (which runs SD first and automatically switches to CG) is preferable to pure CG, as it combines robust initial descent with efficient final convergence. Pure CG is best when the starting geometry is already reasonable.</p>
           </div>
         </div>
 
         <nav class="page-nav">
-          <a href="../../tasks/frequency.html">&larr; Frequency</a>
-          <a class="next" href="opt_lbfgs.html">L-BFGS &rarr;</a>
+          <a href="opt_sd.html">&larr; SD</a>
+          <a class="next" href="opt_sdcg.html">SD/CG &rarr;</a>
         </nav>
       </article>
     </main>
