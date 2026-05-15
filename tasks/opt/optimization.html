@@ -94,6 +94,9 @@
                   <ul class="children">
                     <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../scan/scan_sd.html">SD</a></li>
+                    <li><a href="../scan/scan_cg.html">CG</a></li>
+                    <li><a href="../scan/scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -250,7 +253,7 @@ H       2.96000900     -0.36880600     -1.38891000</code></pre>
         <p>A successful optimization produces the following output files:</p>
         <ul>
           <li><strong><code>*_opt.xyz</code></strong> &mdash; The final optimized geometry in XYZ format. This is the primary result file.</li>
-          <li><strong><code>*_traj.xyz</code></strong> &mdash; The full optimization trajectory containing the geometry at each iteration (only produced when <code>write_traj=true</code>). Useful for visualizing the optimization path in molecular viewers.</li>
+          <li><strong><code>*_opt_traj.xyz</code></strong> &mdash; The optimization trajectory containing geometries written during the run. Useful for visualizing the optimization path in molecular viewers.</li>
           <li><strong><code>*.out</code></strong> &mdash; The main output log containing energies, forces, convergence diagnostics, and timing information at each step.</li>
         </ul>
 

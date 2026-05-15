@@ -75,6 +75,8 @@
                     <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../opt/opt_rfo.html">RFO</a></li>
                     <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,6 +94,9 @@
                   <ul class="children">
                     <li><a href="scan_lbfgs.html">L-BFGS</a></li>
                     <li><a href="scan_rfo.html">RFO</a></li>
+                    <li><a href="scan_sd.html">SD</a></li>
+                    <li><a href="scan_cg.html">CG</a></li>
+                    <li><a href="scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -118,20 +123,69 @@
     </aside>
 
     <main class="content">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="../../index.html">Home</a></li>
-          <li><a href="../../tasks/singlepoint.html">Tasks</a></li>
-          <li aria-current="page">PES Scan</li>
-        </ol>
-      </nav>
-
       <article>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="../../index.html">Home</a>
+          <span class="separator">/</span>
+          <a href="../../tasks/singlepoint.html">Tasks</a>
+          <span class="separator">/</span>
+          <span class="current">PES Scan</span>
+        </nav>
+
         <h1>Potential Energy Surface Scanning</h1>
 
         <h2 id="overview">Overview</h2>
-        <p>The PES Scan module performs systematic exploration of the potential energy surface along user-specified internal coordinates. It supports one-dimensional (1D), two-dimensional (2D), and arbitrary N-dimensional scans. Two scan modes are available: <strong>relaxed</strong> scans, where all coordinates except the scanned ones are optimized at each step, and <strong>rigid</strong> scans, where all other coordinates are frozen at their initial values.</p>
+        <p>The PES Scan module performs systematic exploration of the potential energy surface along user-specified internal coordinates. It supports one-dimensional (1D), two-dimensional (2D), and three-dimensional (3D) scans. Two scan modes are available: <strong>relaxed</strong> scans, where all coordinates except the scanned ones are optimized at each point, and <strong>rigid</strong> scans, where MAPLE moves the detected connected fragment to satisfy the target scan coordinate without running an optimization.</p>
         <p>PES scans are commonly used for constructing torsional energy profiles, mapping bond-dissociation curves, exploring conformational landscapes, and generating starting geometries for transition-state searches.</p>
+
+        <h2 id="available-methods">Available Methods</h2>
+        <p>Relaxed scans reuse MAPLE's geometry optimization dispatcher at each scan point. The following optimizers can be selected via the <code>method</code> parameter; rigid scans do not require an optimizer.</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Keyword</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="scan_lbfgs.html"><strong>L-BFGS</strong></a></td>
+                <td><code>lbfgs</code></td>
+                <td>Limited-memory BFGS quasi-Newton method. <strong>Default and recommended</strong> for routine relaxed scans.</td>
+              </tr>
+              <tr>
+                <td><a href="scan_rfo.html"><strong>RFO</strong></a></td>
+                <td><code>rfo</code></td>
+                <td>Rational Function Optimization with trust-radius control. Useful for difficult scan points or strong curvature changes.</td>
+              </tr>
+              <tr>
+                <td><a href="scan_sd.html"><strong>SD</strong></a></td>
+                <td><code>sd</code></td>
+                <td>Steepest descent. Robust stabilization for distorted geometries.</td>
+              </tr>
+              <tr>
+                <td><a href="scan_cg.html"><strong>CG</strong></a></td>
+                <td><code>cg</code></td>
+                <td>Conjugate gradient. Memory-efficient relaxation when starting geometries are already reasonable.</td>
+              </tr>
+              <tr>
+                <td><a href="scan_sdcg.html"><strong>SDCG</strong></a></td>
+                <td><code>sdcg</code></td>
+                <td>Hybrid steepest-descent / conjugate-gradient with optional DIIS acceleration.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="quick-usage">Quick Usage</h2>
+        <p>To run a PES scan, add the <code>#scan</code> directive to your input file. The method and scan mode can be specified in parentheses:</p>
+        <pre><code>#scan(method=lbfgs, mode=relaxed)</code></pre>
+        <p>If no options are specified, the defaults <code>method=lbfgs</code> and <code>mode=relaxed</code> are used:</p>
+        <pre><code>#scan</code></pre>
+        <p>Rigid scans skip optimization and only move the detected connected fragment to satisfy the target coordinate:</p>
+        <pre><code>#scan(mode=rigid)</code></pre>
 
         <h2 id="scan-coordinate-syntax">Scan Coordinate Syntax</h2>
         <p>Scan coordinates are specified with the <code>S</code> command at the end of the input file, after the molecular geometry. The format depends on the type of internal coordinate being scanned:</p>
@@ -144,98 +198,114 @@
         <ul>
           <li><strong>atom1</strong>, <strong>atom2</strong>, ... &mdash; 1-based atom indices defining the internal coordinate to scan.</li>
           <li><strong>step_size</strong> &mdash; increment per step (in Angstroms for bonds, degrees for angles/dihedrals). Negative values scan in the decreasing direction.</li>
-          <li><strong>n_steps</strong> &mdash; number of scan steps to perform.</li>
+          <li><strong>n_steps</strong> &mdash; number of increments to apply after the initial point; each scan coordinate therefore produces <code>n_steps + 1</code> values.</li>
         </ul>
 
         <h2 id="scan-modes">Scan Modes</h2>
-        <p>MAPLE supports two scan modes, selected via the <code>mode</code> parameter in the <code>#scan</code> header:</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Mode</th>
-              <th>Description</th>
-              <th>Use Case</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>relaxed</strong></td>
-              <td>Optimizes all degrees of freedom except the scanned coordinates at each scan point. Produces a minimum-energy path along the scan coordinate.</td>
-              <td>Torsional profiles, bond dissociation curves, conformational analysis.</td>
-            </tr>
-            <tr>
-              <td><strong>rigid</strong></td>
-              <td>Freezes all coordinates at their initial values; only the scanned coordinate changes. No geometry optimization is performed.</td>
-              <td>Quick energy profiles, repulsive wall scans, initial survey of PES topology.</td>
-            </tr>
-          </tbody>
-        </table>
+        <p>MAPLE supports two scan modes, selected via the <code>mode</code> parameter:</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Description</th>
+                <th>Use Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>relaxed</strong></td>
+                <td>Optimizes all degrees of freedom except the scanned coordinates at each scan point. Produces a minimum-energy path along the scan coordinate.</td>
+                <td>Torsional profiles, bond dissociation curves, conformational analysis.</td>
+              </tr>
+              <tr>
+                <td><strong>rigid</strong></td>
+                <td>Moves the detected connected fragment as a rigid body to satisfy each target scan coordinate. No geometry optimization is performed.</td>
+                <td>Quick energy profiles, repulsive wall scans, initial survey of PES topology.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>A simple 1D relaxed bond scan between atoms 1 and 2:</p>
-        <pre><code>#model=uma
+        <p>A complete input file for a two-coordinate relaxed scan with the ANI-1xnr model on a GPU. The <code>S</code> lines define two scanned distances, each with 15 increments of &minus;0.1 &Aring;, producing a 16 &times; 16 = 256 point grid:</p>
+        <pre><code>#model=ANI-1xnr
 #scan
 #device=gpu0
 
-C   0.0  0.0  0.0
-H   1.0  0.0  0.0
-O   2.0  0.0  0.0
+S 11 52 -0.1 15
+S 14 51 -0.1 15
 
-S 1 2 -0.1 15</code></pre>
-        <p>This performs 15 steps along the C&ndash;H bond, decreasing the distance by 0.1 &Aring; at each step. Since no method is specified, the default L-BFGS optimizer is used for relaxed optimization at each scan point.</p>
+[... XYZ coordinates ...]</code></pre>
+        <p>Because <code>#scan</code> defaults to <code>method=lbfgs</code> and <code>mode=relaxed</code>, the header above is equivalent to <code>#scan(method=lbfgs, mode=relaxed)</code>. At each grid point MAPLE constrains both target coordinates and optimizes the remaining degrees of freedom with the selected optimizer.</p>
 
-        <h2 id="2d-scan-example">2D Scan Example</h2>
-        <p>To scan two coordinates simultaneously, specify multiple <code>S</code> lines. MAPLE constructs the full Cartesian-product grid of scan points:</p>
-        <pre><code>S 1 2 -0.1 15
-S 2 3 -0.05 10</code></pre>
-        <p>This produces a 15 &times; 10 = 150 grid of scan points. At each point, both scanned coordinates are constrained to their target values and all remaining degrees of freedom are optimized.</p>
-
-        <h2 id="scan-settings">Scan Settings</h2>
-        <p>The scan mode and optimizer are set via the <code>#scan</code> header line:</p>
-        <pre><code>#scan(mode=relaxed)
-#scan(mode=rigid)</code></pre>
+        <h2 id="common-parameters">Common Parameters</h2>
+        <p>These parameters are shared across all scan calculations. Individual optimizers may accept additional method-specific parameters (see each method's sub-page).</p>
         <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Parameter</th>
-              <th>Type</th>
-              <th>Default</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>mode</code></td>
-              <td>str</td>
-              <td><code>"relaxed"</code></td>
-              <td>Scan mode: <code>"relaxed"</code> (optimize at each point) or <code>"rigid"</code> (freeze all other coordinates).</td>
-            </tr>
-            <tr>
-              <td><code>method</code></td>
-              <td>str</td>
-              <td><code>"lbfgs"</code></td>
-              <td>Optimizer for relaxed scans. Valid: <code>"lbfgs"</code>, <code>"cg"</code>.</td>
-            </tr>
-          </tbody>
-        </table>
-        </div>
-        <div class="admonition note">
-          <p class="admonition-title">Note</p>
-          <p>During relaxed scans, the L-BFGS optimizer uses the following hardcoded defaults: <code>memory=5</code>, <code>curvature=70</code>, <code>max_step=0.2</code>, <code>max_iter=128</code>. These are not the same as the optimization task L-BFGS parameters and cannot be overridden from the input file.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>mode</code></td>
+                <td><code>relaxed</code></td>
+                <td>Scan mode: <code>relaxed</code> (optimize at each point) or <code>rigid</code> (rigid-body fragment motion without optimization).</td>
+              </tr>
+              <tr>
+                <td><code>method</code></td>
+                <td><code>lbfgs</code></td>
+                <td>Optimizer used for relaxed scans. Supported: <code>lbfgs</code>, <code>rfo</code>, <code>sd</code>, <code>cg</code>, <code>sdcg</code>. Ignored for rigid scans.</td>
+              </tr>
+              <tr>
+                <td><code>level</code></td>
+                <td><code>medium</code></td>
+                <td>Convergence preset passed to the underlying optimizer (relaxed scans only). Options: <code>extratight</code>, <code>tight</code>, <code>medium</code>, <code>loose</code>, <code>extraloose</code>, <code>superloose</code>.</td>
+              </tr>
+              <tr>
+                <td><code>max_iter</code></td>
+                <td><code>256</code></td>
+                <td>Maximum number of optimization cycles per scan point (relaxed scans only).</td>
+              </tr>
+              <tr>
+                <td><code>write_traj</code></td>
+                <td><code>false</code></td>
+                <td>Write per-point optimizer trajectories in addition to the combined scan trajectory.</td>
+              </tr>
+              <tr>
+                <td><code>verbose</code></td>
+                <td><code>0</code></td>
+                <td>Per-point optimizer output verbosity. Scan keeps this low by default to keep the scan log readable; the overall scan progress is always reported.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <h2 id="output-files">Output Files</h2>
         <p>The scan module produces the following output files:</p>
         <ul>
-          <li><strong><code>*_scan_final.xyz</code></strong> &mdash; Multi-frame XYZ file containing the optimized geometry at each scan point. Can be visualized as a trajectory in standard molecular viewers.</li>
-          <li><strong><code>*.out</code></strong> &mdash; Main text output with convergence diagnostics, energies, and coordinates for every scan point.</li>
+          <li><strong><code>*_scan_final.xyz</code></strong> &mdash; Multi-frame XYZ file containing the final geometry at each scan point. Can be visualized as a trajectory in standard molecular viewers.</li>
+          <li><strong><code>*.out</code></strong> &mdash; Main text output with scan progress, energies, coordinates, and optimizer diagnostics when applicable.</li>
         </ul>
-        <p>The scan trajectory file uses the standard multi-frame XYZ format, with one frame per converged scan point. Each frame header includes the scan combination index and the target values of the scanned internal coordinates.</p>
+        <p>The scan trajectory file uses the standard multi-frame XYZ format, with one frame per scan point. Each frame header includes the scan combination index, target values of the scanned internal coordinates, and the energy.</p>
+
+        <div class="admonition tip">
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Tip
+          </div>
+          <div class="admonition-body">
+            <p>For routine relaxed scans, the default L-BFGS optimizer with <code>level=medium</code> is sufficient. Use <code>mode=rigid</code> for quick initial PES surveys when geometry optimization at each point is not needed.</p>
+          </div>
+        </div>
 
         <nav class="page-nav">
           <a href="../ts/ts_autoneb.html">&larr; Previous: AutoNEB</a>
-          <a href="scan_lbfgs.html">Next: Scan L-BFGS &rarr;</a>
+          <a class="next" href="scan_lbfgs.html">Next: L-BFGS &rarr;</a>
         </nav>
       </article>
     </main>

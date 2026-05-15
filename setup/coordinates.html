@@ -75,6 +75,8 @@
                     <li><a href="../tasks/opt/opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../tasks/opt/opt_rfo.html">RFO</a></li>
                     <li><a href="../tasks/opt/opt_sd.html">SD</a></li>
+                    <li><a href="../tasks/opt/opt_cg.html">CG</a></li>
+                    <li><a href="../tasks/opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,6 +94,9 @@
                   <ul class="children">
                     <li><a href="../tasks/scan/scan_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../tasks/scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../tasks/scan/scan_sd.html">SD</a></li>
+                    <li><a href="../tasks/scan/scan_cg.html">CG</a></li>
+                    <li><a href="../tasks/scan/scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -268,20 +273,14 @@ B 1 2</code></pre>
         <p>In this example, atom 3 (oxygen) is frozen in place and the bond between atoms 1 and 2 (C-C) is constrained at its initial distance during optimization.</p>
 
         <h3>Example with scan coordinate</h3>
-        <pre><code>#model = uma
-#scan(method=lbfgs)
+        <p>Checked-in MAPLE example: <code>example/scan/C18.inp</code>. The full C18 coordinates are in that file; the real task header and scan coordinate are:</p>
+        <pre><code>#model=aimnet2nse
+#scan(mode=rigid)
+#device=gpu0
 
-0 1
-C    0.000000    0.000000    0.000000
-C    1.540000    0.000000    0.000000
-H   -0.392000    1.011000    0.000000
-H   -0.392000   -0.506000    0.875000
-H    1.932000    0.506000    0.875000
-H    1.932000   -1.011000    0.000000
+S 1 36 0.1 50</code></pre>
 
-S 1 2 0.05 10</code></pre>
-
-        <p>This scans the C-C bond length (atoms 1 and 2) in 10 steps of 0.05 Angstroms each.</p>
+        <p>This scans the distance between atoms 1 and 36 over 51 points: the initial geometry plus 50 increments of 0.1 Angstroms.</p>
 
       </article>
       <nav class="page-nav">

@@ -75,6 +75,8 @@
                     <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../opt/opt_rfo.html">RFO</a></li>
                     <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,6 +94,9 @@
                   <ul class="children">
                     <li><a href="scan_lbfgs.html">L-BFGS</a></li>
                     <li><a href="scan_rfo.html" class="active">RFO</a></li>
+                    <li><a href="scan_sd.html">SD</a></li>
+                    <li><a href="scan_cg.html">CG</a></li>
+                    <li><a href="scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -118,91 +123,130 @@
     </aside>
 
     <main class="content">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="../../index.html">Home</a></li>
-          <li><a href="../../tasks/singlepoint.html">Tasks</a></li>
-          <li><a href="scan.html">PES Scan</a></li>
-          <li aria-current="page">RFO</li>
-        </ol>
-      </nav>
-
       <article>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="../../index.html">Home</a>
+          <span class="separator">/</span>
+          <a href="../../tasks/singlepoint.html">Tasks</a>
+          <span class="separator">/</span>
+          <a href="scan.html">PES Scan</a>
+          <span class="separator">/</span>
+          <span class="current">RFO</span>
+        </nav>
+
         <h1>PES Scan with RFO Optimization</h1>
 
         <h2 id="overview">Overview</h2>
-        <p>The RFO (Rational Function Optimization) method is a Hessian-based geometry optimizer that can be used within the PES Scan workflow as an alternative to the default L-BFGS optimizer. At each scan point, RFO builds the full Hessian matrix, diagonalizes it, and determines a shift parameter using Brent's root-finding algorithm to compute a trust-region step. This approach provides more robust convergence in regions of the PES where the curvature changes rapidly or where L-BFGS may struggle.</p>
+        <p>RFO (Rational Function Optimization) is available as a relaxed PES scan optimizer through <code>#scan(method=rfo)</code>. At each scan point, MAPLE constrains the requested internal coordinates and reuses the same RFO minimizer used by <code>#opt(method=rfo)</code> to relax the remaining degrees of freedom.</p>
+        <p>RFO is more expensive than L-BFGS because it uses Hessian information and a trust-region step, but it can be more stable when the scan passes through regions with strong curvature changes or difficult convergence.</p>
 
         <h2 id="parameters">Parameters</h2>
-        <p>The RFO scan optimizer uses its own standalone parameters with trust-radius control. Like the scan L-BFGS, these are hardcoded in the standalone scan function.</p>
-        <div class="admonition warning">
-          <p class="admonition-title">Warning</p>
-          <p>The scan <code>IMPLEMENTATION_MAP</code> only registers <code>"lbfgs"</code> and <code>"cg"</code> as valid methods. RFO scan support may not be available in all versions of MAPLE. Check your version's release notes before using <code>#scan(method=rfo)</code>.</p>
-        </div>
+        <p>Per-point RFO settings reuse the same controls as <a href="../opt/opt_rfo.html"><code>#opt(method=rfo)</code></a>. The shared <code>level</code> preset on <code>#scan</code> supplies the scan-point convergence thresholds; the scan driver sets per-point optimizer verbosity to quiet by default.</p>
         <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Parameter</th>
-              <th>Type</th>
-              <th>Default</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>maxiter</code></td>
-              <td>int</td>
-              <td>256</td>
-              <td>Maximum number of RFO iterations per scan point.</td>
-            </tr>
-            <tr>
-              <td><code>max_step_size</code></td>
-              <td>float</td>
-              <td>0.1</td>
-              <td>Upper bound on step displacement to prevent unphysical jumps.</td>
-            </tr>
-            <tr>
-              <td><code>tol</code></td>
-              <td>float</td>
-              <td>1.0e-5</td>
-              <td>Convergence tolerance for the Brent root-search of the shift parameter.</td>
-            </tr>
-            <tr>
-              <td><code>lambda_max_iter</code></td>
-              <td>int</td>
-              <td>64</td>
-              <td>Maximum Brent iterations for solving the rational-function shift equation.</td>
-            </tr>
-          </tbody>
-        </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>max_iter</code></td>
+                <td>int</td>
+                <td><code>256</code></td>
+                <td>Maximum number of RFO iterations per scan point.</td>
+              </tr>
+              <tr>
+                <td><code>trust_radius_init</code></td>
+                <td>float</td>
+                <td><code>0.2</code></td>
+                <td>Initial trust radius in Angstrom.</td>
+              </tr>
+              <tr>
+                <td><code>trust_radius_min</code></td>
+                <td>float</td>
+                <td><code>1e-3</code></td>
+                <td>Minimum trust radius.</td>
+              </tr>
+              <tr>
+                <td><code>trust_radius_max</code></td>
+                <td>float</td>
+                <td><code>1.0</code></td>
+                <td>Maximum trust radius.</td>
+              </tr>
+              <tr>
+                <td><code>eta_shrink</code></td>
+                <td>float</td>
+                <td><code>0.75</code></td>
+                <td>Trust radius shrink factor when step quality is poor.</td>
+              </tr>
+              <tr>
+                <td><code>eta_expand</code></td>
+                <td>float</td>
+                <td><code>1.75</code></td>
+                <td>Trust radius expansion factor when step quality is good.</td>
+              </tr>
+              <tr>
+                <td><code>evals_eps</code></td>
+                <td>float</td>
+                <td><code>1e-10</code></td>
+                <td>Eigenvalue epsilon for numerical stability.</td>
+              </tr>
+              <tr>
+                <td><code>mu_margin</code></td>
+                <td>float</td>
+                <td><code>1e-8</code></td>
+                <td>Margin for the level-shift parameter mu.</td>
+              </tr>
+              <tr>
+                <td><code>max_bisect_it</code></td>
+                <td>int</td>
+                <td><code>60</code></td>
+                <td>Maximum bisection iterations for level-shift optimization.</td>
+              </tr>
+              <tr>
+                <td><code>verbose</code></td>
+                <td>int</td>
+                <td><code>0</code> in scans</td>
+                <td>Per-point optimizer verbosity. Scan keeps this low so the scan log stays readable.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <p>Standard convergence thresholds (maximum force, RMS force, maximum displacement, RMS displacement) are evaluated at each scan point.</p>
 
         <h2 id="input-example">Input Example</h2>
-        <p>A relaxed 1D bond scan using the RFO optimizer:</p>
-        <pre><code>#model=uma
-#scan(method=rfo)
+        <p>The MAPLE <code>example/scan/</code> directory currently ships real default-relaxed and rigid scan files rather than duplicate files for every optimizer method. To run the real relaxed scan example with RFO, start from <code>example/scan/da.inp</code> and change only the scan header to:</p>
+        <pre><code>#scan(method=rfo, mode=relaxed, level=tight)</code></pre>
+        <p>Keep the checked-in coordinates and scan-coordinate block from <code>example/scan/da.inp</code>:</p>
+        <pre><code>#model=ANI-1xnr
 #device=gpu0
 
-C   0.0  0.0  0.0
-H   1.0  0.0  0.0
-O   2.0  0.0  0.0
+S 11 52 -0.1 15
+S 14 51 -0.1 15</code></pre>
 
-S 1 2 -0.1 15</code></pre>
-
-        <h2 id="when-to-use">When to Use</h2>
-        <p>Consider using the RFO optimizer for PES scans when:</p>
+        <h2 id="when-to-use">When to Use RFO Scans</h2>
         <ul>
-          <li>The default L-BFGS optimizer has difficulty converging at certain scan points, particularly near stationary points or in flat regions of the PES.</li>
-          <li>The scan path passes through regions with strong curvature changes where Hessian information is valuable for determining step directions.</li>
-          <li>You need more robust convergence and are willing to accept the additional cost of Hessian computation at each optimization step.</li>
+          <li><strong>L-BFGS struggles at selected scan points:</strong> RFO's Hessian-based trust-region step accepts/rejects per step, providing a built-in safeguard against bad moves through strong curvature regions.</li>
+          <li><strong>Smaller systems or high-value scan regions:</strong> RFO stores and manipulates the full Hessian, so its cost is worth it only where the added robustness pays off.</li>
+          <li><strong>Routine large scans:</strong> Start with <a href="scan_lbfgs.html">L-BFGS scan</a> and switch to RFO only at scan points or regions where convergence fails.</li>
         </ul>
-        <p>For routine scans on well-behaved surfaces, the default <a href="scan_lbfgs.html">L-BFGS method</a> is generally preferred due to its lower per-step cost.</p>
+
+        <div class="admonition tip">
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Tip
+          </div>
+          <div class="admonition-body">
+            <p>For large systems where per-point RFO is too expensive, fall back to <a href="scan_lbfgs.html">L-BFGS scan</a> with a reduced <code>max_step</code> as a compromise between robustness and efficiency.</p>
+          </div>
+        </div>
 
         <nav class="page-nav">
           <a href="scan_lbfgs.html">&larr; Previous: Scan L-BFGS</a>
-          <a href="../irc/irc.html">Next: IRC &rarr;</a>
+          <a class="next" href="scan_sd.html">Next: Scan SD &rarr;</a>
         </nav>
       </article>
     </main>

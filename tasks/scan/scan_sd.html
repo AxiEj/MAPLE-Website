@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SD Optimization - MAPLE</title>
+  <title>PES Scan: SD - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 <body>
@@ -69,14 +69,14 @@
               <ul class="children">
                 <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
                 <li><a href="../../tasks/frequency.html">Frequency</a></li>
-                <li class="open">
-                  <span class="tree-label"><span class="chevron"></span> <a href="optimization.html">Optimization</a></span>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../opt/optimization.html">Optimization</a></span>
                   <ul class="children">
-                    <li><a href="opt_lbfgs.html">L-BFGS</a></li>
-                    <li><a href="opt_rfo.html">RFO</a></li>
-                    <li><a href="opt_sd.html" class="active">SD</a></li>
-                    <li><a href="opt_cg.html">CG</a></li>
-                    <li><a href="opt_sdcg.html">SD/CG</a></li>
+                    <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../opt/opt_rfo.html">RFO</a></li>
+                    <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -89,14 +89,14 @@
                     <li><a href="../ts/ts_autoneb.html">AutoNEB</a></li>
                   </ul>
                 </li>
-                <li>
-                  <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
+                <li class="open">
+                  <span class="tree-label"><span class="chevron"></span> <a href="scan.html">PES Scan</a></span>
                   <ul class="children">
-                    <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
-                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
-                    <li><a href="../scan/scan_sd.html">SD</a></li>
-                    <li><a href="../scan/scan_cg.html">CG</a></li>
-                    <li><a href="../scan/scan_sdcg.html">SD/CG</a></li>
+                    <li><a href="scan_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="scan_rfo.html">RFO</a></li>
+                    <li><a href="scan_sd.html" class="active">SD</a></li>
+                    <li><a href="scan_cg.html">CG</a></li>
+                    <li><a href="scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -129,18 +129,19 @@
           <span class="separator">/</span>
           <a href="../../tasks/singlepoint.html">Tasks</a>
           <span class="separator">/</span>
-          <a href="optimization.html">Optimization</a>
+          <a href="scan.html">PES Scan</a>
           <span class="separator">/</span>
           <span class="current">SD</span>
         </nav>
 
-        <h1>Steepest Descent (SD)</h1>
+        <h1>PES Scan with SD Optimization</h1>
 
         <h2 id="overview">Overview</h2>
-        <p>The steepest descent optimizer moves each step directly along the negative gradient direction, scaled by a fixed maximum step length. It is the simplest first-order method and requires no history or Hessian information. Invoked with <code>method=sd</code> inside <code>#opt()</code>.</p>
-        <p>Because each step is independent and the direction is always the steepest downhill direction, SD is highly robust for severely distorted geometries but converges slowly near a minimum due to its tendency to zigzag. For better convergence after the initial descent, consider switching to <a href="opt_cg.html">CG</a> or using the automatic <a href="opt_sdcg.html">SD/CG</a> fusion.</p>
+        <p>Steepest Descent (SD) is available for relaxed PES scans through <code>#scan(method=sd)</code>. It reuses the SD-only mode of MAPLE's SD/CG optimizer family at every scan point.</p>
+        <p>SD is robust for distorted geometries and high-force regions, but it usually converges more slowly near a minimum. It is most useful as a stabilizing scan optimizer for rough starting structures or problematic scan points.</p>
 
         <h2 id="parameters">Parameters</h2>
+        <p>Per-point SD settings reuse the same controls as <a href="../opt/opt_sd.html"><code>#opt(method=sd)</code></a>. With <code>method=sd</code> the CG phase is disabled at each scan point; the scan driver keeps per-point optimizer verbosity quiet.</p>
         <div class="table-wrapper">
           <table>
             <thead>
@@ -162,7 +163,7 @@
                 <td><code>max_iter</code></td>
                 <td>int</td>
                 <td><code>256</code></td>
-                <td>Maximum number of optimization cycles.</td>
+                <td>Maximum SD iterations per scan point.</td>
               </tr>
               <tr>
                 <td><code>sd_max_iter</code></td>
@@ -171,74 +172,55 @@
                 <td>Maximum SD iterations before stopping (when used as a standalone method).</td>
               </tr>
               <tr>
-                <td><code>write_traj</code></td>
+                <td><code>diis_enabled</code></td>
                 <td>bool</td>
-                <td><code>False</code></td>
-                <td>Write intermediate geometries to a trajectory file.</td>
+                <td><code>True</code></td>
+                <td>Enable DIIS extrapolation acceleration.</td>
               </tr>
               <tr>
-                <td><code>traj_every</code></td>
+                <td><code>diis_store_every</code></td>
                 <td>int</td>
-                <td><code>1</code></td>
-                <td>Write trajectory frame every N steps.</td>
+                <td><code>5</code></td>
+                <td>Store a DIIS snapshot every N steps.</td>
+              </tr>
+              <tr>
+                <td><code>diis_min_snapshots</code></td>
+                <td>int</td>
+                <td><code>3</code></td>
+                <td>Minimum snapshots required before DIIS extrapolation is attempted.</td>
+              </tr>
+              <tr>
+                <td><code>diis_memory</code></td>
+                <td>int</td>
+                <td><code>6</code></td>
+                <td>Maximum number of DIIS snapshots stored.</td>
               </tr>
               <tr>
                 <td><code>verbose</code></td>
                 <td>int</td>
-                <td><code>1</code></td>
-                <td>Output verbosity level.</td>
+                <td><code>0</code> in scans</td>
+                <td>Per-point optimizer verbosity. Scan keeps this low so the scan log stays readable.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <pre><code>#model=uma
-#opt(method=sd)
+        <p>The MAPLE <code>example/scan/</code> directory currently ships real default-relaxed and rigid scan files rather than duplicate files for every optimizer method. To run the real relaxed scan example with SD, start from <code>example/scan/da.inp</code> and change only the scan header to:</p>
+        <pre><code>#scan(method=sd, mode=relaxed, level=medium)</code></pre>
+        <p>Keep the checked-in coordinates and scan-coordinate block from <code>example/scan/da.inp</code>:</p>
+        <pre><code>#model=ANI-1xnr
 #device=gpu0
 
-C      -0.77812600     -1.06756100      0.32105900
-C       1.30255300      0.05212000     -0.02829900
-C      -0.97199300      1.45624900      0.82365700
-C       1.98122900     -0.41843300      1.25017500
-C       2.26403300      0.43516800     -1.13310700
-N       0.29116400     -0.87682100     -0.50039900
-N      -2.01916300     -1.37200600     -0.23311200
-O      -1.66473400      1.63022300     -0.40183700
-H      -2.25863200      0.87013900     -0.47589900
-H       0.02784900     -0.67831200     -1.45849500
-H      -0.60975900     -1.36785600      1.34117800
-H       0.68126400      0.91830000      0.28694100
-H      -2.57326300     -2.05736100      0.25741200
-H      -2.05242800     -1.50454200     -1.23382300
-H      -0.36899300      2.35139200      0.99174700
-H      -1.63960900      1.29421500      1.67465300
-H       2.76444900      0.29146200      1.52284600
-H       1.72511400      0.73069500     -2.03779400
-H       2.43559300     -1.40609800      1.13421500
-H       1.27300500     -0.44722400      2.08057900
-H       2.85034500      1.29869700     -0.81432200
-H       2.96000900     -0.36880600     -1.38891000</code></pre>
+S 11 52 -0.1 15
+S 14 51 -0.1 15</code></pre>
 
-        <h2 id="when-to-use">When to Use</h2>
+        <h2 id="when-to-use">When to Use SD Scans</h2>
         <ul>
-          <li><strong>Severely distorted geometries:</strong> When the starting structure has large steric clashes or unreasonable bond lengths, SD rapidly reduces the worst forces without requiring Hessian information.</li>
-          <li><strong>Pre-optimization pass:</strong> A short SD run can stabilise a structure before handing off to a more efficient method such as L-BFGS or RFO.</li>
-          <li><strong>Diagnostic runs:</strong> Because each step is independent and the algorithm is transparent, SD is useful for isolating convergence problems.</li>
+          <li><strong>Severely distorted scan geometries:</strong> When early scan points have large steric clashes or unreasonable bond lengths, SD rapidly reduces the worst per-point forces without requiring Hessian information.</li>
+          <li><strong>Robust pre-relaxation:</strong> A short SD scan can stabilise structures before switching to <a href="scan_lbfgs.html">L-BFGS</a>, <a href="scan_cg.html">CG</a>, or <a href="scan_sdcg.html">SD/CG</a>.</li>
+          <li><strong>Avoid for large production grids:</strong> SD's slow convergence near the minimum makes it inefficient when a faster optimizer would converge reliably.</li>
         </ul>
-
-        <h2 id="convergence">Convergence Behaviour</h2>
-        <p>The figures below show a typical SD run on a 22-atom organic molecule (UMA model). Energy drops steeply in the early iterations but the characteristic zigzagging of SD slows convergence near the minimum.</p>
-        <div class="figure-row">
-          <figure class="doc-figure">
-            <img src="../../assets/images/opt/sd/energy_vs_iter_sd.png" alt="SD energy vs iteration">
-            <figcaption>Fig. 1 — Energy convergence (SD)</figcaption>
-          </figure>
-          <figure class="doc-figure">
-            <img src="../../assets/images/opt/sd/force_vs_iter_sd.png" alt="SD force vs iteration">
-            <figcaption>Fig. 2 — Force convergence (SD)</figcaption>
-          </figure>
-        </div>
 
         <div class="admonition note">
           <div class="admonition-title">
@@ -246,23 +228,18 @@ H       2.96000900     -0.36880600     -1.38891000</code></pre>
             Note
           </div>
           <div class="admonition-body">
-            <p>Pure SD is rarely the best choice for a complete optimization. Consider <a href="opt_sdcg.html">SD/CG</a> to automatically transition to conjugate gradient once the large initial forces have been reduced, or <a href="opt_lbfgs.html">L-BFGS</a> for production runs.</p>
+            <p>Pure SD is rarely the best choice for a complete scan. Consider <a href="scan_sdcg.html">SD/CG</a> to automatically transition to conjugate gradient once large initial forces have been reduced.</p>
           </div>
         </div>
 
         <nav class="page-nav">
-          <a href="opt_rfo.html">&larr; RFO</a>
-          <a class="next" href="opt_cg.html">CG &rarr;</a>
+          <a href="scan_rfo.html">&larr; Previous: Scan RFO</a>
+          <a class="next" href="scan_cg.html">Next: Scan CG &rarr;</a>
         </nav>
       </article>
     </main>
 
-    <aside class="toc">
-      <div class="toc-sticky">
-        <h3>On this page</h3>
-        <ul></ul>
-      </div>
-    </aside>
+    <aside class="toc"><div class="toc-sticky"><h3>On this page</h3><ul></ul></div></aside>
   </div>
   <div class="sidebar-overlay"></div>
   <footer><p>&copy; 2026, MAPLE development team.</p></footer>

@@ -75,6 +75,8 @@
                     <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../opt/opt_rfo.html">RFO</a></li>
                     <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,6 +94,9 @@
                   <ul class="children">
                     <li><a href="scan_lbfgs.html" class="active">L-BFGS</a></li>
                     <li><a href="scan_rfo.html">RFO</a></li>
+                    <li><a href="scan_sd.html">SD</a></li>
+                    <li><a href="scan_cg.html">CG</a></li>
+                    <li><a href="scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -118,16 +123,17 @@
     </aside>
 
     <main class="content">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="../../index.html">Home</a></li>
-          <li><a href="../../tasks/singlepoint.html">Tasks</a></li>
-          <li><a href="scan.html">PES Scan</a></li>
-          <li aria-current="page">L-BFGS</li>
-        </ol>
-      </nav>
-
       <article>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="../../index.html">Home</a>
+          <span class="separator">/</span>
+          <a href="../../tasks/singlepoint.html">Tasks</a>
+          <span class="separator">/</span>
+          <a href="scan.html">PES Scan</a>
+          <span class="separator">/</span>
+          <span class="current">L-BFGS</span>
+        </nav>
+
         <h1>PES Scan with L-BFGS Optimization</h1>
 
         <h2 id="overview">Overview</h2>
@@ -135,7 +141,7 @@
         <p>L-BFGS builds a low-rank approximation to the inverse Hessian from a short history of past displacements and gradient changes, enabling efficient convergence without storing or inverting the full Hessian matrix. This makes it well suited for systems of any size, from small molecules to large biomolecular fragments.</p>
 
         <h2 id="parameters">Parameters</h2>
-        <p>The scan L-BFGS optimizer uses standalone functions from <code>scan/algorithm/LBFGS.py</code> with hardcoded parameters. These are <strong>not</strong> the same as the optimization task <code>LBFGSParams</code> and cannot be overridden from the input file.</p>
+        <p>Relaxed scans use the same L-BFGS optimizer as <code>#opt(method=lbfgs)</code>. The requested internal coordinates are fixed at each scan point while the remaining geometry is relaxed.</p>
         <div class="table-wrapper">
         <table>
           <thead>
@@ -150,47 +156,55 @@
             <tr>
               <td><code>memory</code></td>
               <td>int</td>
-              <td>5</td>
+              <td><code>5</code></td>
               <td>Number of previous steps retained for the approximate inverse Hessian.</td>
             </tr>
             <tr>
               <td><code>curvature</code></td>
               <td>float</td>
-              <td>70.0</td>
-              <td>Initial Hessian scaling factor before optimization history is accumulated.</td>
+              <td><code>70.0</code></td>
+              <td>Initial diagonal Hessian estimate before optimization history is accumulated.</td>
             </tr>
             <tr>
               <td><code>max_step</code></td>
               <td>float</td>
-              <td>0.2</td>
+              <td><code>0.2</code></td>
               <td>Maximum allowed atomic displacement per step (Angstroms).</td>
             </tr>
             <tr>
               <td><code>max_iter</code></td>
               <td>int</td>
-              <td>128</td>
+              <td><code>256</code></td>
               <td>Maximum number of L-BFGS iterations per scan point.</td>
+            </tr>
+            <tr>
+              <td><code>verbose</code></td>
+              <td>int</td>
+              <td><code>0</code> in scans</td>
+              <td>Output verbosity level. Scan sets this internally to suppress per-point optimizer detail and keep the scan log readable.</td>
             </tr>
           </tbody>
         </table>
         </div>
         <div class="admonition note">
-          <p class="admonition-title">Note</p>
-          <p>No separate <code>Params</code> class exists for scan algorithms. The scan L-BFGS uses hardcoded values in its standalone function, unlike the optimization task L-BFGS which exposes a full <code>LBFGSParams</code> dataclass.</p>
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Note
+          </div>
+          <div class="admonition-body">
+            <p>Because relaxed scans use the same L-BFGS optimizer as geometry optimization, L-BFGS parameter names match the <a href="../opt/opt_lbfgs.html">optimization L-BFGS</a> page. Use <code>level</code> on <code>#scan</code> for the shared convergence preset; scan output keeps per-point optimizer verbosity quiet by design.</p>
+          </div>
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>A relaxed 1D bond scan using L-BFGS (the default):</p>
-        <pre><code>#model=uma
-#scan(method=lbfgs)
+        <p>Checked-in MAPLE example: <code>example/scan/da.inp</code>. The file uses the default relaxed L-BFGS path because the task header is <code>#scan</code>.</p>
+        <pre><code>#model=ANI-1xnr
+#scan
 #device=gpu0
 
-C   0.0  0.0  0.0
-H   1.0  0.0  0.0
-O   2.0  0.0  0.0
-
-S 1 2 -0.1 15</code></pre>
-        <p>Since L-BFGS is the default scan optimizer, <code>#scan</code> without specifying a method is equivalent to <code>#scan(method=lbfgs)</code>.</p>
+S 11 52 -0.1 15
+S 14 51 -0.1 15</code></pre>
+        <p>The full coordinates stay in <code>example/scan/da.inp</code>. The header above is equivalent to <code>#scan(method=lbfgs, mode=relaxed)</code> for the current parser and dispatcher.</p>
 
         <h2 id="when-to-use">When to Use</h2>
         <p>L-BFGS is the recommended default method for relaxed PES scans. Use it when:</p>
@@ -199,11 +213,11 @@ S 1 2 -0.1 15</code></pre>
           <li>The system is well-behaved and does not exhibit strong anharmonicity or near-degenerate states at the scan points.</li>
           <li>You want efficient optimization without explicit Hessian computation at each scan point.</li>
         </ul>
-        <p>If L-BFGS has difficulty converging at certain scan points (for example, near transition states or in flat regions of the PES), consider switching to the <a href="scan_rfo.html">RFO method</a>.</p>
+        <p>If L-BFGS has difficulty converging at certain scan points (for example, near transition states or in flat regions of the PES), consider reducing the scan step size, tightening the convergence level, or switching the relaxed scan to <a href="scan_rfo.html"><code>method=rfo</code></a>.</p>
 
         <nav class="page-nav">
           <a href="scan.html">&larr; Previous: PES Scan</a>
-          <a href="scan_rfo.html">Next: Scan RFO &rarr;</a>
+          <a class="next" href="scan_rfo.html">Next: Scan RFO &rarr;</a>
         </nav>
       </article>
     </main>

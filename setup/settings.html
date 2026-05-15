@@ -75,6 +75,8 @@
                     <li><a href="../tasks/opt/opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../tasks/opt/opt_rfo.html">RFO</a></li>
                     <li><a href="../tasks/opt/opt_sd.html">SD</a></li>
+                    <li><a href="../tasks/opt/opt_cg.html">CG</a></li>
+                    <li><a href="../tasks/opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,6 +94,9 @@
                   <ul class="children">
                     <li><a href="../tasks/scan/scan_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../tasks/scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../tasks/scan/scan_sd.html">SD</a></li>
+                    <li><a href="../tasks/scan/scan_cg.html">CG</a></li>
+                    <li><a href="../tasks/scan/scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -169,10 +174,12 @@
 #irc(method=lqa, steps=50)</code></pre>
 
         <h3 id="scan">#scan</h3>
-        <p>Requests a potential energy surface (PES) scan along one or more internal coordinates. Scan coordinates are defined in the post-processing section of the input file.</p>
+        <p>Requests a potential energy surface (PES) scan along one to three internal coordinates. Scan coordinates are defined in the post-processing section of the input file.</p>
         <pre><code>#scan
-#scan(method=lbfgs)
-#scan(method=rfo, convergence=tight)</code></pre>
+#scan(mode=rigid)
+#scan(method=lbfgs, mode=relaxed, level=tight)
+#scan(method=rfo, mode=relaxed, level=tight)</code></pre>
+        <p>Current runtime support: relaxed scans reuse the optimization dispatcher and support <code>lbfgs</code>, <code>rfo</code>, <code>sd</code>, <code>cg</code>, and <code>sdcg</code>. Rigid scans bypass optimization and ignore optimizer settings.</p>
 
         <h3 id="device">#device</h3>
         <p>Specifies the hardware device on which the calculation will run. See <a href="#device-selection">Device Selection</a> below for details.</p>

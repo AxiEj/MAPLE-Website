@@ -72,9 +72,11 @@
                                 <li>
                                     <span class="tree-label"><span class="chevron"></span> <a href="../tasks/opt/optimization.html">Optimization</a></span>
                                     <ul class="children">
-                                        <li><a href="../tasks/opt/opt_lbfgs.html">L-BFGS</a></li>
-                                        <li><a href="../tasks/opt/opt_rfo.html">RFO</a></li>
-                                        <li><a href="../tasks/opt/opt_sd.html">SD</a></li>
+                                      <li><a href="../tasks/opt/opt_lbfgs.html">L-BFGS</a></li>
+                                      <li><a href="../tasks/opt/opt_rfo.html">RFO</a></li>
+                                      <li><a href="../tasks/opt/opt_sd.html">SD</a></li>
+                                      <li><a href="../tasks/opt/opt_cg.html">CG</a></li>
+                                      <li><a href="../tasks/opt/opt_sdcg.html">SD/CG</a></li>
                                     </ul>
                                 </li>
                                 <li>
@@ -90,8 +92,11 @@
                                 <li>
                                     <span class="tree-label"><span class="chevron"></span> <a href="../tasks/scan/scan.html">PES Scan</a></span>
                                     <ul class="children">
-                                        <li><a href="../tasks/scan/scan_lbfgs.html">L-BFGS</a></li>
-                                        <li><a href="../tasks/scan/scan_rfo.html">RFO</a></li>
+                                      <li><a href="../tasks/scan/scan_lbfgs.html">L-BFGS</a></li>
+                                      <li><a href="../tasks/scan/scan_rfo.html">RFO</a></li>
+                                      <li><a href="../tasks/scan/scan_sd.html">SD</a></li>
+                                      <li><a href="../tasks/scan/scan_cg.html">CG</a></li>
+                                      <li><a href="../tasks/scan/scan_sdcg.html">SD/CG</a></li>
                                     </ul>
                                 </li>
                                 <li>
@@ -196,8 +201,8 @@ H    0.000000   -0.757200   -0.469200</code></pre>
                         </tr>
                         <tr>
                             <td><code>#scan</code></td>
-                            <td>Perform a potential energy surface scan</td>
-                            <td><code>#scan(method=lbfgs)</code></td>
+                            <td>Perform a potential energy surface scan; relaxed mode supports <code>lbfgs</code>, <code>rfo</code>, <code>sd</code>, <code>cg</code>, and <code>sdcg</code></td>
+                            <td><code>#scan(method=rfo, mode=relaxed)</code></td>
                         </tr>
                         <tr>
                             <td><code>#device</code></td>
@@ -366,13 +371,13 @@ XYZ product.xyz</code></pre>
                         </tr>
                         <tr>
                             <td>PES Scan</td>
-                            <td><code>*_scan.xyz</code></td>
-                            <td>Geometries along the scan coordinate</td>
+                            <td><code>*_scan_final.xyz</code></td>
+                            <td>Multi-frame geometries for every scan point</td>
                         </tr>
                         <tr>
                             <td>PES Scan</td>
-                            <td><code>*_scan.dat</code></td>
-                            <td>Energy vs. scan coordinate data</td>
+                            <td><code>*.out</code></td>
+                            <td>Main scan log with progress, energies, coordinates, and optimizer diagnostics when applicable</td>
                         </tr>
                     </tbody>
                 </table>
