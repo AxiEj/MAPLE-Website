@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solvation - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -267,7 +268,7 @@
         <pre><code>#model = uma
 #device = gpu0
 #solv(implicit=gbsa)
-#opt(method=lbfgs, convergence=tight)
+#opt(method=lbfgs, level=tight)
 
 0 1
 C    0.000000    0.000000    0.000000
@@ -283,7 +284,7 @@ H    1.960000   -1.003000    0.000000</code></pre>
         <pre><code>#model = uma
 #device = gpu0
 #solv(explicit=water, radius=10.0, clash_cutoff=1.5, fix_dis=8.0)
-#opt(method=lbfgs, convergence=medium)
+#opt(method=lbfgs, level=medium)
 
 0 1
 C    0.000000    0.000000    0.000000

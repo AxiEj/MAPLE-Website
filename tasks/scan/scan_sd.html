@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PES Scan: SD - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -206,14 +207,31 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>The MAPLE <code>example/scan/</code> directory currently ships real default-relaxed and rigid scan files rather than duplicate files for every optimizer method. To run the real relaxed scan example with SD, start from <code>example/scan/da.inp</code> and change only the scan header to:</p>
-        <pre><code>#scan(method=sd, mode=relaxed, level=medium)</code></pre>
-        <p>Keep the checked-in coordinates and scan-coordinate block from <code>example/scan/da.inp</code>:</p>
-        <pre><code>#model=ANI-1xnr
+        <p>Checked-in MAPLE example: <code>example/scan/sd/dimethyl_peroxide_torsion.inp</code>. This is the relaxed dimethyl peroxide torsion scan shown in the visualization below:</p>
+        <pre><code>#model=aimnet2nse
+#scan(method=sd,mode=relaxed)
 #device=gpu0
 
-S 11 52 -0.1 15
-S 14 51 -0.1 15</code></pre>
+C     -0.38846526    -0.54120852     0.47889724
+O     -0.43299775    -0.36385918    -0.93087360
+O      0.57946000     0.64373500    -1.22768354
+C      1.45974812     0.03203524    -2.16138925
+H      0.59947954    -0.89956469     0.78229810
+H     -1.13763115    -1.28584057     0.75935167
+H     -0.61851510     0.40189440     0.98297169
+H      2.23953829     0.75053877    -2.42607962
+H      1.92682619    -0.85102187    -1.71579499
+H      0.91182580    -0.24730864    -3.06593618
+
+S 1 2 3 4 5.0 72</code></pre>
+        <p>The final <code>S</code> line is a dihedral scan: four atom indices followed by a 5.0 degree step and 72 increments, producing 73 scan points including the initial geometry.</p>
+
+        <h2 id="visualization">Scan Visualization</h2>
+        <p>The animation below pairs the generated scan geometries with the energy profile for a relaxed dimethyl peroxide torsion scan using SD.</p>
+        <figure class="doc-figure" style="max-width:720px;margin:1.75rem auto;">
+          <img src="../../assets/images/scan/sd/dimethyl_peroxide_torsion_scan_visual_lab_traj_energy.gif" alt="SD dimethyl peroxide torsion scan animation with energy profile">
+          <figcaption>Fig. 1 — Dimethyl peroxide torsion relaxed scan (SD)</figcaption>
+        </figure>
 
         <h2 id="when-to-use">When to Use SD Scans</h2>
         <ul>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -152,16 +153,16 @@
 #model = maceoff23m</code></pre>
 
         <h3 id="opt">#opt</h3>
-        <p>Requests a geometry optimization. Parameters such as the optimization method and convergence criteria can be supplied in parentheses.</p>
+        <p>Requests a geometry optimization. Parameters such as the optimization method and convergence level can be supplied in parentheses.</p>
         <pre><code>#opt
 #opt(method=lbfgs)
-#opt(method=lbfgs, convergence=tight)</code></pre>
+#opt(method=lbfgs, level=tight)</code></pre>
 
         <h3 id="ts">#ts</h3>
-        <p>Requests a transition state search. The method and convergence settings are specified in parentheses.</p>
+        <p>Requests a transition state search. The method and convergence level are specified in parentheses.</p>
         <pre><code>#ts
 #ts(method=prfo)
-#ts(method=neb, convergence=tight)</code></pre>
+#ts(method=neb, level=tight)</code></pre>
 
         <h3 id="freq">#freq</h3>
         <p>Requests a vibrational frequency calculation. This computes the Hessian matrix and derives harmonic frequencies, zero-point energy, and thermochemical properties.</p>
@@ -283,7 +284,7 @@
 
         <h2 id="convergence-levels">Convergence Levels</h2>
 
-        <p>MAPLE provides several predefined convergence levels for geometry optimizations and transition state searches. These control the thresholds for maximum force (<code>f_max</code>), RMS force (<code>f_rms</code>), maximum displacement (<code>dp_max</code>), and RMS displacement (<code>dp_rms</code>). All force values are in Hartree/Bohr and displacements in Bohr.</p>
+        <p>MAPLE provides several predefined convergence levels for geometry optimizations and transition state searches. These control the thresholds for maximum force (<code>f_max</code>), RMS force (<code>f_rms</code>), maximum displacement (<code>dp_max</code>), and RMS displacement (<code>dp_rms</code>). Force thresholds are in Hartree/Angstrom and displacement thresholds are in Angstrom.</p>
 
         <table>
           <thead>
@@ -298,52 +299,52 @@
           <tbody>
             <tr>
               <td><code>extratight</code></td>
-              <td>1.5e-06</td>
-              <td>1.0e-06</td>
-              <td>6.0e-06</td>
-              <td>4.0e-06</td>
+              <td>3.0e-04</td>
+              <td>2.0e-04</td>
+              <td>3.0e-04</td>
+              <td>2.0e-04</td>
             </tr>
             <tr>
               <td><code>tight</code></td>
-              <td>1.5e-05</td>
-              <td>1.0e-05</td>
-              <td>6.0e-05</td>
-              <td>4.0e-05</td>
+              <td>8.5e-04</td>
+              <td>5.5e-04</td>
+              <td>1.1e-03</td>
+              <td>7.5e-04</td>
             </tr>
             <tr>
               <td><code>medium</code></td>
-              <td>4.5e-04</td>
-              <td>3.0e-04</td>
-              <td>1.8e-03</td>
-              <td>1.2e-03</td>
+              <td>2.85e-03</td>
+              <td>1.90e-03</td>
+              <td>3.15e-03</td>
+              <td>2.10e-03</td>
             </tr>
             <tr>
               <td><code>loose</code></td>
-              <td>2.5e-03</td>
-              <td>1.7e-03</td>
-              <td>1.0e-02</td>
-              <td>6.7e-03</td>
+              <td>3.80e-03</td>
+              <td>2.50e-03</td>
+              <td>6.00e-03</td>
+              <td>4.00e-03</td>
             </tr>
             <tr>
               <td><code>extraloose</code></td>
-              <td>2.5e-02</td>
-              <td>1.7e-02</td>
-              <td>1.0e-01</td>
-              <td>6.7e-02</td>
+              <td>7.55e-03</td>
+              <td>5.00e-03</td>
+              <td>1.20e-02</td>
+              <td>8.00e-03</td>
             </tr>
             <tr>
               <td><code>superloose</code></td>
-              <td>2.5e-01</td>
-              <td>1.7e-01</td>
-              <td>1.0e+00</td>
-              <td>6.7e-01</td>
+              <td>8.50e-02</td>
+              <td>5.50e-02</td>
+              <td>1.45e-01</td>
+              <td>9.50e-02</td>
             </tr>
           </tbody>
         </table>
 
         <p>Set the convergence level inside the task command parentheses:</p>
-        <pre><code>#opt(method=lbfgs, convergence=tight)
-#ts(method=prfo, convergence=extratight)</code></pre>
+        <pre><code>#opt(method=lbfgs, level=tight)
+#ts(method=prfo, level=extratight)</code></pre>
 
         <div class="admonition tip">
           <p class="admonition-title">Tip</p>

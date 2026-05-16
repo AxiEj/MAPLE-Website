@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MAPLE PES scan documentation covering relaxed and rigid scan modes, supported optimizers, scan coordinate syntax, and output files.">
   <title>PES Scan - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -171,7 +173,7 @@
                 <td>Conjugate gradient. Memory-efficient relaxation when starting geometries are already reasonable.</td>
               </tr>
               <tr>
-                <td><a href="scan_sdcg.html"><strong>SDCG</strong></a></td>
+                <td><a href="scan_sdcg.html"><strong>SD/CG</strong></a></td>
                 <td><code>sdcg</code></td>
                 <td>Hybrid steepest-descent / conjugate-gradient with optional DIIS acceleration.</td>
               </tr>
@@ -228,16 +230,16 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>A complete input file for a two-coordinate relaxed scan with the ANI-1xnr model on a GPU. The <code>S</code> lines define two scanned distances, each with 15 increments of &minus;0.1 &Aring;, producing a 16 &times; 16 = 256 point grid:</p>
+        <p>The checked-in MAPLE example <code>example/scan/da.inp</code> is a two-coordinate relaxed scan with the ANI-1xnr model on a GPU. Only the long coordinate block is elided below; in a real input file the <code>S</code> scan commands must come after the molecular coordinates because MAPLE parses them as post-processing commands:</p>
         <pre><code>#model=ANI-1xnr
 #scan
 #device=gpu0
 
-S 11 52 -0.1 15
-S 14 51 -0.1 15
+[XYZ coordinates from example/scan/da.inp]
 
-[... XYZ coordinates ...]</code></pre>
-        <p>Because <code>#scan</code> defaults to <code>method=lbfgs</code> and <code>mode=relaxed</code>, the header above is equivalent to <code>#scan(method=lbfgs, mode=relaxed)</code>. At each grid point MAPLE constrains both target coordinates and optimizes the remaining degrees of freedom with the selected optimizer.</p>
+S 11 52 -0.1 15
+S 14 51 -0.1 15</code></pre>
+        <p>The two <code>S</code> lines define scanned distances, each with 15 increments of &minus;0.1 &Aring;, producing a 16 &times; 16 = 256 point grid. Because <code>#scan</code> defaults to <code>method=lbfgs</code> and <code>mode=relaxed</code>, the header above is equivalent to <code>#scan(method=lbfgs, mode=relaxed)</code>. At each grid point MAPLE constrains both target coordinates and optimizes the remaining degrees of freedom with the selected optimizer.</p>
 
         <h2 id="common-parameters">Common Parameters</h2>
         <p>These parameters are shared across all scan calculations. Individual optimizers may accept additional method-specific parameters (see each method's sub-page).</p>
@@ -270,11 +272,6 @@ S 14 51 -0.1 15
                 <td><code>max_iter</code></td>
                 <td><code>256</code></td>
                 <td>Maximum number of optimization cycles per scan point (relaxed scans only).</td>
-              </tr>
-              <tr>
-                <td><code>write_traj</code></td>
-                <td><code>false</code></td>
-                <td>Write per-point optimizer trajectories in addition to the combined scan trajectory.</td>
               </tr>
               <tr>
                 <td><code>verbose</code></td>

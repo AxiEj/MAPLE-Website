@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coordinates - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -173,7 +174,7 @@ H    1.932000   -1.011000    0.000000</code></pre>
         <p>For larger molecules or when reusing geometries across calculations, you can load coordinates from an external XYZ file using the <code>XYZ</code> keyword followed by the file path.</p>
 
         <pre><code>#model = aimnet2
-#opt(method=lbfgs, convergence=tight)
+#opt(method=lbfgs, level=tight)
 
 XYZ /path/to/molecule.xyz</code></pre>
 
@@ -273,10 +274,12 @@ B 1 2</code></pre>
         <p>In this example, atom 3 (oxygen) is frozen in place and the bond between atoms 1 and 2 (C-C) is constrained at its initial distance during optimization.</p>
 
         <h3>Example with scan coordinate</h3>
-        <p>Checked-in MAPLE example: <code>example/scan/C18.inp</code>. The full C18 coordinates are in that file; the real task header and scan coordinate are:</p>
+        <p>Checked-in MAPLE example: <code>example/scan/C18.inp</code>. The full C18 coordinates are in that file; the scan coordinate is a post-processing line after the coordinates:</p>
         <pre><code>#model=aimnet2nse
 #scan(mode=rigid)
 #device=gpu0
+
+[XYZ coordinates from example/scan/C18.inp]
 
 S 1 36 0.1 50</code></pre>
 

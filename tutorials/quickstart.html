@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick Start Tutorial - MAPLE</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../favicon.ico">
 </head>
 <body>
     <header class="top-nav">
@@ -191,10 +192,10 @@ Convergence thresholds                      0.000450    0.000300
 
 Optimization converged in 2 steps.</code></pre>
 
-                <p>You can customize the optimization method and convergence criteria. For example, to use the L-BFGS optimizer with a tighter convergence threshold:</p>
+                <p>You can customize the optimization method and convergence level. For example, to use the L-BFGS optimizer with the <code>tight</code> preset:</p>
 
                 <pre><code>#model = ani2x
-#opt(method=lbfgs, convergence=1e-6)
+#opt(method=lbfgs, level=tight)
 
 O    0.000000    0.000000    0.120000
 H    0.000000    0.800000   -0.480000
@@ -219,9 +220,11 @@ H    0.000000   -0.800000   -0.480000</code></pre>
                     <li><strong>dE</strong>: The energy change from the previous step in kcal/mol.</li>
                     <li><strong>max(|G|)</strong>: The maximum component of the gradient (atomic forces).</li>
                     <li><strong>RMS(G)</strong>: The root-mean-square of the gradient.</li>
+                    <li><strong>Maximum displacement</strong>: The largest coordinate displacement in the step.</li>
+                    <li><strong>RMS displacement</strong>: The root-mean-square coordinate displacement.</li>
                 </ul>
 
-                <p>Convergence is reached when both <code>max(|G|)</code> and <code>RMS(G)</code> fall below their respective thresholds, as shown in the convergence threshold line of the output.</p>
+                <p>Convergence is reached only when maximum force, RMS force, maximum displacement, and RMS displacement all fall below their respective thresholds, as shown in the convergence criteria section of the output.</p>
 
                 <p>For optimization jobs, the optimized geometry is written to an XYZ file that you can visualize with molecular viewers such as ASE GUI, Avogadro, or VMD:</p>
 

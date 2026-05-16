@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PES Scan: CG - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -212,14 +213,35 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>The MAPLE <code>example/scan/</code> directory currently ships real default-relaxed and rigid scan files rather than duplicate files for every optimizer method. To run the real relaxed scan example with CG, start from <code>example/scan/da.inp</code> and change only the scan header to:</p>
-        <pre><code>#scan(method=cg, mode=relaxed, level=tight)</code></pre>
-        <p>Keep the checked-in coordinates and scan-coordinate block from <code>example/scan/da.inp</code>:</p>
-        <pre><code>#model=ANI-1xnr
+        <p>Checked-in MAPLE example: <code>example/scan/cg/butane_torsion.inp</code>. This is the relaxed butane torsion scan shown in the visualization below:</p>
+        <pre><code>#model=aimnet2nse
+#scan(method=cg,mode=relaxed)
 #device=gpu0
 
-S 11 52 -0.1 15
-S 14 51 -0.1 15</code></pre>
+C     -0.52081539     1.11161504    -0.13989751
+C      0.59078300     0.29318923    -0.77842290
+C      1.32746823    -0.60957381     0.21152861
+C      0.45259197    -1.70775275     0.79614860
+H     -0.94949784     1.80049876    -0.87488523
+H     -1.32977057     0.47261032     0.22606643
+H     -0.14081339     1.70426027     0.69821742
+H      1.31638081     0.98145785    -1.22807656
+H      0.17655991    -0.30881448    -1.59557540
+H      1.74762224    -0.00673639     1.02502995
+H      2.17359552    -1.07649793    -0.30658812
+H      1.05410451    -2.37229845     1.42471640
+H     -0.00260239    -2.31098551     0.00433108
+H     -0.34575942    -1.29510299     1.41986360
+
+S 1 2 3 4 5.0 72</code></pre>
+        <p>The final <code>S</code> line is a dihedral scan: four atom indices followed by a 5.0 degree step and 72 increments, producing 73 scan points including the initial geometry.</p>
+
+        <h2 id="visualization">Scan Visualization</h2>
+        <p>The animation below pairs the generated scan geometries with the energy profile for a relaxed butane torsion scan using CG.</p>
+        <figure class="doc-figure" style="max-width:720px;margin:1.75rem auto;">
+          <img src="../../assets/images/scan/cg/butane_torsion_scan_visual_lab_traj_energy.gif" alt="CG butane torsion scan animation with energy profile">
+          <figcaption>Fig. 1 — Butane torsion relaxed scan (CG)</figcaption>
+        </figure>
 
         <h2 id="when-to-use">When to Use CG Scans</h2>
         <ul>

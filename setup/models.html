@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ML Models - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -270,7 +271,7 @@
         <pre><code><span class="comment"># Uses uma-s-1p2 checkpoint, omol task by default</span>
 <span class="keyword">#model</span>=<span class="value">uma</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
-<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">convergence</span>=<span class="value">tight</span>)
+<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">level</span>=<span class="value">tight</span>)
 
 0 1
 C    0.000000    0.000000    0.000000
@@ -289,7 +290,7 @@ XYZ /path/to/material.xyz</code></pre>
         <pre><code>#model = aimnet2
 #d4
 #device = gpu0
-#opt(method=lbfgs, convergence=extratight)
+#opt(method=lbfgs, level=extratight)
 
 0 1
 C    0.000000    0.000000    0.000000
@@ -308,7 +309,7 @@ XYZ /path/to/optimized_geometry.xyz</code></pre>
         <h3>CPU-based calculation for large systems</h3>
         <pre><code>#model = maceoff23s
 #device = cpu
-#opt(convergence=loose)
+#opt(level=loose)
 
 XYZ /path/to/large_molecule.xyz</code></pre>
 

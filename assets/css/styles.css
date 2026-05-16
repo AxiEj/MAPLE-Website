@@ -635,7 +635,7 @@ pre .section { color: #267f99; font-weight: 600; }
 .admonition.note .admonition-title { background: rgba(0, 176, 255, 0.08); color: #0077b3; }
 
 .admonition.tip { border-left-color: var(--color-tip); }
-.admonition.tip .admonition-title { background: rgba(0, 200, 82, 0.08); color: #00873e; }
+.admonition.tip .admonition-title { background: rgba(0, 200, 82, 0.08); color: #007a38; }
 
 .admonition.warning { border-left-color: var(--color-warning); }
 .admonition.warning .admonition-title { background: rgba(255, 145, 0, 0.08); color: #b36500; }

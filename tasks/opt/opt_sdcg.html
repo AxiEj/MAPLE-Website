@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SD/CG Optimization - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -136,7 +137,7 @@
 
         <h2 id="overview">Overview</h2>
         <p>The SD/CG optimizer is a hybrid steepest-descent / conjugate-gradient method with optional DIIS acceleration. It begins with a steepest descent phase to rapidly reduce large forces, then automatically switches to conjugate gradient for more efficient convergence near a minimum. This is the recommended choice when a starting geometry may be significantly distorted. Invoked with <code>method=sdcg</code> (or simply the keyword <code>sdcg</code>, which defaults to this mode).</p>
-        <p>The switch from SD to CG is controlled by <code>sd_max_iter</code> and <code>cg_switch_fmax</code>: the optimizer moves to CG once either the SD iteration limit is reached or the maximum force drops below the specified threshold. The parameters <code>sd_enabled</code> and <code>cg_enabled</code> are derived internally from the <code>method</code> keyword and are not intended to be set directly.</p>
+        <p>The switch from SD to CG is controlled by <code>sd_max_iter</code> and <code>cg_switch_fmax</code>: the optimizer moves to CG once either the SD iteration limit is reached or the maximum force drops below the specified threshold. With the default <code>cg_switch_fmax=0.0</code>, MAPLE sets an automatic threshold equal to 0.5 &times; the initial maximum force. The parameters <code>sd_enabled</code> and <code>cg_enabled</code> are derived internally from the <code>method</code> keyword and are not intended to be set directly.</p>
 
         <h2 id="parameters">Parameters</h2>
         <div class="table-wrapper">
@@ -172,7 +173,7 @@
                 <td><code>cg_switch_fmax</code></td>
                 <td>float</td>
                 <td><code>0.0</code></td>
-                <td>Switch from SD to CG when the maximum force drops below this value (eV/Å). Set to 0 to switch purely based on <code>sd_max_iter</code>.</td>
+                <td>Switch from SD to CG when the maximum force drops below this value (Hartree/Angstrom). The default <code>0.0</code> enables the runtime auto-threshold: 0.5 &times; the initial maximum force.</td>
               </tr>
               <tr>
                 <td><code>cg_restart_threshold</code></td>
@@ -209,18 +210,6 @@
                 <td>int</td>
                 <td><code>6</code></td>
                 <td>Maximum number of DIIS snapshots stored.</td>
-              </tr>
-              <tr>
-                <td><code>write_traj</code></td>
-                <td>bool</td>
-                <td><code>False</code></td>
-                <td>Write intermediate geometries to a trajectory file.</td>
-              </tr>
-              <tr>
-                <td><code>traj_every</code></td>
-                <td>int</td>
-                <td><code>1</code></td>
-                <td>Write trajectory frame every N steps.</td>
               </tr>
               <tr>
                 <td><code>verbose</code></td>

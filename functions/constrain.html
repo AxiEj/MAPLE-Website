@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Constraints - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -290,7 +291,7 @@ D 1 2 3 4</code></pre>
         <h3>Constrained optimization: freeze atoms and fix a bond</h3>
         <pre><code>#model = uma
 #device = gpu0
-#opt(method=lbfgs, convergence=tight)
+#opt(method=lbfgs, level=tight)
 
 0 1
 C    0.000000    0.000000    0.000000
@@ -330,19 +331,23 @@ D 5 1 2 3</code></pre>
         <p>The dihedral angle along H(5)-C(1)-C(2)-C(3) is fixed at its initial value while the rest of the geometry relaxes.</p>
 
         <h3>1D bond scan</h3>
-        <p>Checked-in MAPLE example: <code>example/scan/C18.inp</code>. The full coordinate block is kept in the source example; the real scan-defining lines are:</p>
+        <p>Checked-in MAPLE example: <code>example/scan/C18.inp</code>. The full coordinate block is kept in the source example; the scan command belongs after that coordinate block:</p>
         <pre><code>#model=aimnet2nse
 #scan(mode=rigid)
 #device=gpu0
+
+[XYZ coordinates from example/scan/C18.inp]
 
 S 1 36 0.1 50</code></pre>
         <p>Scans the atom 1&ndash;36 distance over 51 points: the initial geometry plus 50 increments of 0.1 Angstroms.</p>
 
         <h3>2D scan: two distance coordinates</h3>
-        <p>Checked-in MAPLE example: <code>example/scan/da.inp</code>. It defines a two-coordinate relaxed scan with the default L-BFGS method:</p>
+        <p>Checked-in MAPLE example: <code>example/scan/da.inp</code>. It defines a two-coordinate relaxed scan with the default L-BFGS method. The long coordinate block is omitted here, but the <code>S</code> commands must remain after it:</p>
         <pre><code>#model=ANI-1xnr
 #scan
 #device=gpu0
+
+[XYZ coordinates from example/scan/da.inp]
 
 S 11 52 -0.1 15
 S 14 51 -0.1 15</code></pre>

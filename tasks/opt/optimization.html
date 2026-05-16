@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Geometry Optimization - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -170,7 +171,7 @@
                 <td>Conjugate gradient. Improved convergence over SD with minimal additional cost.</td>
               </tr>
               <tr>
-                <td><a href="opt_sdcg.html"><strong>SDCG</strong></a></td>
+                <td><a href="opt_sdcg.html"><strong>SD/CG</strong></a></td>
                 <td><code>sdcg</code></td>
                 <td>Hybrid steepest-descent / conjugate-gradient. Starts with SD, switches to CG automatically.</td>
               </tr>
@@ -239,11 +240,6 @@ H       2.96000900     -0.36880600     -1.38891000</code></pre>
                 <td><code>max_iter</code></td>
                 <td><code>256</code></td>
                 <td>Maximum number of optimization cycles before the calculation is terminated.</td>
-              </tr>
-              <tr>
-                <td><code>write_traj</code></td>
-                <td><code>false</code></td>
-                <td>Write intermediate geometries to a trajectory file.</td>
               </tr>
             </tbody>
           </table>

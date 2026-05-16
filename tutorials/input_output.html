@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input &amp; Output - MAPLE</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="../favicon.ico">
 </head>
 <body>
     <header class="top-nav">
@@ -148,9 +149,8 @@
                 <p>Here is an example input file showing both sections:</p>
 
                 <pre><code>#model=ani2x
-#opt(method=lbfgs)
+#opt(method=lbfgs, level=tight)
 #device=gpu0
-#convergence=tight
 
 O    0.000000    0.000000    0.117300
 H    0.000000    0.757200   -0.469200
@@ -209,11 +209,6 @@ H    0.000000   -0.757200   -0.469200</code></pre>
                             <td>Set the compute device</td>
                             <td><code>#device=gpu0</code></td>
                         </tr>
-                        <tr>
-                            <td><code>#convergence</code></td>
-                            <td>Set convergence level for iterative tasks</td>
-                            <td><code>#convergence=tight</code></td>
-                        </tr>
                     </tbody>
                 </table>
 
@@ -232,8 +227,7 @@ H    0.000000   -0.757200   -0.469200</code></pre>
                 <p>Task commands accept optional parameters in parentheses. If no parameters are given, MAPLE uses sensible defaults:</p>
 
                 <pre><code># With explicit parameters
-#opt(method=lbfgs)
-#convergence=tight
+#opt(method=lbfgs, level=tight)
 
 # Using defaults (equivalent to #opt(method=lbfgs))
 #opt</code></pre>
@@ -259,9 +253,10 @@ H    0.000000   -0.757200   -0.469200</code></pre>
 
                 <h2 id="convergence-levels">Convergence Levels</h2>
 
-                <p>MAPLE provides six predefined convergence levels for iterative tasks such as geometry optimizations and transition state searches. Set the level using the <code>#convergence</code> header command:</p>
+                <p>MAPLE provides six predefined convergence levels for iterative tasks such as geometry optimizations and transition state searches. Set the level inside the task command parentheses:</p>
 
-                <pre><code>#convergence=tight</code></pre>
+                <pre><code>#opt(method=lbfgs, level=tight)
+#ts(method=prfo, level=extratight)</code></pre>
 
                 <p>The available levels, from tightest to loosest, are:</p>
 

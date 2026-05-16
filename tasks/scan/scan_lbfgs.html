@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PES Scan: L-BFGS - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -197,14 +198,30 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>Checked-in MAPLE example: <code>example/scan/da.inp</code>. The file uses the default relaxed L-BFGS path because the task header is <code>#scan</code>.</p>
-        <pre><code>#model=ANI-1xnr
-#scan
+        <p>Checked-in MAPLE example: <code>example/scan/lbfgs/ethanol_torsion.inp</code>. This is the relaxed ethanol torsion scan shown in the visualization below:</p>
+        <pre><code>#model=aimnet2nse
+#scan(method=lbfgs,mode=relaxed)
 #device=gpu0
 
-S 11 52 -0.1 15
-S 14 51 -0.1 15</code></pre>
-        <p>The full coordinates stay in <code>example/scan/da.inp</code>. The header above is equivalent to <code>#scan(method=lbfgs, mode=relaxed)</code> for the current parser and dispatcher.</p>
+C       0.00000000    0.00000000    0.00000000
+C       1.52000000    0.00000000    0.00000000
+O       2.07000000    1.21000000    0.00000000
+H       2.94000000    1.20000000    0.00000000
+H      -0.54000000    0.94000000    0.00000000
+H      -0.54000000   -0.47000000    0.81400000
+H      -0.54000000   -0.47000000   -0.81400000
+H       1.92000000   -0.52000000    0.89000000
+H       1.92000000   -0.52000000   -0.89000000
+
+S 1 2 3 4 5.0 72</code></pre>
+        <p>The final <code>S</code> line is a dihedral scan: four atom indices followed by a 5.0 degree step and 72 increments, producing 73 scan points including the initial geometry.</p>
+
+        <h2 id="visualization">Scan Visualization</h2>
+        <p>The animation below pairs the generated scan geometries with the energy profile for a relaxed ethanol torsion scan using L-BFGS.</p>
+        <figure class="doc-figure" style="max-width:720px;margin:1.75rem auto;">
+          <img src="../../assets/images/scan/lbfgs/ethanol_torsion_scan_visual_lab_traj_energy.gif" alt="L-BFGS ethanol torsion scan animation with energy profile">
+          <figcaption>Fig. 1 — Ethanol torsion relaxed scan (L-BFGS)</figcaption>
+        </figure>
 
         <h2 id="when-to-use">When to Use</h2>
         <p>L-BFGS is the recommended default method for relaxed PES scans. Use it when:</p>
