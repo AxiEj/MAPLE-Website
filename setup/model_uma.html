@@ -136,22 +136,25 @@
 
         <p><strong>UMA</strong> is a family of universal machine-learning interatomic potentials developed by Meta's FAIR Chemistry team. Trained on approximately 500 million unique 3D atomic structures spanning molecules, materials, and catalysts, UMA is designed to serve as a single universal model that handles diverse chemical domains without requiring fine-tuning.</p>
 
-        <p>MAPLE defaults to <strong>UMA v1.2</strong> (<code>uma-s-1p2</code>), which offers ~50% faster inference and ~40% improved accuracy on molecular systems compared to v1.1.</p>
+        <p>MAPLE defaults to the small UMA v1.1 checkpoint (<code>uma-s-1p1</code>) for compatibility. You can explicitly select newer or larger checkpoints, and you can choose the FAIR Chemistry inference interface for speed-critical GPU workloads.</p>
 
         <h2 id="configuration">Configuration</h2>
 
-        <p>Basic usage with all defaults (task = <code>omol</code>, size = <code>uma-s-1p2</code>):</p>
+        <p>Basic usage with all defaults (task = inferred from the system, size = <code>uma-s-1p1</code>, inference = <code>default</code>):</p>
         <pre><code><span class="keyword">#model</span>=<span class="value">uma</span></code></pre>
 
         <p>Specify task and/or size explicitly:</p>
         <pre><code><span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">task</span>=<span class="value">omat</span>, <span class="param">size</span>=<span class="value">uma-s-1p2</span>)</code></pre>
 
-        <p>Both parameters are optional and can be used independently:</p>
-        <pre><code><span class="comment"># Only change task (size stays at default uma-s-1p2)</span>
+        <p>The <code>task</code>, <code>size</code>, and <code>inference</code> parameters are optional and can be used independently:</p>
+        <pre><code><span class="comment"># Only change task (size stays at default uma-s-1p1)</span>
 <span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">task</span>=<span class="value">oc20</span>)
 
-<span class="comment"># Only change size (task stays at default omol)</span>
-<span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">size</span>=<span class="value">uma-m-1p1</span>)</code></pre>
+<span class="comment"># Only change size (task remains auto-selected)</span>
+<span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">size</span>=<span class="value">uma-m-1p1</span>)
+
+<span class="comment"># Only change the FAIR Chemistry inference interface</span>
+<span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">inference</span>=<span class="value">turbo</span>)</code></pre>
 
         <h2 id="model-sizes">Model Sizes</h2>
 
@@ -173,14 +176,14 @@
               <td>v1.2</td>
               <td>6.6M</td>
               <td>~150M</td>
-              <td><strong>Default.</strong> Latest and fastest; ~50% faster, ~40% more accurate than v1.1</td>
+              <td>Latest and fastest; ~50% faster, ~40% more accurate than v1.1 on molecular benchmarks</td>
             </tr>
             <tr>
               <td><code>uma-s-1p1</code></td>
               <td>v1.1</td>
               <td>6.6M</td>
               <td>~150M</td>
-              <td>Previous stable release; use if v1.2 compatibility issues arise</td>
+              <td><strong>Default.</strong> Compatibility-first small checkpoint</td>
             </tr>
             <tr>
               <td><code>uma-m-1p1</code></td>
@@ -194,7 +197,45 @@
 
         <div class="admonition tip">
           <p class="admonition-title">Tip</p>
-          <p>For most use cases, the default <code>uma-s-1p2</code> provides the best balance of speed and accuracy. Switch to <code>uma-m-1p1</code> when you need the highest possible accuracy and can tolerate slower evaluation.</p>
+          <p>The default <code>uma-s-1p1</code> is the compatibility-first choice. Select <code>uma-s-1p2</code> when you want the newer v1.2 checkpoint, or <code>uma-m-1p1</code> when you need higher accuracy and can tolerate slower evaluation.</p>
+        </div>
+
+        <h2 id="inference-interface">Inference Interface</h2>
+
+        <p>The <code>inference</code> option selects the FAIR Chemistry inference interface used by UMA. The MAPLE input keyword is <code>inference</code>; "interface" here describes the backend path being selected.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Mode</th>
+              <th>Use case</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>default</code></td>
+              <td>General-purpose calculations and CPU runs</td>
+              <td><strong>Default.</strong> Safest for short jobs and changing-composition workflows.</td>
+            </tr>
+            <tr>
+              <td><code>turbo</code></td>
+              <td>CUDA runs with repeated fixed-composition evaluations</td>
+              <td>Opt-in fast path for workloads such as NEB, TS, and frequency calculations; short jobs may not recover the startup cost.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <pre><code><span class="comment"># Explicitly request the CUDA turbo inference interface</span>
+<span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">inference</span>=<span class="value">turbo</span>)
+<span class="keyword">#device</span>=<span class="value">gpu0</span>
+
+<span class="comment"># Combine task, size, and inference options</span>
+<span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">task</span>=<span class="value">omat</span>, <span class="param">size</span>=<span class="value">uma-s-1p2</span>, <span class="param">inference</span>=<span class="value">turbo</span>)</code></pre>
+
+        <div class="admonition note">
+          <p class="admonition-title">Note</p>
+          <p>On CPU, MAPLE falls back to <code>inference=default</code> even if <code>turbo</code> is requested, because the turbo path depends on CUDA-oriented FAIR Chemistry kernels.</p>
         </div>
 
         <h2 id="task-domains">Task Domains</h2>
@@ -280,7 +321,7 @@ O    1.210000    0.000000    0.000000</code></pre>
         <h2 id="examples">Usage Examples</h2>
 
         <h3>Default: molecular geometry optimization</h3>
-        <pre><code><span class="comment"># Default: uma-s-1p2 checkpoint, omol task</span>
+        <pre><code><span class="comment"># Default: uma-s-1p1 checkpoint, omol task for this molecular system</span>
 <span class="keyword">#model</span>=<span class="value">uma</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
@@ -339,6 +380,7 @@ H   -0.540000   -0.940000    0.000000</code></pre>
           <li><strong>D4 dispersion:</strong> Not supported with UMA. The model's training data already includes dispersion-corrected DFT for relevant tasks (PBE+D3 for omc, odac, oc25).</li>
           <li><strong>GBSA solvation:</strong> Fully supported. QEq charges are computed automatically when implicit solvation is enabled.</li>
           <li><strong>All MAPLE job types</strong> are compatible with UMA: single point, optimization, transition state search, IRC, frequency, PES scan, and molecular dynamics.</li>
+          <li><strong>UMA inference interface:</strong> use <code>inference=turbo</code> only when you explicitly want the CUDA fast path; otherwise keep the default interface.</li>
           <li><strong>Requires</strong> <code>fairchem-core</code> Python package (v2.9+) and a HuggingFace account with access to the <code>facebook/UMA</code> repository.</li>
         </ul>
 
@@ -355,6 +397,7 @@ H   -0.540000   -0.940000    0.000000</code></pre>
         <ul>
           <li><a href="#configuration">Configuration</a></li>
           <li><a href="#model-sizes">Model Sizes</a></li>
+          <li><a href="#inference-interface">Inference Interface</a></li>
           <li><a href="#task-domains">Task Domains</a></li>
           <li><a href="#charge-spin">Charge and Spin</a></li>
           <li><a href="#examples">Usage Examples</a></li>

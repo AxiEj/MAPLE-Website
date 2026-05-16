@@ -220,7 +220,7 @@
               <td><a href="../setup/model_uma.html">UMA</a></td>
               <td><code>uma</code></td>
               <td>Broad periodic table coverage (83+ elements)</td>
-              <td>Universal model from Meta FAIR (v1.2); supports 7 task domains, 3 model sizes. <a href="../setup/model_uma.html">Details &rarr;</a></td>
+              <td>Universal model from Meta FAIR; supports 7 task domains, 3 model sizes, and <code>inference=default|turbo</code>. <a href="../setup/model_uma.html">Details &rarr;</a></td>
             </tr>
           </tbody>
         </table>
@@ -267,8 +267,8 @@
 
         <p>Below are complete input file examples demonstrating model selection for various scenarios.</p>
 
-        <h3>General-purpose optimization with UMA (default: v1.2, omol task)</h3>
-        <pre><code><span class="comment"># Uses uma-s-1p2 checkpoint, omol task by default</span>
+        <h3>General-purpose optimization with UMA (default: small v1.1 checkpoint, omol task)</h3>
+        <pre><code><span class="comment"># Uses uma-s-1p1 checkpoint and default inference interface</span>
 <span class="keyword">#model</span>=<span class="value">uma</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">level</span>=<span class="value">tight</span>)
@@ -285,6 +285,16 @@ H   -0.540000   -0.940000    0.000000</code></pre>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
 
 XYZ /path/to/material.xyz</code></pre>
+
+        <h3>UMA with CUDA turbo inference</h3>
+        <pre><code><span class="comment"># Opt in to the FAIR Chemistry turbo inference interface for repeated GPU evaluations</span>
+<span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">inference</span>=<span class="value">turbo</span>)
+<span class="keyword">#device</span>=<span class="value">gpu0</span>
+<span class="keyword">#ts</span>(<span class="param">method</span>=<span class="value">neb</span>)
+
+XYZ /path/to/reactant.xyz
+
+XYZ /path/to/product.xyz</code></pre>
 
         <h3>High-accuracy calculation with AIMNet2 and D4</h3>
         <pre><code>#model = aimnet2
