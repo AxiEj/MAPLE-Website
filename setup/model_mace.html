@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MACE &amp; EGRET - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
 </head>
 <body>
   <header class="top-nav">
@@ -75,6 +76,8 @@
                     <li><a href="../tasks/opt/opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../tasks/opt/opt_rfo.html">RFO</a></li>
                     <li><a href="../tasks/opt/opt_sd.html">SD</a></li>
+                    <li><a href="../tasks/opt/opt_cg.html">CG</a></li>
+                    <li><a href="../tasks/opt/opt_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,6 +95,9 @@
                   <ul class="children">
                     <li><a href="../tasks/scan/scan_lbfgs.html">L-BFGS</a></li>
                     <li><a href="../tasks/scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../tasks/scan/scan_sd.html">SD</a></li>
+                    <li><a href="../tasks/scan/scan_cg.html">CG</a></li>
+                    <li><a href="../tasks/scan/scan_sdcg.html">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -199,14 +205,14 @@ XYZ /path/to/drug_molecule.xyz</code></pre>
         <h3>Quick screening with MACE-OFF23 Small</h3>
         <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23s</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
-<span class="keyword">#opt</span>(<span class="param">convergence</span>=<span class="value">loose</span>)
+<span class="keyword">#opt</span>(<span class="param">level</span>=<span class="value">loose</span>)
 
 XYZ /path/to/molecule.xyz</code></pre>
 
         <h3>Publication-quality optimization with MACE-OFF23 Large</h3>
         <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23l</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
-<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">convergence</span>=<span class="value">tight</span>)
+<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">level</span>=<span class="value">tight</span>)
 
 XYZ /path/to/optimized_guess.xyz</code></pre>
 
@@ -220,7 +226,7 @@ XYZ /path/to/optimized_geometry.xyz</code></pre>
         <h3>CPU fallback for large systems</h3>
         <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23s</span>
 <span class="keyword">#device</span>=<span class="value">cpu</span>
-<span class="keyword">#opt</span>(<span class="param">convergence</span>=<span class="value">loose</span>)
+<span class="keyword">#opt</span>(<span class="param">level</span>=<span class="value">loose</span>)
 
 XYZ /path/to/large_system.xyz</code></pre>
 
