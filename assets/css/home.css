@@ -478,12 +478,17 @@ button, input { font: inherit; }
   transition: background .2s var(--ease), color .2s var(--ease), transform .25s var(--ease-spring), border-color .2s var(--ease);
 }
 .chip:hover .chip-ico {
-  background: var(--red);
-  color: #fff;
-  border-color: var(--red);
+  background: linear-gradient(145deg, rgba(226,58,46,.16), rgba(255,255,255,.96));
+  color: var(--red);
+  border-color: rgba(226,58,46,.34);
   transform: scale(1.04) rotate(-3deg);
 }
-.chip .chip-ico svg { width: 17px; height: 17px; }
+.chip .chip-ico img {
+  width: 25px;
+  height: 25px;
+  display: block;
+  object-fit: contain;
+}
 
 /* ---------- Footer ---------- */
 .site-footer {
