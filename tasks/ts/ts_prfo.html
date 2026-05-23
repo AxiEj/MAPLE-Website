@@ -270,6 +270,17 @@ H     2.7050   -0.3554   -1.4408</code></pre>
           <li><code>*_prfo_traj.xyz</code> &mdash; Multi-frame trajectory of the local saddle-point search.</li>
         </ul>
 
+        <h2 id="visualization">Visualization</h2>
+        <p>The P-RFO trajectory visualization uses <code>*_prfo_traj.xyz</code>, while the final TS panel uses <code>*_prfo_ts.xyz</code>. The trajectory is the local saddle-point search history, not a full reaction path.</p>
+        <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
+          <img src="../../assets/images/ts/prfo_search_traj_energy.gif" alt="P-RFO transition state search trajectory with energy trace">
+          <figcaption>Fig. 1 — P-RFO local TS search trajectory with energy trace.</figcaption>
+        </figure>
+        <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
+          <img src="../../assets/images/ts/prfo_final_ts.png" alt="P-RFO final transition state geometry with energy marker">
+          <figcaption>Fig. 2 — P-RFO final optimized TS geometry.</figcaption>
+        </figure>
+
         <h2 id="tips">Tips</h2>
         <ul>
           <li><strong>Start from a good guess.</strong> The best starting geometry is typically the highest-energy image (HEI) from a converged NEB or String calculation. You can extract this from the <code>*_hei.xyz</code> output file.</li>
