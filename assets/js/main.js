@@ -100,25 +100,66 @@ document.addEventListener('DOMContentLoaded', function () {
   var sidebar = document.querySelector('.sidebar');
   var overlay = document.querySelector('.sidebar-overlay');
   var topNavUl = document.querySelector('.top-nav ul');
+  var narrowNavQuery = window.matchMedia('(max-width: 52em)');
+  var sidebarFab = null;
+
+  function setTopNavOpen(open) {
+    if (topNavUl) topNavUl.classList.toggle('open', open);
+    if (mobileToggle) mobileToggle.setAttribute('aria-expanded', String(open));
+  }
+
+  function setSidebarOpen(open) {
+    if (sidebar) sidebar.classList.toggle('open', open);
+    if (overlay) overlay.classList.toggle('active', open);
+    if (sidebarFab) {
+      sidebarFab.classList.toggle('active', open);
+      sidebarFab.setAttribute('aria-expanded', String(open));
+    }
+  }
+
+  if (sidebar) {
+    sidebarFab = document.createElement('button');
+    sidebarFab.type = 'button';
+    sidebarFab.className = 'sidebar-fab';
+    sidebarFab.setAttribute('aria-label', 'Toggle documentation sidebar');
+    sidebarFab.setAttribute('aria-expanded', 'false');
+    sidebarFab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h14"/><path d="M4 12h10"/><path d="M4 18h14"/><path d="M20 8l-3 4 3 4"/></svg>';
+    document.body.appendChild(sidebarFab);
+    sidebarFab.addEventListener('click', function () {
+      setTopNavOpen(false);
+      setSidebarOpen(!sidebar.classList.contains('open'));
+    });
+  }
 
   if (mobileToggle) {
+    mobileToggle.setAttribute('aria-expanded', 'false');
     mobileToggle.addEventListener('click', function () {
-      // Toggle sidebar on doc pages
-      if (sidebar) {
-        sidebar.classList.toggle('open');
-        if (overlay) overlay.classList.toggle('active');
+      if (narrowNavQuery.matches && topNavUl) {
+        setSidebarOpen(false);
+        setTopNavOpen(!topNavUl.classList.contains('open'));
+        return;
       }
-      // Toggle nav menu on landing pages
-      if (topNavUl) {
-        topNavUl.classList.toggle('open');
-      }
+
+      if (sidebar) setSidebarOpen(!sidebar.classList.contains('open'));
+    });
+  }
+
+  if (topNavUl) {
+    topNavUl.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { setTopNavOpen(false); });
     });
   }
 
   if (overlay) {
     overlay.addEventListener('click', function () {
-      if (sidebar) sidebar.classList.remove('open');
-      overlay.classList.remove('active');
+      setSidebarOpen(false);
+    });
+  }
+
+  if (narrowNavQuery.addEventListener) {
+    narrowNavQuery.addEventListener('change', function () {
+      setTopNavOpen(false);
+      setSidebarOpen(false);
     });
   }
 
