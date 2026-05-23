@@ -136,13 +136,13 @@
         <h1>Single Point Energy</h1>
 
         <h2 id="overview">Overview</h2>
-        <p>A single point (SP) calculation computes the electronic energy and atomic forces at a fixed molecular geometry. Unlike optimization or transition state searches, no atoms are moved during the calculation. The geometry remains exactly as specified in the input, and MAPLE evaluates the energy and gradient at that single configuration.</p>
+        <p>A single point (SP) calculation evaluates a fixed molecular geometry without moving any atoms. By default MAPLE writes the electronic energy; higher verbosity levels can also print gradients, forces, and charge/multiplicity metadata from the same geometry.</p>
         <p>This is the simplest and fastest task type available in MAPLE, making it the foundation upon which more complex workflows are built.</p>
 
         <h2 id="usage">Usage</h2>
-        <p>The single point task is invoked by including the <code>#sp</code> header command in the input file. No additional parameters are required.</p>
+        <p>The single point task is invoked by including the <code>#sp</code> header command in the input file. No method or convergence parameters are used because there is no iterative procedure.</p>
         <pre><code>#sp</code></pre>
-        <p>The <code>#sp</code> command does not accept any method or convergence parameters since there is no iterative procedure involved. You only need to specify the model and device alongside the task command.</p>
+        <p>Use the optional <code>verbose</code> parameter when you need more than the default energy-only report. MAPLE accepts <code>verbose=0</code>, <code>verbose=1</code>, or <code>verbose=2</code>; the older spelling <code>verbosity</code> is not valid for SP jobs.</p>
 
         <div class="admonition tip">
           <div class="admonition-title">
@@ -155,15 +155,27 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>Below is a complete input file for a single point calculation on a small system using the ANI-1xnr model on a GPU:</p>
-        <pre><code>#model=ani1xnr
-#sp
-#device=gpu0
+        <p>Checked-in MAPLE example: <code>example/sp/sp3.inp</code>. It requests <code>verbose=2</code> so the output includes charge/multiplicity, energy, gradients, and forces.</p>
+        <pre><code>#model=ANI-2x
+#sp(verbose=2)
 
-C   0.0  0.0  0.0
-H   1.0  0.0  0.0
-O   2.0  0.0  0.0</code></pre>
-        <p>The first three lines are header commands that set the ML model, task type, and compute device. The remaining lines define the atomic coordinates in Cartesian format (element symbol followed by X, Y, Z positions in angstroms).</p>
+C       0.65365800      1.02013500      0.25040200
+C      -0.95129600     -1.02931400      0.57474200
+C       1.95888600     -0.93622000      0.00515500
+N       0.79077500     -0.14946600     -0.38846900
+N      -0.42242100      1.80163100      0.01564100
+O      -1.87211100     -0.71447900     -0.39360600
+H      -1.49152400     -0.99165700     -1.23718800
+H       1.93501500      1.43895500     -0.76274600
+H       1.14080200      1.20947000      1.20910000
+H      -1.06000700      1.56870100     -0.72483100
+H      -0.64277300      2.56184400      0.62878400
+H      -1.22475800     -0.59467400      1.53295400
+H      -0.61313000     -2.06366600      0.60833500
+H       1.61854500     -1.95264400      0.20633800
+H       2.67877500     -0.97401900     -0.81539800
+H       2.47397200     -0.55869000      0.89670300</code></pre>
+        <p>Run it from the MAPLE source tree with <code>maple example/sp/sp3.inp</code>. The same example has a D4 variant at <code>example/sp/sp3_d4.inp</code>.</p>
 
         <h2 id="parameters">Parameters</h2>
         <p>The single point task accepts the following parameter:</p>
@@ -181,21 +193,22 @@ O   2.0  0.0  0.0</code></pre>
               <tr>
                 <td><code>verbose</code></td>
                 <td>int</td>
-                <td>1</td>
-                <td>Output verbosity level. 0 = energy only, 1 = detailed output with forces, 2 = suppress coordinate printing.</td>
+                <td>0</td>
+                <td>Output verbosity level. 0 = energy only, 1 = energy plus gradients, 2 = charge/multiplicity, energy, gradients, and forces.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <h2 id="output">Output</h2>
-        <p>The output file from a single point calculation contains the following information:</p>
+        <p>The output file from a single point calculation always contains the total energy in Hartree (Eh). Additional fields depend on <code>verbose</code>:</p>
         <ul>
-          <li><strong>Total energy</strong> -- reported in Hartree (Eh) units. This is the primary result of the SP calculation.</li>
-          <li><strong>Gradient / forces</strong> -- the atomic forces (negative gradient of the energy with respect to nuclear positions) are computed and printed for each atom.</li>
+          <li><code>verbose=0</code> -- energy only.</li>
+          <li><code>verbose=1</code> -- energy plus per-atom gradients in Hartree/Angstrom.</li>
+          <li><code>verbose=2</code> -- charge/multiplicity metadata, gradients, and per-atom forces in Hartree/Angstrom.</li>
         </ul>
-        <p>Example output:</p>
-        <pre><code>Energy: -10434.811113387317</code></pre>
+        <p>Example output from <code>example/sp/sp3.out</code>:</p>
+        <pre><code>Energy: -304.7642932897 Hartree</code></pre>
         <p>The energy value represents the total electronic energy of the system at the given geometry as predicted by the specified ML potential.</p>
 
         <h2 id="use-cases">Use Cases</h2>
@@ -204,7 +217,7 @@ O   2.0  0.0  0.0</code></pre>
           <li><strong>Benchmarking</strong> -- comparing energies from different ML models or against reference DFT/ab initio values for the same geometry.</li>
           <li><strong>Energy comparisons</strong> -- evaluating relative energies of conformers, isomers, or reaction intermediates at their respective geometries.</li>
           <li><strong>Post-optimization checks</strong> -- verifying the energy at an optimized geometry using a different or higher-level model than was used during optimization.</li>
-          <li><strong>Force analysis</strong> -- examining the magnitude and direction of forces on atoms to assess whether a structure is close to a stationary point.</li>
+          <li><strong>Gradient or force analysis</strong> -- use <code>verbose=1</code> or <code>verbose=2</code> to inspect whether a structure is close to a stationary point.</li>
           <li><strong>Workflow building blocks</strong> -- SP calculations serve as the fundamental energy/force evaluation used internally by optimization, frequency, TS search, and other iterative tasks.</li>
         </ul>
 

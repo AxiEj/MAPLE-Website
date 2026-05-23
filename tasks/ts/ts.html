@@ -169,7 +169,7 @@
               <tr>
                 <td><a href="ts_string.html">String/GSM</a></td>
                 <td><code>string</code></td>
-                <td>Growing String Method. Adaptive path growth from both endpoints with CI-STRING refinement. More efficient than NEB for large systems.</td>
+                <td>Growing String Method. Adaptive path growth from both endpoints followed by the current String-TS finalization path.</td>
               </tr>
               <tr>
                 <td><a href="ts_autoneb.html">AutoNEB</a></td>
@@ -195,10 +195,20 @@
         <ol>
           <li><strong>Optimize endpoints.</strong> Ensure your reactant and product geometries are properly optimized local minima. Poorly optimized endpoints can cause path-based methods to fail or converge to spurious saddle points.</li>
           <li><strong>Run the TS search.</strong> Choose an appropriate method (<code>neb</code>, <code>string</code>, <code>dimer</code>, or <code>prfo</code>) and run the calculation. For path-based methods, the highest-energy image (HEI) provides an initial TS estimate.</li>
-          <li><strong>Refine the TS.</strong> Optionally refine the HEI with P-RFO using <code>refine=nebts</code> to obtain an accurate saddle-point geometry.</li>
+          <li><strong>Refine the TS.</strong> For NEB, use <code>refine=cineb</code> or <code>refine=nebts</code>. For String/GSM, use <code>refine=cistring</code> or <code>refine=stringts</code>; other TS methods reject <code>refine</code>.</li>
           <li><strong>Verify with a frequency calculation.</strong> Confirm the TS has exactly one imaginary frequency. If there are zero or more than one imaginary frequencies, the geometry is not a true first-order saddle point.</li>
           <li><strong>Run IRC.</strong> Perform an intrinsic reaction coordinate (IRC) calculation from the TS to confirm that it connects the expected reactant and product.</li>
         </ol>
+
+        <div class="admonition note">
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Note
+          </div>
+          <div class="admonition-body">
+            <p>TS refinement keywords are method-specific. MAPLE validates them during input parsing: NEB accepts <code>cineb</code> and <code>nebts</code>; String/GSM accepts <code>cistring</code> and <code>stringts</code>; P-RFO, Dimer, and AutoNEB do not accept <code>refine</code>.</p>
+          </div>
+        </div>
 
         <nav class="page-nav">
           <a href="../opt/opt_sd.html">&larr; Previous: SD</a>

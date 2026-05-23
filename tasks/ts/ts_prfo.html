@@ -139,7 +139,7 @@
 
         <h2 id="overview">Overview</h2>
         <p>P-RFO is a second-order saddle point optimizer based on the Partitioned Rational Function Optimization algorithm. It works by partitioning the Hessian eigenspace into one mode to maximize along (the reaction coordinate) and all remaining modes to minimize along. This dual-shift approach, combined with a trust-region framework and mode-following in mass-weighted coordinates, efficiently converges to the nearest first-order saddle point from an initial guess geometry.</p>
-        <p>P-RFO is the default TS refinement method in MAPLE and is the final optimization step used by <code>refine=nebts</code> after NEB or String calculations. It requires a good starting geometry that is already close to the true TS.</p>
+        <p>P-RFO is the local TS optimizer used directly with <code>#ts(method=prfo)</code> and as the final optimization step for NEB-TS/String-TS refinement workflows. It requires a good starting geometry that is already close to the true TS.</p>
 
         <h2 id="parameters">Parameters</h2>
         <div class="table-wrapper">
@@ -211,7 +211,7 @@
                 <td><code>f_max_th</code></td>
                 <td>float</td>
                 <td>9.5e-3</td>
-                <td>Max force convergence threshold (Hartree/Bohr).</td>
+                <td>Max force convergence threshold (Hartree/Angstrom).</td>
               </tr>
               <tr>
                 <td><code>f_rms_th</code></td>
@@ -223,7 +223,7 @@
                 <td><code>dp_max_th</code></td>
                 <td>float</td>
                 <td>1.8e-3</td>
-                <td>Max displacement convergence threshold (Bohr).</td>
+                <td>Max displacement convergence threshold (Angstrom).</td>
               </tr>
               <tr>
                 <td><code>dp_rms_th</code></td>
@@ -236,17 +236,45 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <pre><code>#model=ani1xnr
+        <p>Checked-in MAPLE example: <code>example/ts/prfo/inp1.inp</code>. It uses an inline TS guess geometry and writes <code>inp1_prfo_ts.xyz</code> plus <code>inp1_prfo_traj.xyz</code>.</p>
+        <pre><code>#model=ANI-1xnr
 #ts(method=prfo)
 #device=gpu0
 
-XYZ /path/to/ts_guess.xyz</code></pre>
+C               -0.8675              -1.1212               0.1451
+C                1.2063               0.0888               0.0375
+C               -0.8012               1.8039               0.7777
+C                1.9270              -0.5238               1.2299
+C                2.1735               0.5194              -1.0520
+N                0.2436              -0.9006              -0.5570
+N               -2.0080              -1.5937              -0.4191
+O               -1.6073               1.4743              -0.2757
+H               -1.9698               0.5875              -0.1411
+H                0.0290              -0.6370              -1.5287
+H               -0.8978              -0.8021               1.1842
+H                0.5985               0.9809               0.3930
+H               -2.6675              -1.9721               0.2647
+H               -1.8829              -2.2545              -1.1927
+H               -0.4288               2.8210               0.7145
+H               -1.0181               1.4392               1.7832
+H                2.6046               0.2089               1.6809
+H                1.6503               1.0084              -1.8818
+H                2.5096              -1.3982               0.9217
+H                1.2101              -0.8363               1.9937
+H                2.9111               1.2261              -0.6587
+H                2.7050              -0.3554              -1.4408</code></pre>
+
+        <h2 id="output-files">Output Files</h2>
+        <ul>
+          <li><code>*_prfo_ts.xyz</code> &mdash; Final optimized TS geometry.</li>
+          <li><code>*_prfo_traj.xyz</code> &mdash; Multi-frame trajectory of the local saddle-point search.</li>
+        </ul>
 
         <h2 id="tips">Tips</h2>
         <ul>
           <li><strong>Start from a good guess.</strong> The best starting geometry is typically the highest-energy image (HEI) from a converged NEB or String calculation. You can extract this from the <code>*_hei.xyz</code> output file.</li>
           <li><strong>Verify with a frequency calculation.</strong> After P-RFO converges, always run a frequency calculation to confirm exactly one imaginary frequency. If there are multiple imaginary frequencies, the converged structure may be a higher-order saddle point.</li>
-          <li><strong>Use <code>refine=nebts</code> for automation.</strong> Rather than running P-RFO manually, you can set <code>refine=nebts</code> in your NEB or String input to automatically apply P-RFO refinement after the path search completes.</li>
+          <li><strong>Use method-specific refinement keywords for automation.</strong> Set <code>refine=nebts</code> for NEB workflows or <code>refine=stringts</code> for String/GSM workflows when you want the path calculation to hand its highest-energy image to the local TS refinement stage.</li>
           <li><strong>Trust radius adjustment.</strong> If P-RFO oscillates or fails to converge, consider providing a geometry closer to the true TS. The trust-region mechanism will automatically adapt the step size, but a poor initial guess can cause the search to wander.</li>
         </ul>
 
