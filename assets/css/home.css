@@ -362,54 +362,110 @@ button, input { font: inherit; }
 /* ---------- Tri-info section ---------- */
 .tri-info {
   border-top: 1px solid var(--line);
-  background: var(--paper-2);
-  padding: 70px 0 90px;
+  background:
+    radial-gradient(ellipse 50rem 24rem at 14% 12%, rgba(226,58,46,.055), transparent 70%),
+    linear-gradient(180deg, var(--paper-2), #f4f4f2 100%);
+  padding: 82px 0 104px;
 }
 .tri-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "ml ml"
+    "cap add";
+  gap: 24px;
 }
+.tri-col {
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
+  border: 1px solid rgba(229,230,234,.9);
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.72));
+  box-shadow: 0 1px 2px rgba(12,12,16,.035), 0 18px 50px rgba(12,12,16,.055);
+}
+.tri-col::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(226,58,46,.07), transparent 32%),
+    radial-gradient(circle at 92% 14%, rgba(226,58,46,.06), transparent 34%);
+  pointer-events: none;
+}
+.tri-col > * { position: relative; z-index: 1; }
+.tri-col:nth-child(1) { grid-area: ml; }
+.tri-col:nth-child(2) { grid-area: cap; }
+.tri-col:nth-child(3) { grid-area: add; }
 .tri-col h3 {
   margin: 0 0 6px;
   font-family: var(--display);
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 800;
-  letter-spacing: -.01em;
+  letter-spacing: -.02em;
   color: var(--ink);
 }
+.tri-col h3::after {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 3px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--red), rgba(226,58,46,.18));
+}
 .tri-col > p {
-  margin: 0 0 22px;
+  margin: 0 0 24px;
   color: var(--muted);
   font-size: 13.5px;
   line-height: 1.65;
-  max-width: 320px;
+  max-width: 520px;
+  min-height: 2.8em;
 }
+.tri-col:nth-child(1) > p { max-width: 600px; }
 .chip-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
+}
+.tri-col:nth-child(1) .chip-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 .chip {
   display: flex; align-items: center;
-  gap: 12px;
-  height: 54px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
+  gap: 13px;
+  height: 58px;
+  padding: 0 15px;
+  border: 1px solid rgba(229,230,234,.96);
+  border-radius: 15px;
+  background: linear-gradient(180deg, #fff, rgba(250,250,248,.88));
+  box-shadow: 0 1px 1px rgba(12,12,16,.03), inset 0 1px 0 rgba(255,255,255,.9);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 760;
   color: var(--ink-2);
-  transition: border-color .2s var(--ease), transform .25s var(--ease-spring), box-shadow .25s var(--ease);
+  transition: border-color .2s var(--ease), transform .25s var(--ease-spring), box-shadow .25s var(--ease), background .25s var(--ease), color .2s var(--ease);
 }
-.chip:hover { border-color: var(--red); color: var(--red); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.chip:hover {
+  border-color: rgba(226,58,46,.34);
+  color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(12,12,16,.08), 0 4px 10px rgba(226,58,46,.08);
+  background: linear-gradient(180deg, #fff, #fff7f6);
+}
 .chip .chip-ico {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  background: var(--red-soft);
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(226,58,46,.12);
+  background: linear-gradient(145deg, rgba(226,58,46,.07), rgba(255,255,255,.85));
   color: var(--red);
   display: grid; place-items: center; flex: 0 0 auto;
+  transition: background .2s var(--ease), color .2s var(--ease), transform .25s var(--ease-spring), border-color .2s var(--ease);
+}
+.chip:hover .chip-ico {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+  transform: scale(1.04) rotate(-3deg);
 }
 .chip .chip-ico svg { width: 17px; height: 17px; }
 
@@ -489,7 +545,7 @@ button, input { font: inherit; }
   .hero { padding: 40px 0 40px; }
   .hero-copy h1 { font-size: 56px; }
   .feat-pills { grid-template-columns: repeat(2, 1fr); }
-  .tri-grid { grid-template-columns: 1fr; }
+  .tri-grid { grid-template-columns: 1fr; grid-template-areas: "ml" "cap" "add"; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
@@ -635,4 +691,13 @@ button, input { font: inherit; }
   .what-grid { grid-template-columns: minmax(0, 1fr); }
   .what-copy h2 { font-size: 34px; }
   .platform-figure { margin-left: -22px; margin-right: -22px; border-radius: 0; }
+  .tri-info { padding: 56px 0 72px; }
+  .tri-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "ml" "cap" "add"; gap: 18px; }
+  .tri-col { padding: 22px; border-radius: 22px; }
+  .tri-col h3 { font-size: 23px; }
+  .tri-col > p { min-height: 0; }
+  .tri-col:nth-child(1) .chip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chip-grid { grid-template-columns: 1fr; }
+  .chip { gap: 9px; padding: 0 10px; font-size: 12px; white-space: nowrap; }
+  .chip .chip-ico { width: 29px; height: 29px; border-radius: 9px; }
 }
