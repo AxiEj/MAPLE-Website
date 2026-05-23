@@ -36,7 +36,89 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // ----- 2. Copy Code Button -----
+  // ----- 2. MAPLE Input Syntax Highlighting -----
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function isMapleInput(text) {
+    return /(^|\n)\s*#(?:model|device|charge|mult|sp|opt|ts|scan|irc|freq|md|solvent|constraint|constraints)\b/i.test(text) ||
+      /(^|\n)\s*(?:XYZ|PDB|MOL2)\s+\S+/i.test(text);
+  }
+
+  function highlightDirectiveTail(tail) {
+    var directValue = tail.match(/^(\s*=\s*)("[^"]*"|'[^']*'|[^,\)\s]+)(.*)$/);
+    if (directValue) {
+      return escapeHtml(directValue[1]) +
+        '<span class="value">' + escapeHtml(directValue[2]) + '</span>' +
+        escapeHtml(directValue[3]);
+    }
+
+    var out = '';
+    var last = 0;
+    var paramRe = /([A-Za-z_][\w-]*)(\s*=\s*)("[^"]*"|'[^']*'|[^,\)\s]+)/g;
+    var match;
+    while ((match = paramRe.exec(tail)) !== null) {
+      out += escapeHtml(tail.slice(last, match.index));
+      out += '<span class="param">' + escapeHtml(match[1]) + '</span>';
+      out += escapeHtml(match[2]);
+      out += '<span class="value">' + escapeHtml(match[3]) + '</span>';
+      last = match.index + match[0].length;
+    }
+    out += escapeHtml(tail.slice(last));
+    return out;
+  }
+
+  function highlightCoordinateLine(line) {
+    var match = line.match(/^(\s*)([A-Z][a-z]?)(\s+[-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?(?:\s+[-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?){2,})(.*)$/);
+    if (!match) return null;
+    return escapeHtml(match[1]) +
+      '<span class="atom">' + escapeHtml(match[2]) + '</span>' +
+      escapeHtml(match[3]).replace(/([-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?)/g, '<span class="number">$1</span>') +
+      escapeHtml(match[4]);
+  }
+
+  function highlightMapleLine(line) {
+    if (/^\s*$/.test(line)) return '';
+
+    if (/^\s*#\s/.test(line)) {
+      return '<span class="comment">' + escapeHtml(line) + '</span>';
+    }
+
+    var directive = line.match(/^(\s*)#([A-Za-z_][\w-]*)(.*)$/);
+    if (directive) {
+      return escapeHtml(directive[1]) +
+        '<span class="hash">#</span><span class="directive">' + escapeHtml(directive[2]) + '</span>' +
+        highlightDirectiveTail(directive[3]);
+    }
+
+    var fileRef = line.match(/^(\s*)(XYZ|PDB|MOL2)(\s+)(.*)$/i);
+    if (fileRef) {
+      return escapeHtml(fileRef[1]) +
+        '<span class="directive">' + escapeHtml(fileRef[2]) + '</span>' +
+        escapeHtml(fileRef[3]) +
+        '<span class="filename">' + escapeHtml(fileRef[4]) + '</span>';
+    }
+
+    return highlightCoordinateLine(line) || escapeHtml(line);
+  }
+
+  document.querySelectorAll('pre code').forEach(function (code) {
+    var text = code.textContent;
+    if (!isMapleInput(text)) return;
+
+    var pre = code.closest('pre');
+    if (pre) pre.classList.add('maple-code');
+    code.classList.add('maple-input-code');
+    code.innerHTML = text.split('\n').map(highlightMapleLine).join('\n');
+  });
+
+  // ----- 3. Copy Code Button -----
   document.querySelectorAll('pre').forEach(function (pre) {
     // Skip if already wrapped
     if (pre.parentElement.classList.contains('code-wrapper')) return;
@@ -67,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
     wrapper.appendChild(btn);
   });
 
-  // ----- 3. TOC Scroll Spy -----
+  // ----- 4. TOC Scroll Spy -----
   var tocLinks = document.querySelectorAll('.toc a');
   if (tocLinks.length > 0) {
     var headings = [];
@@ -95,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateTocActive();
   }
 
-  // ----- 4. Mobile Hamburger Menu -----
+  // ----- 5. Mobile Hamburger Menu -----
   var mobileToggle = document.querySelector('.mobile-toggle');
   var sidebar = document.querySelector('.sidebar');
   var overlay = document.querySelector('.sidebar-overlay');
@@ -163,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ----- 5. Auto-generate TOC -----
+  // ----- 6. Auto-generate TOC -----
   var tocContainer = document.querySelector('.toc ul');
   if (tocContainer && tocContainer.children.length === 0) {
     var article = document.querySelector('article');
@@ -199,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // ----- 6. Smooth Scroll for Anchor Links -----
+  // ----- 7. Smooth Scroll for Anchor Links -----
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       var href = a.getAttribute('href');
