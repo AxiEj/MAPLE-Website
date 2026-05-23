@@ -873,3 +873,96 @@ button, input { font: inherit; }
   .feature-card { min-height: 0; padding: 24px; }
   .feature-icon { margin-bottom: 24px; }
 }
+
+/* ---------- Mobile hero tuning ---------- */
+@media (max-width: 760px) {
+  .hero {
+    padding: 28px 0 34px;
+  }
+  .hero::after {
+    opacity: .45;
+    right: -28%;
+    top: 36%;
+    width: 120%;
+    height: 48%;
+  }
+  .hero-grid {
+    gap: 20px;
+    align-items: start;
+  }
+  .hero-copy h1 {
+    margin-bottom: 14px;
+    font-size: clamp(54px, 17vw, 74px);
+  }
+  .hero-copy .tagline {
+    margin-bottom: 16px;
+    font-size: clamp(20px, 7vw, 28px);
+    line-height: 1.25;
+  }
+  .hero-copy .lead {
+    margin-bottom: 22px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .hero-actions {
+    gap: 10px;
+  }
+  .btn {
+    flex: 1 1 calc(50% - 5px);
+    min-width: 0;
+    height: 48px;
+    padding: 0 14px;
+  }
+  .hero-art {
+    min-height: clamp(260px, 74vw, 350px);
+    margin: 0 -22px;
+    overflow: hidden;
+  }
+  .maple-mark {
+    width: min(76%, 330px);
+    opacity: .42;
+    filter: drop-shadow(0 10px 22px rgba(226,58,46,.16));
+  }
+  .science-bg {
+    inset: 3% -14% -2%;
+  }
+  .float-eq {
+    font-size: 15px;
+    opacity: .42;
+  }
+  .axis-label,
+  .tick {
+    display: none;
+  }
+  .mol-a {
+    left: 0;
+    top: 38%;
+    width: clamp(120px, 38vw, 165px);
+  }
+  .mol-b {
+    right: 1%;
+    top: 8%;
+    width: clamp(118px, 36vw, 158px);
+  }
+  .mol-c {
+    right: 0;
+    bottom: 5%;
+    width: clamp(124px, 39vw, 170px);
+  }
+  .spark {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-copy h1 {
+    font-size: clamp(50px, 18vw, 62px);
+  }
+  .hero-art {
+    min-height: 250px;
+  }
+  .btn {
+    flex-basis: 100%;
+  }
+}
