@@ -201,6 +201,18 @@
         </ol>
 
         <h2 id="refine-options">Refine Options Lookup</h2>
+        <p><code>refine</code> is an optional parameter inside the <code>#ts(...)</code> command. It is not a separate header line. Use it only with methods that accept a second refinement stage; omit it when you want the base TS search workflow.</p>
+        <pre><code># Base NEB path search
+#ts(method=neb)
+
+# NEB path search followed by NEBTS refinement
+#ts(method=neb,refine=nebts)
+
+# String/GSM path search followed by String-TS refinement
+#ts(method=string,refine=stringts)
+
+# P-RFO, Dimer, and AutoNEB do not accept refine
+#ts(method=prfo)</code></pre>
         <p>Use this table to match each accepted <code>refine</code> value with the TS workflow it triggers. Unsupported method/refine combinations are rejected during input parsing.</p>
         <div class="table-wrapper">
           <table>
