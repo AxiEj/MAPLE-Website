@@ -244,12 +244,6 @@
                 <td>RMS force threshold for CI-NEB refinement.</td>
               </tr>
               <tr>
-                <td><code>cilbfgs_m</code></td>
-                <td>int</td>
-                <td>20</td>
-                <td>L-BFGS memory for CI-NEB optimizer.</td>
-              </tr>
-              <tr>
                 <td><code>cistep0</code></td>
                 <td>float</td>
                 <td>5e-3</td>
@@ -264,23 +258,36 @@
         <p>When <code>refine=cineb</code> is set, the highest-energy image (HEI) is freed from spring forces and instead climbs along the band tangent toward the true saddle point. The remaining images continue to be optimized with springs. This gives a more accurate TS estimate without requiring a separate local TS optimizer.</p>
 
         <h3>NEBTS (NEB + TS Refinement)</h3>
-        <p>When <code>refine=nebts</code> is set, MAPLE first performs CI-NEB to refine the HEI, then applies a P-RFO local TS optimizer starting from the climbing image. This two-stage approach provides the most accurate TS geometry and is recommended for production calculations.</p>
+        <p>When <code>refine=nebts</code> is set, MAPLE first performs CI-NEB to refine the HEI, then applies a P-RFO local TS optimizer starting from the climbing image. NEB only accepts <code>refine=cineb</code> and <code>refine=nebts</code>; other refine values fail during input parsing.</p>
 
         <h2 id="input-example">Input Example</h2>
-        <pre><code>#model=ani1xnr
+        <p>Checked-in MAPLE example: <code>example/ts/neb/inp1.inp</code>. The portable form below is for an input file saved in the MAPLE repository root; if you save the input elsewhere, adjust the <code>XYZ</code> paths because relative paths are resolved from the input file location. If you copy the checked-in file verbatim, update its absolute <code>XYZ</code> paths to your local checkout.</p>
+        <pre><code>#model=ANI-1xnr
 #ts(method=neb,refine=nebts)
 #device=gpu0
 
-XYZ /path/to/reactant.xyz
-XYZ /path/to/product.xyz</code></pre>
+XYZ example/ts/neb/react.xyz
+XYZ example/ts/neb/prod.xyz</code></pre>
 
         <h2 id="output-files">Output Files</h2>
         <ul>
           <li><code>*_mep.xyz</code> &mdash; Multi-frame XYZ file containing all images along the converged minimum energy path.</li>
           <li><code>*_hei.xyz</code> &mdash; The highest-energy image extracted from the converged NEB band.</li>
           <li><code>*_cineb_*.xyz</code> &mdash; Climbing-image NEB trajectory and converged path (when <code>refine=cineb</code> or <code>refine=nebts</code>).</li>
+          <li><code>*_nebts_mep.xyz</code> &mdash; Multi-frame MEP after NEBTS refinement.</li>
           <li><code>*_nebts_ts.xyz</code> &mdash; Final optimized TS geometry from P-RFO refinement (when <code>refine=nebts</code>).</li>
         </ul>
+
+        <h2 id="visualization">Visualization</h2>
+        <p>The NEBTS visualization uses the refined <code>*_nebts_mep.xyz</code> path and <code>*_nebts_ts.xyz</code> final TS output from the checked-in example.</p>
+        <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
+          <img src="../../assets/images/ts/nebts_mep_traj_energy.gif" alt="NEBTS minimum energy path animation with energy profile">
+          <figcaption>Fig. 1 — NEBTS minimum energy path with energy trace.</figcaption>
+        </figure>
+        <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
+          <img src="../../assets/images/ts/nebts_final_ts.png" alt="NEBTS final transition state geometry">
+          <figcaption>Fig. 2 — NEBTS final refined TS geometry.</figcaption>
+        </figure>
 
         <div class="admonition important">
           <div class="admonition-title">
