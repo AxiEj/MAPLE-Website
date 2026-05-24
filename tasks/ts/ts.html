@@ -200,6 +200,73 @@
           <li><strong>Run IRC.</strong> Perform an intrinsic reaction coordinate (IRC) calculation from the TS to confirm that it connects the expected reactant and product.</li>
         </ol>
 
+        <h2 id="refine-options">Refine Options Lookup</h2>
+        <p>Use this table to match each accepted <code>refine</code> value with the TS workflow it triggers. Unsupported method/refine combinations are rejected during input parsing.</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>TS Method</th>
+                <th><code>refine</code> Value</th>
+                <th>Accepted?</th>
+                <th>Workflow Meaning</th>
+                <th>Main Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>neb</code></td>
+                <td>None</td>
+                <td>Yes</td>
+                <td>Run the base NEB path search and extract the highest-energy image.</td>
+                <td><code>*_mep.xyz</code>, <code>*_hei.xyz</code></td>
+              </tr>
+              <tr>
+                <td><code>neb</code></td>
+                <td><code>cineb</code></td>
+                <td>Yes</td>
+                <td>Run NEB, then climb the highest-energy image with CI-NEB.</td>
+                <td><code>*_cineb_*.xyz</code></td>
+              </tr>
+              <tr>
+                <td><code>neb</code></td>
+                <td><code>nebts</code></td>
+                <td>Yes</td>
+                <td>Run NEB, refine the path with CI-NEB, then optimize the TS with P-RFO.</td>
+                <td><code>*_nebts_mep.xyz</code>, <code>*_nebts_ts.xyz</code></td>
+              </tr>
+              <tr>
+                <td><code>string</code></td>
+                <td>None</td>
+                <td>Yes</td>
+                <td>Run the base String/GSM path search and extract the highest-energy image.</td>
+                <td><code>*_gsm_mep.xyz</code>, <code>*_gsm_hei.xyz</code></td>
+              </tr>
+              <tr>
+                <td><code>string</code></td>
+                <td><code>cistring</code></td>
+                <td>Yes</td>
+                <td>Accept the CI-String-style refinement setting for the String/GSM workflow.</td>
+                <td><code>*_gsm_mep.xyz</code>, <code>*_gsm_hei.xyz</code></td>
+              </tr>
+              <tr>
+                <td><code>string</code></td>
+                <td><code>stringts</code></td>
+                <td>Yes</td>
+                <td>Run String/GSM, select the highest-energy image, then optimize the TS with P-RFO.</td>
+                <td><code>*_stringts_mep.xyz</code>, <code>*_stringts_ts.xyz</code></td>
+              </tr>
+              <tr>
+                <td><code>prfo</code>, <code>dimer</code>, <code>autoneb</code></td>
+                <td>Any value</td>
+                <td>No</td>
+                <td>These methods do not accept <code>refine</code>; run them without a refine keyword.</td>
+                <td>Method-specific TS/search outputs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <h2 id="visualization-gallery">Visualization Gallery</h2>
         <p>The gallery below uses the checked-in TS example outputs rendered with MAPLE Visual Lab. Atom indices are hidden in these web-ready figures. Path and search animations on the method pages include energy traces, while single-geometry TS snapshots are shown as structure-only figures.</p>
         <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
