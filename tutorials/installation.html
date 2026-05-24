@@ -195,6 +195,25 @@ pip install -e .</code></pre>
 
                 <p>This installs MAPLE as a Python package and makes the <code>maple</code> command available in your terminal. The <code>-e</code> flag enables editable mode, so any changes to the source code take effect immediately without reinstalling.</p>
 
+                <div class="admonition note">
+                    <div class="admonition-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        For users in China
+                    </div>
+                    <div class="admonition-body">
+                        <p>Follow the same installation order above. If PyPI downloads are slow, append the Tsinghua mirror option to the editable install command:</p>
+
+                        <pre><code># From the MAPLE repository root
+pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
+
+                        <p>The same <code>-i https://pypi.tuna.tsinghua.edu.cn/simple</code> option can also be appended to later PyPI-based <code>pip install</code> commands on this page, such as the core dependencies or <code>fairchem-core</code>.</p>
+
+                        <p>MAPLE auto-downloads model files from <a href="https://huggingface.co/Wayne7815/MAPLE_models" target="_blank">https://huggingface.co/Wayne7815/MAPLE_models</a>. If you download model files manually through a reachable mirror, keep the same filenames and place them in <code>maple/function/calculator/model/</code>.</p>
+
+                        <p><strong>Tip:</strong> If the local model directory does not exist, create <code>maple/function/calculator/model/</code> before placing files there.</p>
+                    </div>
+                </div>
+
                 <h2 id="install-dependencies">Install Dependencies</h2>
 
                 <h3>Core Dependencies</h3>
