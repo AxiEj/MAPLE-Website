@@ -36,7 +36,106 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // ----- 2. Copy Code Button -----
+  // ----- 2. MAPLE Input Syntax Highlighting -----
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function isMapleInput(text) {
+    return /(^|\n)\s*#(?:model|device|charge|mult|sp|opt|ts|scan|irc|freq|md|solvent|constraint|constraints)\b/i.test(text) ||
+      /(^|\n)\s*(?:XYZ|PDB|MOL2)\s+\S+/i.test(text);
+  }
+
+  function highlightDirectiveTail(tail) {
+    var directValue = tail.match(/^(\s*=\s*)("[^"]*"|'[^']*'|[^,\)\s]+)(.*)$/);
+    if (directValue) {
+      return escapeHtml(directValue[1]) +
+        '<span class="value">' + escapeHtml(directValue[2]) + '</span>' +
+        escapeHtml(directValue[3]);
+    }
+
+    var out = '';
+    var last = 0;
+    var paramRe = /([A-Za-z_][\w-]*)(\s*=\s*)("[^"]*"|'[^']*'|[^,\)\s]+)/g;
+    var match;
+    while ((match = paramRe.exec(tail)) !== null) {
+      out += escapeHtml(tail.slice(last, match.index));
+      out += '<span class="param">' + escapeHtml(match[1]) + '</span>';
+      out += escapeHtml(match[2]);
+      out += '<span class="value">' + escapeHtml(match[3]) + '</span>';
+      last = match.index + match[0].length;
+    }
+    out += escapeHtml(tail.slice(last));
+    return out;
+  }
+
+  function highlightCoordinateLine(line) {
+    var match = line.match(/^(\s*)([A-Z][a-z]?)((?:\s+[-+]?\d*\.\d+(?:[Ee][-+]?\d+)?){3,})(.*)$/);
+    if (!match) return null;
+    return escapeHtml(match[1]) +
+      '<span class="atom">' + escapeHtml(match[2]) + '</span>' +
+      escapeHtml(match[3]).replace(/([-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?)/g, '<span class="number">$1</span>') +
+      escapeHtml(match[4]);
+  }
+
+  function highlightScanLine(line) {
+    var match = line.match(/^(\s*)(S)((?:\s+[-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?){3,})(.*)$/);
+    if (!match) return null;
+    var nums = match[3].match(/\s+[-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?/g) || [];
+    var n = nums.length;
+    if (n < 4 || n > 6) return null;
+    var atomCount = n - 2;
+    var out = escapeHtml(match[1]) + '<span class="directive">' + escapeHtml(match[2]) + '</span>';
+    nums.forEach(function (chunk, i) {
+      var parts = chunk.match(/^(\s+)([-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?)$/);
+      if (!parts) return;
+      var cls = i < atomCount ? 'atom-idx' : (i === atomCount ? 'step-size' : 'n-steps');
+      out += escapeHtml(parts[1]) + '<span class="' + cls + '">' + escapeHtml(parts[2]) + '</span>';
+    });
+    return out + escapeHtml(match[4]);
+  }
+
+  function highlightMapleLine(line) {
+    if (/^\s*$/.test(line)) return '';
+
+    if (/^\s*#\s/.test(line)) {
+      return '<span class="comment">' + escapeHtml(line) + '</span>';
+    }
+
+    var directive = line.match(/^(\s*)#([A-Za-z_][\w-]*)(.*)$/);
+    if (directive) {
+      return escapeHtml(directive[1]) +
+        '<span class="hash">#</span><span class="directive">' + escapeHtml(directive[2]) + '</span>' +
+        highlightDirectiveTail(directive[3]);
+    }
+
+    var fileRef = line.match(/^(\s*)(XYZ|PDB|MOL2)(\s+)(.*)$/i);
+    if (fileRef) {
+      return escapeHtml(fileRef[1]) +
+        '<span class="directive">' + escapeHtml(fileRef[2]) + '</span>' +
+        escapeHtml(fileRef[3]) +
+        '<span class="filename">' + escapeHtml(fileRef[4]) + '</span>';
+    }
+
+    return highlightCoordinateLine(line) || highlightScanLine(line) || escapeHtml(line);
+  }
+
+  document.querySelectorAll('pre code').forEach(function (code) {
+    var text = code.textContent;
+    if (!isMapleInput(text)) return;
+
+    var pre = code.closest('pre');
+    if (pre) pre.classList.add('maple-code');
+    code.classList.add('maple-input-code');
+    code.innerHTML = text.split('\n').map(highlightMapleLine).join('\n');
+  });
+
+  // ----- 3. Copy Code Button -----
   document.querySelectorAll('pre').forEach(function (pre) {
     // Skip if already wrapped
     if (pre.parentElement.classList.contains('code-wrapper')) return;
@@ -67,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
     wrapper.appendChild(btn);
   });
 
-  // ----- 3. TOC Scroll Spy -----
+  // ----- 4. TOC Scroll Spy -----
   var tocLinks = document.querySelectorAll('.toc a');
   if (tocLinks.length > 0) {
     var headings = [];
@@ -95,34 +194,75 @@ document.addEventListener('DOMContentLoaded', function () {
     updateTocActive();
   }
 
-  // ----- 4. Mobile Hamburger Menu -----
+  // ----- 5. Mobile Hamburger Menu -----
   var mobileToggle = document.querySelector('.mobile-toggle');
   var sidebar = document.querySelector('.sidebar');
   var overlay = document.querySelector('.sidebar-overlay');
   var topNavUl = document.querySelector('.top-nav ul');
+  var narrowNavQuery = window.matchMedia('(max-width: 52em)');
+  var sidebarFab = null;
+
+  function setTopNavOpen(open) {
+    if (topNavUl) topNavUl.classList.toggle('open', open);
+    if (mobileToggle) mobileToggle.setAttribute('aria-expanded', String(open));
+  }
+
+  function setSidebarOpen(open) {
+    if (sidebar) sidebar.classList.toggle('open', open);
+    if (overlay) overlay.classList.toggle('active', open);
+    if (sidebarFab) {
+      sidebarFab.classList.toggle('active', open);
+      sidebarFab.setAttribute('aria-expanded', String(open));
+    }
+  }
+
+  if (sidebar) {
+    sidebarFab = document.createElement('button');
+    sidebarFab.type = 'button';
+    sidebarFab.className = 'sidebar-fab';
+    sidebarFab.setAttribute('aria-label', 'Toggle documentation sidebar');
+    sidebarFab.setAttribute('aria-expanded', 'false');
+    sidebarFab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h14"/><path d="M4 12h10"/><path d="M4 18h14"/><path d="M20 8l-3 4 3 4"/></svg>';
+    document.body.appendChild(sidebarFab);
+    sidebarFab.addEventListener('click', function () {
+      setTopNavOpen(false);
+      setSidebarOpen(!sidebar.classList.contains('open'));
+    });
+  }
 
   if (mobileToggle) {
+    mobileToggle.setAttribute('aria-expanded', 'false');
     mobileToggle.addEventListener('click', function () {
-      // Toggle sidebar on doc pages
-      if (sidebar) {
-        sidebar.classList.toggle('open');
-        if (overlay) overlay.classList.toggle('active');
+      if (narrowNavQuery.matches && topNavUl) {
+        setSidebarOpen(false);
+        setTopNavOpen(!topNavUl.classList.contains('open'));
+        return;
       }
-      // Toggle nav menu on landing pages
-      if (topNavUl) {
-        topNavUl.classList.toggle('open');
-      }
+
+      if (sidebar) setSidebarOpen(!sidebar.classList.contains('open'));
+    });
+  }
+
+  if (topNavUl) {
+    topNavUl.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { setTopNavOpen(false); });
     });
   }
 
   if (overlay) {
     overlay.addEventListener('click', function () {
-      if (sidebar) sidebar.classList.remove('open');
-      overlay.classList.remove('active');
+      setSidebarOpen(false);
     });
   }
 
-  // ----- 5. Auto-generate TOC -----
+  if (narrowNavQuery.addEventListener) {
+    narrowNavQuery.addEventListener('change', function () {
+      setTopNavOpen(false);
+      setSidebarOpen(false);
+    });
+  }
+
+  // ----- 6. Auto-generate TOC -----
   var tocContainer = document.querySelector('.toc ul');
   if (tocContainer && tocContainer.children.length === 0) {
     var article = document.querySelector('article');
@@ -158,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // ----- 6. Smooth Scroll for Anchor Links -----
+  // ----- 7. Smooth Scroll for Anchor Links -----
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       var href = a.getAttribute('href');
