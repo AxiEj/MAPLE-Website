@@ -7,6 +7,8 @@
 
 /* ----- 1. Design Tokens (CSS Variables) ----- */
 :root {
+  color-scheme: light;
+
   /* Brand */
   --color-brand-primary: #d32021;
   --color-brand-content: #d32021;
@@ -77,7 +79,7 @@ body {
   font-family: var(--font-stack);
   background:
     radial-gradient(ellipse 56rem 30rem at 92% 0%, rgba(226,58,46,.055), transparent 72%),
-    linear-gradient(180deg, #fff 0%, var(--color-bg-secondary) 100%);
+    linear-gradient(180deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
   color: var(--color-text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -1678,53 +1680,6 @@ footer {
     padding: 1.25rem;
     border-radius: 18px;
   }
-}
-
-/* ----- 20. Dark Mode ----- */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-primary: #141414;
-    --color-bg-secondary: #1d1b1a;
-    --color-bg-hover: #2a201f;
-    --color-bg-code: #211f1d;
-    --color-bg-border: #37302e;
-    --color-bg-soft: #261b1a;
-    --color-text-primary: #f1eeee;
-    --color-text-secondary: #d2cccc;
-    --color-text-muted: #a8a1a0;
-    --color-text-border: #6f6765;
-    --color-brand-primary: #f15a4f;
-    --color-brand-content: #f15a4f;
-    --color-brand-visited: #ff9a92;
-    --color-brand-soft: rgba(241,90,79,.16);
-  }
-
-  .top-nav {
-    background: rgba(20, 20, 20, 0.9);
-  }
-
-  .btn-primary {
-    background: var(--color-brand-primary);
-    border-color: var(--color-brand-primary);
-  }
-  .btn-primary:hover {
-    background: #d83c34;
-    border-color: #d83c34;
-  }
-
-  .btn-secondary {
-    background: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    border-color: var(--color-bg-border);
-  }
-
-  pre .comment { color: #6a9955; }
-  pre .keyword { color: #569cd6; }
-  pre .value { color: #ce9178; }
-  pre .param { color: #dcdcaa; }
-  pre .section { color: #4ec9b0; }
-
-  img { opacity: 0.9; }
 }
 
 /* ----- 21. Print Styles ----- */
