@@ -14,7 +14,7 @@ spec.loader.exec_module(plot_opt)
 
 class MethodDetectionTests(unittest.TestCase):
     def test_detects_lbfgs_from_example_output_path(self):
-        path = "/home/axie/MAPLE/MAPLE/example/opt/lbfgs/inp1.out"
+        path = "/home/axie/MAPLE/MAPLE/examples/opt/lbfgs/inp1.out"
         self.assertEqual(plot_opt._method_from_path(path), "lbfgs")
 
 
