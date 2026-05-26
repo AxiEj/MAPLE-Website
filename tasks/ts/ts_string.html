@@ -139,7 +139,7 @@
 
         <h2 id="overview">Overview</h2>
         <p>The Growing String Method (GSM) is an adaptive path-based algorithm for finding minimum energy paths and transition states between a given reactant and product. Unlike NEB, which creates all images at once, GSM grows the path incrementally from both endpoints, adding new nodes only where needed. This adaptive growth strategy can be significantly more efficient than NEB for large molecular systems.</p>
-        <p>MAPLE's GSM implementation features Kabsch alignment of endpoints, two-ended adaptive growth with constrained mini-relaxation in the hyperplane orthogonal to the local path direction, energy-weighted tangents, a dynamic growth policy (including side pausing and forced connector pulls), and CI-STRING refinement followed by P-RFO TS optimization from the highest-energy image.</p>
+        <p>MAPLE's GSM implementation features Kabsch alignment of endpoints, two-ended adaptive growth with constrained mini-relaxation in the hyperplane orthogonal to the local path direction, energy-weighted tangents, and a dynamic growth policy including side pausing and forced connector pulls. In the current runtime, the equal-arc GSM path is finalized by taking the highest-energy image into the String-TS/P-RFO output path.</p>
 
         <h2 id="parameters">Parameters</h2>
         <div class="table-wrapper">
@@ -259,19 +259,19 @@
                 <td><code>refine</code></td>
                 <td>str</td>
                 <td>None</td>
-                <td>Post-string refinement: None, "cistring", or "stringts".</td>
+                <td>Accepted explicit refinement values: "cistring" or "stringts". Other values, including NEB-only refine keywords, are rejected during input parsing.</td>
               </tr>
               <tr>
                 <td><code>cistring_f_max_th</code></td>
                 <td>float</td>
                 <td>4.0e-3</td>
-                <td>Max force threshold for CI-String refinement.</td>
+                <td>Compatibility threshold for CI-String-style refinement settings; current String-TS output follows the HEI-to-P-RFO finalization path.</td>
               </tr>
               <tr>
                 <td><code>cistring_f_rms_th</code></td>
                 <td>float</td>
                 <td>2.0e-3</td>
-                <td>RMS force threshold for CI-String refinement.</td>
+                <td>Compatibility threshold for CI-String-style refinement settings; current String-TS output follows the HEI-to-P-RFO finalization path.</td>
               </tr>
               <tr>
                 <td><code>max_iter_grow</code></td>
@@ -308,19 +308,34 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <pre><code>#model=ani1xnr
+        <p>Checked-in MAPLE example: <code>examples/ts/string/inp1.inp</code>. It uses the same reactant/product endpoint files as the NEB example. The portable form below is for an input file saved in the MAPLE repository root; if you save the input elsewhere, adjust the <code>XYZ</code> paths because relative paths are resolved from the input file location.</p>
+        <pre><code>#model=ANI-1xnr
 #ts(method=string,refine=stringts)
 #device=gpu0
 
-XYZ /path/to/reactant.xyz
-XYZ /path/to/product.xyz</code></pre>
+XYZ examples/ts/neb/react.xyz
+XYZ examples/ts/neb/prod.xyz</code></pre>
 
         <h2 id="output">Output</h2>
+        <p>The current runtime writes the String/GSM path and then the String-TS finalization files from the highest-energy image.</p>
         <ul>
-          <li><code>*_gsm_grow_final.xyz</code> &mdash; The final path after the growth phase is complete, before reparameterization and refinement.</li>
+          <li><code>*_gsm_grow_final.xyz</code> &mdash; The final path after the growth phase is complete, before reparameterization.</li>
           <li><code>*_gsm_mep.xyz</code> &mdash; The reparameterized minimum energy path with equally spaced images.</li>
+          <li><code>*_gsm_hei.xyz</code> &mdash; The highest-energy image selected from the reparameterized string.</li>
+          <li><code>*_stringts_mep.xyz</code> &mdash; The path with the refined TS inserted after the selected HEI.</li>
           <li><code>*_stringts_ts.xyz</code> &mdash; The final optimized TS geometry obtained from P-RFO refinement of the highest-energy image along the string.</li>
         </ul>
+
+        <h2 id="visualization">Visualization</h2>
+        <p>The String-TS visualization uses <code>*_stringts_mep.xyz</code> for the path and <code>*_stringts_ts.xyz</code> for the refined TS geometry.</p>
+        <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
+          <img src="../../assets/images/ts/stringts_mep_traj_energy.gif" alt="String-TS minimum energy path animation with energy profile">
+          <figcaption>Fig. 1 — String-TS path with energy trace.</figcaption>
+        </figure>
+        <figure class="doc-figure" style="max-width:760px;margin:1.75rem auto;">
+          <img src="../../assets/images/ts/stringts_final_ts.png" alt="String-TS final transition state geometry">
+          <figcaption>Fig. 2 — String-TS final refined TS geometry.</figcaption>
+        </figure>
 
         <h2 id="comparison-with-neb">Comparison with NEB</h2>
         <p>Both GSM and NEB are path-based methods that require reactant and product endpoints. The key differences are:</p>

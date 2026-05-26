@@ -159,10 +159,10 @@
 #opt(method=lbfgs, level=tight)</code></pre>
 
         <h3 id="ts">#ts</h3>
-        <p>Requests a transition state search. The method and convergence level are specified in parentheses.</p>
-        <pre><code>#ts
-#ts(method=prfo)
-#ts(method=neb, level=tight)</code></pre>
+        <p>Requests a transition state search. The <code>method</code> parameter is required; convergence levels and method-specific refinement keywords can also be supplied in parentheses.</p>
+        <pre><code>#ts(method=prfo)
+#ts(method=neb, level=tight, refine=nebts)
+#ts(method=string, refine=stringts)</code></pre>
 
         <h3 id="freq">#freq</h3>
         <p>Requests a vibrational frequency calculation. This computes the Hessian matrix and derives harmonic frequencies, zero-point energy, and thermochemical properties.</p>
@@ -198,14 +198,14 @@
               <th>Job Type</th>
               <th>Command</th>
               <th>Description</th>
-              <th>Default Method</th>
+              <th>Default / Required</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Single Point</td>
               <td><code>#sp</code></td>
-              <td>Computes energy and forces at the current geometry</td>
+              <td>Computes energy at the current geometry; <code>verbose=1</code> adds gradients</td>
               <td>N/A</td>
             </tr>
             <tr>
@@ -224,7 +224,7 @@
               <td>Transition State</td>
               <td><code>#ts</code></td>
               <td>Locates first-order saddle points</td>
-              <td>P-RFO</td>
+              <td>Required via <code>method</code></td>
             </tr>
             <tr>
               <td>IRC</td>

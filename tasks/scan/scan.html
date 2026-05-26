@@ -230,12 +230,12 @@
         </div>
 
         <h2 id="input-example">Input Example</h2>
-        <p>The checked-in MAPLE example <code>example/scan/da.inp</code> is a two-coordinate relaxed scan with the ANI-1xnr model on a GPU. Only the long coordinate block is elided below; in a real input file the <code>S</code> scan commands must come after the molecular coordinates because MAPLE parses them as post-processing commands:</p>
+        <p>The checked-in MAPLE example <code>examples/scan/da.inp</code> is a two-coordinate relaxed scan with the ANI-1xnr model on a GPU. Only the long coordinate block is elided below; in a real input file the <code>S</code> scan commands must come after the molecular coordinates because MAPLE parses them as post-processing commands:</p>
         <pre><code>#model=ANI-1xnr
 #scan
 #device=gpu0
 
-[XYZ coordinates from example/scan/da.inp]
+[XYZ coordinates from examples/scan/da.inp]
 
 S 11 52 -0.1 15
 S 14 51 -0.1 15</code></pre>
