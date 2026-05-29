@@ -152,8 +152,8 @@
           <tbody>
             <tr>
               <td><strong><a href="irc_gs.html">GS</a></strong></td>
-              <td>Gonzalez&ndash;Schlegel</td>
-              <td>Mass-weighted coordinates with pivot-step and constrained optimization on a hypersphere. Robust and well-tested.</td>
+              <td>The second-order method of Gonzalez&ndash;Schlegel</td>
+              <td>Default method. Mass-weighted coordinates with pivot-step and constrained optimization on a hypersphere. Robust and well-tested.</td>
             </tr>
             <tr>
               <td><strong><a href="irc_lqa.html">LQA</a></strong></td>
@@ -163,7 +163,7 @@
             <tr>
               <td><strong><a href="irc_hpc.html">HPC</a></strong></td>
               <td>Hessian Predictor&ndash;Corrector</td>
-              <td>Default method. Building upon the LQA, the evaluation and correction steps are executed.</td>
+              <td>Building upon the LQA, the evaluation and correction steps are executed.</td>
             </tr>
             <tr>
               <td><strong><a href="irc_eulerpc.html">EulerPC</a></strong></td>
@@ -176,7 +176,7 @@
         <h2 id="general-usage">General Usage</h2>
         <p>The IRC task is invoked with the <code>#irc</code> keyword, specifying the desired method:</p>
         <pre><code>#model=ani1xnr
-#irc(method=hpc)
+#irc(method=gs)
 #device=gpu0
 
 XYZ /path/to/transition_state.xyz</code></pre>
