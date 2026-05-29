@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --red: #d32021;
   --red-2: #e23a2e;
   --red-3: #f15a4f;
@@ -996,3 +997,4 @@ button, input { font: inherit; }
     flex-basis: 100%;
   }
 }
+
