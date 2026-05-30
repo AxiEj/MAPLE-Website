@@ -237,7 +237,7 @@
         <p>For bundled templates, use the template filename stem as the <code>explicit=</code> value. For example, the bundled <code>water.pdb</code> template is selected with <code>explicit=water</code>. If a solvent has no tabulated density, provide <code>density=&lt;g/mL&gt;</code> or <code>number=&lt;int&gt;</code>.</p>
 
         <h3>Custom solvent PDB templates</h3>
-        <p>Use <code>solvent_pdb=path/to/template.pdb</code> to provide a custom solvent template. In this mode, <code>solvent_pdb</code> selects the actual PDB file, while <code>explicit=&lt;name&gt;</code> declares the solvent identity represented by that file. MAPLE does not infer the solvent name from the custom PDB filename.</p>
+        <p>Use <code>solvent_pdb=path/to/template.pdb</code> to provide a custom solvent template. In this mode, <code>solvent_pdb</code> selects the actual PDB file, while <code>explicit=&lt;name&gt;</code> declares the solvent identity represented by that file. MAPLE does not infer the solvent name from the custom PDB filename. Relative <code>solvent_pdb</code> paths are resolved from the input file directory.</p>
 
         <p>For example, the following input reads <code>boxes/water_bulk.pdb</code> because that is the <code>solvent_pdb</code> path. The <code>explicit=water</code> part means “treat this template as water” for the default density lookup, output labels, and water-specific template checks; it is not derived from the filename <code>water_bulk.pdb</code>.</p>
 
@@ -245,7 +245,7 @@
 #solv(explicit=water, solvent_pdb=boxes/water_bulk.pdb, density=0.997, radius=14.0)
 #opt(method=lbfgs)</code></pre>
 
-        <p>A custom template must be a pure-solvent bulk PDB, group one solvent molecule per residue, and contain an orthorhombic <code>CRYST1</code> record. If the density implied by <code>CRYST1</code> does not match MAPLE's default density for the declared <code>explicit=&lt;name&gt;</code>, MAPLE refuses to infer the target density; add an explicit <code>density=</code> matching the template, or use <code>number=</code> for an explicit molecule-count target.</p>
+        <p>A custom template must be a pure-solvent bulk PDB, group one connected solvent molecule per residue, use the same molecular formula for every residue, and contain an orthorhombic <code>CRYST1</code> record. For <code>explicit=water</code>, each residue must be one H<sub>2</sub>O molecule. MAPLE unwraps molecules that cross an orthorhombic box boundary before validating connectivity, so GROMACS/OpenMM-style water boxes are acceptable when residue grouping remains correct. If the density implied by <code>CRYST1</code> does not match MAPLE's default density for the declared <code>explicit=&lt;name&gt;</code>, MAPLE refuses to infer the target density; add an explicit <code>density=</code> matching the template, or use <code>number=</code> to bypass density inference and request an explicit molecule-count target.</p>
 
         <h2 id="parameters">Parameters</h2>
 
@@ -330,7 +330,7 @@
             <tr>
               <td><code>solvent_pdb</code></td>
               <td>bundled template</td>
-              <td>Path to a pure-solvent bulk PDB template with orthorhombic <code>CRYST1</code></td>
+              <td>Path to a homogeneous pure-solvent bulk PDB template; relative paths are resolved from the input file directory</td>
             </tr>
           </tbody>
         </table>
@@ -449,7 +449,7 @@ XYZ /path/to/solute.xyz</code></pre>
           <li><strong>Keep explicit clusters non-periodic:</strong> remove <code>#pbc</code>; MAPLE does not write cell metadata for explicit clusters.</li>
           <li><strong>Control density deliberately:</strong> use the default density table for common solvents, or specify <code>density=</code> / <code>number=</code> for custom templates and unusual solvent names.</li>
           <li><strong>Prefer vdW clash filtering:</strong> the default <code>clash_method=vdw</code> is usually safer than a single fixed distance across all elements; use <code>clash_method=distance</code> only when you intentionally want a fixed cutoff.</li>
-          <li><strong>Validate custom templates:</strong> the template should be pure solvent, have correct residue grouping, and include an orthorhombic <code>CRYST1</code> box consistent with the density you request.</li>
+          <li><strong>Validate custom templates:</strong> the template should be homogeneous pure solvent, have one connected molecule per residue, and include an orthorhombic <code>CRYST1</code> box consistent with the density you request or the explicit <code>number=</code> target.</li>
           <li><strong>Expect finite clusters:</strong> small unconstrained solvent clusters may move during optimization. Increase the radius/count, write an analysis shell, or add ordinary MAPLE constraints when a specific region must remain fixed.</li>
         </ul>
 
