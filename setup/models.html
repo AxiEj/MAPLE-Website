@@ -249,14 +249,14 @@
 #d4
 #opt</code></pre>
 
-        <h3 id="gbsa-solvation">GBSA Solvation</h3>
-        <p>The Generalized Born with Solvent-Accessible Surface Area (GBSA) model provides implicit solvation corrections. This is configured through the <code>#solv</code> command. See the <a href="../functions/solvent.html">Solvation</a> page for details.</p>
+        <h3 id="gbsa-solvation">Experimental Implicit Solvation</h3>
+        <p>MAPLE's current implicit solvent path is an experimental GB-polar/QEq correction for single-point energies. It is configured through the <code>#solv</code> command with <code>method=gbsa</code>, an <code>implicit</code> solvent name, and <code>experimental=true</code>. See the <a href="../functions/solvent.html">Solvation</a> page for details.</p>
         <pre><code>#model = uma
-#solv(implicit=gbsa)
-#opt</code></pre>
+#solv(method=gbsa, implicit=water, experimental=true)
+#sp</code></pre>
 
         <h3 id="qeq-charges">QEq Charges</h3>
-        <p>The charge equilibration (QEq) method computes atomic partial charges, which are used internally by the GBSA solvation model. QEq charges are computed automatically when implicit solvation is enabled and do not require a separate command.</p>
+        <p>The charge equilibration (QEq) method computes atomic partial charges used internally by the experimental implicit solvent correction. QEq charges are computed automatically when implicit solvation is enabled and do not require a separate command.</p>
 
         <div class="admonition important">
           <p class="admonition-title">Important</p>

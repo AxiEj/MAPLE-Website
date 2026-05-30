@@ -362,11 +362,11 @@ XYZ /path/to/reactant.xyz
 
 XYZ /path/to/product.xyz</code></pre>
 
-        <h3>With implicit solvation (GBSA)</h3>
+        <h3>With energy-only implicit solvation</h3>
         <pre><code><span class="keyword">#model</span>=<span class="value">uma</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
-<span class="keyword">#solv</span>(<span class="param">method</span>=<span class="value">gbsa</span>, <span class="param">implicit</span>=<span class="value">water</span>)
-<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
+<span class="keyword">#solv</span>(<span class="param">method</span>=<span class="value">gbsa</span>, <span class="param">implicit</span>=<span class="value">water</span>, <span class="param">experimental</span>=<span class="value">true</span>)
+<span class="keyword">#sp</span>
 
 0 1
 C    0.000000    0.000000    0.000000
@@ -378,8 +378,8 @@ H   -0.540000   -0.940000    0.000000</code></pre>
 
         <ul>
           <li><strong>D4 dispersion:</strong> Not supported with UMA. The model's training data already includes dispersion-corrected DFT for relevant tasks (PBE+D3 for omc, odac, oc25).</li>
-          <li><strong>GBSA solvation:</strong> Fully supported. QEq charges are computed automatically when implicit solvation is enabled.</li>
-          <li><strong>All MAPLE job types</strong> are compatible with UMA: single point, optimization, transition state search, IRC, frequency, PES scan, and molecular dynamics.</li>
+          <li><strong>Experimental implicit solvation:</strong> Available for energy-only <code>#sp</code> calculations with <code>#solv(method=gbsa, implicit=&lt;solvent&gt;, experimental=true)</code>. Solvent forces, Hessians, optimization, MD, TS, scan, and frequency workflows are disabled for this correction.</li>
+          <li><strong>All MAPLE job types</strong> are compatible with UMA without implicit solvent: single point, optimization, transition state search, IRC, frequency, PES scan, and molecular dynamics.</li>
           <li><strong>UMA inference interface:</strong> use <code>inference=turbo</code> only when you explicitly want the CUDA fast path; otherwise keep the default interface.</li>
           <li><strong>Requires</strong> <code>fairchem-core</code> Python package (v2.9+) and a HuggingFace account with access to the <code>facebook/UMA</code> repository.</li>
         </ul>

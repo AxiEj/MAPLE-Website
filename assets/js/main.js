@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function isMapleInput(text) {
-    return /(^|\n)\s*#(?:model|device|charge|mult|sp|opt|ts|scan|irc|freq|md|solvent|constraint|constraints)\b/i.test(text) ||
+    return /(^|\n)\s*#(?:model|device|charge|mult|sp|opt|ts|scan|irc|freq|md|solv|solvent|constraint|constraints)\b/i.test(text) ||
       /(^|\n)\s*(?:XYZ|PDB|MOL2)\s+\S+/i.test(text);
   }
 

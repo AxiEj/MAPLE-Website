@@ -229,7 +229,7 @@ XYZ /path/to/dimer_complex.xyz</code></pre>
           <li><strong>No charge/multiplicity support.</strong> ANI models always assume neutral, singlet ground state. Charged or open-shell species will be treated as neutral singlets without warning.</li>
           <li><strong>Limited elements.</strong> ANI-2x covers 7 elements; ANI-1x/1ccx/1xnr cover only H, C, N, O.</li>
           <li><strong>No periodic systems.</strong> ANI models do not support periodic boundary conditions.</li>
-          <li><strong>No implicit solvation.</strong> GBSA solvation is not available for ANI models.</li>
+          <li><strong>Implicit solvation is energy-only.</strong> MAPLE's experimental GB-polar/QEq correction can be requested for <code>#sp</code> with <code>experimental=true</code>; solvent forces, optimization, MD, TS, scan, and frequency workflows remain unsupported for that correction.</li>
         </ul>
 
       </article>
