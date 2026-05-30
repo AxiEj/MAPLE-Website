@@ -234,16 +234,18 @@
           <li>toluene</li>
           <li>xylene</li>
         </ul>
-        <p>Use the template filename stem as the <code>explicit=</code> value. If a solvent has no tabulated density, provide <code>density=&lt;g/mL&gt;</code> or <code>number=&lt;int&gt;</code>.</p>
+        <p>For bundled templates, use the template filename stem as the <code>explicit=</code> value. For example, the bundled <code>water.pdb</code> template is selected with <code>explicit=water</code>. If a solvent has no tabulated density, provide <code>density=&lt;g/mL&gt;</code> or <code>number=&lt;int&gt;</code>.</p>
 
         <h3>Custom solvent PDB templates</h3>
-        <p>Use <code>solvent_pdb=path/to/template.pdb</code> to provide a custom solvent template while keeping <code>explicit=&lt;name&gt;</code> for density lookup and output labels. Relative paths are resolved from the input file directory.</p>
+        <p>Use <code>solvent_pdb=path/to/template.pdb</code> to provide a custom solvent template. In this mode, <code>solvent_pdb</code> selects the actual PDB file, while <code>explicit=&lt;name&gt;</code> declares the solvent identity represented by that file. MAPLE does not infer the solvent name from the custom PDB filename.</p>
+
+        <p>For example, the following input reads <code>boxes/water_bulk.pdb</code> because that is the <code>solvent_pdb</code> path. The <code>explicit=water</code> part means “treat this template as water” for the default density lookup, output labels, and water-specific template checks; it is not derived from the filename <code>water_bulk.pdb</code>.</p>
 
         <pre><code>#model = uma
 #solv(explicit=water, solvent_pdb=boxes/water_bulk.pdb, density=0.997, radius=14.0)
 #opt(method=lbfgs)</code></pre>
 
-        <p>A custom template must be a pure-solvent bulk PDB, group one solvent molecule per residue, and contain an orthorhombic <code>CRYST1</code> record. If the density implied by <code>CRYST1</code> does not match MAPLE's default density for the solvent name, MAPLE refuses to infer the target density; add an explicit <code>density=</code> matching the template, or use <code>number=</code> for an explicit molecule-count target.</p>
+        <p>A custom template must be a pure-solvent bulk PDB, group one solvent molecule per residue, and contain an orthorhombic <code>CRYST1</code> record. If the density implied by <code>CRYST1</code> does not match MAPLE's default density for the declared <code>explicit=&lt;name&gt;</code>, MAPLE refuses to infer the target density; add an explicit <code>density=</code> matching the template, or use <code>number=</code> for an explicit molecule-count target.</p>
 
         <h2 id="parameters">Parameters</h2>
 
