@@ -59,6 +59,7 @@
               <span class="tree-section"><span class="chevron"></span> ML Models</span>
               <ul class="children">
                 <li><a href="../setup/models.html">Overview</a></li>
+                <li><a href="../setup/calculators.html">Calculator Backends</a></li>
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html" class="active">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
@@ -134,7 +135,7 @@
       <article>
         <h1>ANI Models</h1>
 
-        <p>The <strong>ANI</strong> (Accurate NeurAl networK engINe for Molecular Energies) family is a set of neural network potentials developed by the Roitberg group. ANI models are among the fastest ML potentials available, making them ideal for high-throughput screening and rapid prototyping of organic molecular systems.</p>
+        <p>The <strong>ANI</strong> (Accurate NeurAl networK engINe for Molecular Energies) family is a set of neural network potentials developed by the Roitberg group. ANI models are among the fastest ML potentials available, making them ideal for high-throughput screening and rapid prototyping of neutral organic molecular systems.</p>
 
         <h2 id="variants">Available Variants</h2>
 
@@ -193,6 +194,14 @@
           <p>Always enable <code>#d4</code> when studying systems with significant non-covalent interactions (hydrogen bonds, pi-stacking, host-guest complexes). The computational overhead is minimal.</p>
         </div>
 
+        <h2 id="calculator-capabilities">Calculator Capabilities</h2>
+        <ul>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Analytic Hessian with implicit solvent is not supported.</li>
+          <li><strong>HVP:</strong> ANI is the only shipped backend that implements <code>get_hvp()</code> for the HVP-enabled Dimer path. ANI HVP is gas-phase only.</li>
+          <li><strong>Implicit solvent:</strong> GBSA is supported for energy and force evaluations, but not for HVP or analytic Hessians.</li>
+          <li><strong>Model files:</strong> MAPLE can auto-download ANI checkpoints from the MAPLE model repository, or you can provide an explicit <code>model_path</code>.</li>
+        </ul>
+
         <h2 id="examples">Usage Examples</h2>
 
         <h3>General organic optimization</h3>
@@ -226,10 +235,9 @@ XYZ /path/to/dimer_complex.xyz</code></pre>
 
         <h2 id="limitations">Limitations</h2>
         <ul>
-          <li><strong>No charge/multiplicity support.</strong> ANI models always assume neutral, singlet ground state. Charged or open-shell species will be treated as neutral singlets without warning.</li>
+          <li><strong>No charge/multiplicity support.</strong> ANI models assume neutral, singlet ground state; use AIMNet2 or UMA <code>omol</code> for charged/open-shell inputs.</li>
           <li><strong>Limited elements.</strong> ANI-2x covers 7 elements; ANI-1x/1ccx/1xnr cover only H, C, N, O.</li>
-          <li><strong>No periodic systems.</strong> ANI models do not support periodic boundary conditions.</li>
-          <li><strong>No implicit solvation.</strong> GBSA solvation is not available for ANI models.</li>
+          <li><strong>No periodic systems.</strong> ANI models do not support periodic boundary conditions; periodic atoms fail fast.</li>
         </ul>
 
       </article>
@@ -245,6 +253,7 @@ XYZ /path/to/dimer_complex.xyz</code></pre>
         <ul>
           <li><a href="#variants">Available Variants</a></li>
           <li><a href="#d4-dispersion">DFT-D4 Dispersion</a></li>
+          <li><a href="#calculator-capabilities">Calculator Capabilities</a></li>
           <li><a href="#examples">Usage Examples</a></li>
           <li><a href="#limitations">Limitations</a></li>
         </ul>

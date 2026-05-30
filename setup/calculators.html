@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator Backends - MAPLE Documentation</title>
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="icon" href="../favicon.ico">
+</head>
+<body>
+  <header class="top-nav">
+    <div class="container">
+      <div class="brand">
+        <a href="../index.html"><img src="../assets/images/logo.jpg" alt="MAPLE Logo"></a>
+        <a href="../index.html">MAPLE</a>
+      </div>
+      <button class="mobile-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../general.html">About</a></li>
+          <li><a href="../tutorials/installation.html">Documentation</a></li>
+          <li><a href="../articles.html">Articles &amp; News</a></li>
+          <li><a href="../downloads.html">Downloads</a></li>
+          <li><a href="../development.html">Development</a></li>
+          <li><a href="../issues.html">Report Issue</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-brand">
+          <img src="../assets/images/logo.jpg" alt="MAPLE">
+          <span>MAPLE Docs</span>
+        </div>
+        <div class="sidebar-tree">
+          <ul>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Getting Started</span>
+              <ul class="children">
+                <li><a href="../tutorials/installation.html">Installation</a></li>
+                <li><a href="../tutorials/quickstart.html">Quick Start</a></li>
+                <li><a href="../tutorials/input_output.html">Input &amp; Output</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Input Setup</span>
+              <ul class="children">
+                <li><a href="../setup/settings.html">Settings</a></li>
+                <li><a href="../setup/coordinates.html">Coordinates</a></li>
+              </ul>
+            </li>
+            <li class="open">
+              <span class="tree-section"><span class="chevron"></span> ML Models</span>
+              <ul class="children">
+                <li><a href="../setup/models.html">Overview</a></li>
+                <li><a href="../setup/calculators.html" class="active">Calculator Backends</a></li>
+                <li><a href="../setup/model_uma.html">UMA</a></li>
+                <li><a href="../setup/model_ani.html">ANI</a></li>
+                <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../setup/model_mace.html">MACE</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Tasks</span>
+              <ul class="children">
+                <li><a href="../tasks/singlepoint.html">Single Point</a></li>
+                <li><a href="../tasks/frequency.html">Frequency</a></li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/opt/optimization.html">Optimization</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/opt/opt_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../tasks/opt/opt_rfo.html">RFO</a></li>
+                    <li><a href="../tasks/opt/opt_sd.html">SD</a></li>
+                    <li><a href="../tasks/opt/opt_cg.html">CG</a></li>
+                    <li><a href="../tasks/opt/opt_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/ts/ts.html">Transition State</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/ts/ts_prfo.html">P-RFO</a></li>
+                    <li><a href="../tasks/ts/ts_neb.html">NEB</a></li>
+                    <li><a href="../tasks/ts/ts_dimmer.html">Dimer</a></li>
+                    <li><a href="../tasks/ts/ts_string.html">String/GSM</a></li>
+                    <li><a href="../tasks/ts/ts_autoneb.html">AutoNEB</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/scan/scan.html">PES Scan</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/scan/scan_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../tasks/scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../tasks/scan/scan_sd.html">SD</a></li>
+                    <li><a href="../tasks/scan/scan_cg.html">CG</a></li>
+                    <li><a href="../tasks/scan/scan_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/irc/irc.html">IRC</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/irc/irc_gs.html">GS</a></li>
+                    <li><a href="../tasks/irc/irc_lqa.html">LQA</a></li>
+                    <li><a href="../tasks/irc/irc_hpc.html">HPC</a></li>
+                    <li><a href="../tasks/irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Functions</span>
+              <ul class="children">
+                <li><a href="../functions/solvent.html">Solvation</a></li>
+                <li><a href="../functions/constrain.html">Constraints</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <nav class="breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="separator">/</span>
+        <a href="../setup/models.html">ML Models</a>
+        <span class="separator">/</span>
+        <span class="current">Calculator Backends</span>
+      </nav>
+      <article>
+        <h1>Calculator Backends &amp; Capability Matrix</h1>
+
+        <p>This page summarizes the calculator layer documented for the MAPLE <strong>0.1.4 development</strong> branch. It is a development capability guide, not a public release announcement. Use it to choose a backend and to understand the protocol expected from new calculators.</p>
+
+        <div class="admonition note">
+          <p class="admonition-title">Development note</p>
+          <p>Backend capability gates are enforced before or during calculator construction: periodic inputs fail fast for molecular wrappers, unsupported Hessian modes are rejected, and typoed backend options fail loudly for shipped calculators.</p>
+        </div>
+
+        <h2 id="capability-matrix">Backend Capability Matrix</h2>
+
+        <div class="capability-grid">
+          <section class="card capability-card">
+            <div class="card-tag">Molecular / HVP</div>
+            <h3>ANI</h3>
+            <p class="capability-keywords"><code>ani2x</code> <code>ani1x</code> <code>ani1ccx</code> <code>ani1xnr</code></p>
+            <div class="capability-badges" aria-label="ANI quick capabilities">
+              <span class="capability-badge badge-no">PBC no</span>
+              <span class="capability-badge badge-no">Charge no</span>
+              <span class="capability-badge badge-yes">D4 yes</span>
+              <span class="capability-badge badge-yes">HVP gas-phase</span>
+            </div>
+            <dl class="capability-list">
+              <div><dt>PBC</dt><dd>No; periodic atoms fail fast.</dd></div>
+              <div><dt>Charge / mult</dt><dd>No; values are not honored by the backend.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is supported.</dd></div>
+              <div><dt>Model files</dt><dd>MAPLE-hosted checkpoints auto-download; explicit <code>model_path</code> is accepted.</dd></div>
+            </dl>
+          </section>
+
+          <section class="card capability-card">
+            <div class="card-tag">Charged molecules</div>
+            <h3>AIMNet2</h3>
+            <p class="capability-keywords"><code>aimnet2</code> <code>aimnet2nse</code></p>
+            <div class="capability-badges" aria-label="AIMNet2 quick capabilities">
+              <span class="capability-badge badge-no">PBC no</span>
+              <span class="capability-badge badge-yes">Charge yes</span>
+              <span class="capability-badge badge-no">D4 no</span>
+              <span class="capability-badge badge-no">HVP no</span>
+            </div>
+            <dl class="capability-list">
+              <div><dt>PBC</dt><dd>No; periodic atoms fail fast. <code>coulomb_method=ewald</code> is disabled.</dd></div>
+              <div><dt>Charge / mult</dt><dd>Yes.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Model files</dt><dd>MAPLE-hosted checkpoints auto-download; explicit <code>model_path</code> is accepted.</dd></div>
+            </dl>
+          </section>
+
+          <section class="card capability-card">
+            <div class="card-tag">Molecular MACE</div>
+            <h3>MACE-OFF / EGRET</h3>
+            <p class="capability-keywords"><code>maceoff23s</code> <code>maceoff23m</code> <code>maceoff23l</code> <code>egret</code></p>
+            <div class="capability-badges" aria-label="MACE-OFF and EGRET quick capabilities">
+              <span class="capability-badge badge-no">PBC no</span>
+              <span class="capability-badge badge-no">Charge no</span>
+              <span class="capability-badge badge-no">D4 no</span>
+              <span class="capability-badge badge-no">HVP no</span>
+            </div>
+            <dl class="capability-list">
+              <div><dt>PBC</dt><dd>No; periodic atoms fail fast.</dd></div>
+              <div><dt>Charge / mult</dt><dd>No.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Model files</dt><dd><code>maceoff23m</code> and <code>egret</code> can auto-download; <code>maceoff23s</code> and <code>maceoff23l</code> require a local file or <code>model_path</code>.</dd></div>
+            </dl>
+          </section>
+
+          <section class="card capability-card">
+            <div class="card-tag">MACE-OMol</div>
+            <h3>MACE-OMol</h3>
+            <p class="capability-keywords"><code>maceomol</code></p>
+            <div class="capability-badges" aria-label="MACE-OMol quick capabilities">
+              <span class="capability-badge badge-no">PBC no</span>
+              <span class="capability-badge badge-no">Charge no</span>
+              <span class="capability-badge badge-no">D4 no</span>
+              <span class="capability-badge badge-no">HVP no</span>
+            </div>
+            <dl class="capability-list">
+              <div><dt>PBC</dt><dd>No; periodic atoms fail fast.</dd></div>
+              <div><dt>Charge / mult</dt><dd>No.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Model files</dt><dd>Requires a local checkpoint in the model directory or explicit <code>model_path</code>.</dd></div>
+            </dl>
+          </section>
+
+          <section class="card capability-card">
+            <div class="card-tag">Development backend</div>
+            <h3>MACE-Polar</h3>
+            <p class="capability-keywords"><code>macepols</code> <code>macepolm</code> <code>macepoll</code></p>
+            <div class="capability-badges" aria-label="MACE-Polar quick capabilities">
+              <span class="capability-badge badge-no">PBC no</span>
+              <span class="capability-badge badge-yes">Charge yes</span>
+              <span class="capability-badge badge-no">D4 no</span>
+              <span class="capability-badge badge-no">HVP no</span>
+            </div>
+            <dl class="capability-list">
+              <div><dt>PBC</dt><dd>No; periodic atoms fail fast. No external-field interface is exposed.</dd></div>
+              <div><dt>Charge / mult</dt><dd>Yes; multiplicity is converted to unpaired-electron spin as <code>mult - 1</code>.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Model files</dt><dd>Requires a local checkpoint in the model directory or explicit <code>model_path</code>.</dd></div>
+            </dl>
+          </section>
+
+          <section class="card capability-card">
+            <div class="card-tag">Periodic / FAIR-Chem</div>
+            <h3>UMA</h3>
+            <p class="capability-keywords"><code>uma</code></p>
+            <div class="capability-badges" aria-label="UMA quick capabilities">
+              <span class="capability-badge badge-yes">PBC yes</span>
+              <span class="capability-badge badge-partial">Charge omol</span>
+              <span class="capability-badge badge-no">D4 no</span>
+              <span class="capability-badge badge-no">HVP no</span>
+            </div>
+            <dl class="capability-list">
+              <div><dt>PBC</dt><dd>Yes through FAIR-Chem. Non-periodic input uses <code>omol</code>; periodic input must specify a non-<code>omol</code> task. Stress / virial requests are rejected until validated.</dd></div>
+              <div><dt>Charge / mult</dt><dd><code>omol</code> only; non-<code>omol</code> tasks reject non-default charge / multiplicity. FAIR-Chem receives spin multiplicity as <code>mult</code>.</dd></div>
+              <div><dt>Hessian</dt><dd>Numerical only.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Model files</dt><dd>Resolved from <code>checkpoint_path</code>, a local <code>maple/function/calculator/model/uma-*.pt</code> file, or FAIR-Chem's official loading path.</dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <h2 id="selection-rules">Selection Rules</h2>
+        <ul>
+          <li><strong>Periodic materials or catalysis:</strong> use <code>uma</code> and set an explicit FAIR-Chem task such as <code>omat</code>, <code>oc20</code>, <code>oc22</code>, <code>oc25</code>, <code>omc</code>, or <code>odac</code>. Do not request stress or virial output yet.</li>
+          <li><strong>Charged or open-shell molecules:</strong> use <code>aimnet2</code> for molecular systems, or <code>uma</code> with the <code>omol</code> task. Treat charged/open-shell UMA chemistry as a result to verify against references.</li>
+          <li><strong>D4 dispersion:</strong> use ANI. Other shipped backends reject or ignore D4 because it is not part of their MAPLE calculator contract.</li>
+          <li><strong>HVP-enabled Dimer:</strong> ANI is the only shipped backend with <code>get_hvp()</code>, and it is gas-phase only. If a selected backend lacks HVP support, use a different transition-state method or a future finite-difference Dimer path once validated.</li>
+          <li><strong>Implicit-solvent Hessians:</strong> analytic Hessians with GBSA are not supported; gas-phase analytic Hessians or numerical Hessians are the supported paths.</li>
+        </ul>
+
+        <h2 id="calculator-contract">Developer Backend Contract</h2>
+
+        <p>MAPLE calculators are registered classes that satisfy a small ASE-style protocol. A backend does not have to inherit the shared base class as long as it exposes the same public surface and class attributes.</p>
+
+        <div class="admonition important">
+          <p class="admonition-title">Authoring source of truth</p>
+          <p>This page is a website summary. The full developer checklist and runnable template live in the MAPLE source tree at <code>maple/function/calculator/AUTHORING.md</code>.</p>
+        </div>
+
+        <h3 id="registration-required">Registration is required</h3>
+        <p>A custom calculator is not selectable by <code>#model=...</code> until its class is registered. Define lowercase <code>MODEL_NAMES</code> keys and decorate the class with <code>@register_calculator</code>; plugin loading only imports the module so this registration code can run.</p>
+
+        <pre><code>from maple.function.calculator import CalcABC, register_calculator
+
+@register_calculator
+class MyCalculator(CalcABC):
+    MODEL_NAMES = ("mymodel",)
+    MODEL_ENERGY_UNIT = "eV"
+    SUPPORTED_HESSIAN_MODES = ("numerical",)
+    SUPPORTS_CHARGE_MULT = False
+    SUPPORTS_PBC = False
+    CHECKPOINT_FILENAME = None
+    REQUIRES_LOCAL_MODEL_FILE = True
+    OPTION_KEYS = ()
+    MODEL_PATH_OPTION = "model_path"</code></pre>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Surface</th>
+                <th>Contract</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>calculate(atoms, properties, system_changes)</code></td>
+                <td>ASE entry point. Store energy, free energy, forces, and optional Hessian in <code>results</code> through the shared finalization path where possible.</td>
+              </tr>
+              <tr>
+                <td><code>get_hessian(atoms, delta=0.002)</code></td>
+                <td>Returns a <code>(3N, 3N)</code> array in Hartree / Å². Numerical mode uses the shared finite-difference helper; analytic mode is backend-specific.</td>
+              </tr>
+              <tr>
+                <td><code>get_hvp(atoms, n)</code></td>
+                <td>Optional. Implement only for the HVP-enabled Dimer path and return <code>(Hn, forces, energy)</code> in Hartree units. The default raises <code>NotImplementedError</code>.</td>
+              </tr>
+              <tr>
+                <td><code>MODEL_NAMES</code></td>
+                <td>Lowercase registry keys. Duplicate registration is a real error and raises instead of overwriting.</td>
+              </tr>
+              <tr>
+                <td><code>MODEL_ENERGY_UNIT</code></td>
+                <td>Declare <code>eV</code> or <code>hartree</code> honestly. <code>_finalize_results</code> performs the energy/force conversion; custom calculators should not multiply by <code>EV2HARTREE</code> in the calculate path.</td>
+              </tr>
+              <tr>
+                <td><code>SUPPORTED_HESSIAN_MODES</code></td>
+                <td>Subset of <code>analytic</code> and <code>numerical</code>. Unsupported requested modes fail before production work begins.</td>
+              </tr>
+              <tr>
+                <td><code>SUPPORTS_CHARGE_MULT</code> / <code>SUPPORTS_PBC</code></td>
+                <td>Declare whether the backend honors charge / multiplicity and validated periodic inputs. Do not mark PBC true unless the backend builds a validated periodic graph or neighbor list.</td>
+              </tr>
+              <tr>
+                <td><code>CHECKPOINT_FILENAME</code> / <code>REQUIRES_LOCAL_MODEL_FILE</code></td>
+                <td>Tell the factory whether MAPLE can auto-download a checkpoint or must require a local file.</td>
+              </tr>
+              <tr>
+                <td><code>OPTION_KEYS</code> / <code>MODEL_PATH_OPTION</code></td>
+                <td>Reject misspelled backend options loudly, and route explicit user model paths to the constructor kwarg that actually consumes them.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="plugin-discovery">Plugin Discovery and Model Paths</h2>
+        <ul>
+          <li><strong>Input header:</strong> <code>#model=mymodel(module=my_lab.maple_plugin, model_path=/tmp/m.pt)</code> imports the plugin module, which must register a calculator class for <code>mymodel</code>, then passes the explicit model path through the backend contract.</li>
+          <li><strong>Environment variable:</strong> <code>MAPLE_CALCULATOR_PLUGINS=my_lab.maple_plugin,other.plugin</code> imports plugin modules once per process before calculator construction; each module must run its own <code>@register_calculator</code> registrations.</li>
+          <li><strong>Python entry points:</strong> <code>[project.entry-points."maple.calculators"]</code> is documented as a preview shape for future packagers, not a current discovery layer.</li>
+        </ul>
+
+        <h2 id="energy-migration">Energy API Migration</h2>
+        <p>The old backend-specific <code>calc.get_energy(...)</code> entry points are not part of the public calculator API. Downstream code should use ASE's standard pattern:</p>
+
+        <pre><code>atoms.calc = calc
+energy = atoms.get_potential_energy()</code></pre>
+
+        <p>This keeps energy access consistent across backends whose legacy <code>get_energy</code> signatures did not agree.</p>
+      </article>
+      <nav class="page-nav">
+        <a class="prev" href="../setup/models.html">&larr; Previous: ML Models</a>
+        <a class="next" href="../setup/model_uma.html">Next: UMA &rarr;</a>
+      </nav>
+    </main>
+
+    <aside class="toc">
+      <div class="toc-sticky">
+        <h3>On this page</h3>
+        <ul>
+          <li><a href="#capability-matrix">Capability Matrix</a></li>
+          <li><a href="#selection-rules">Selection Rules</a></li>
+          <li><a href="#calculator-contract">Calculator Contract</a></li>
+          <li><a href="#registration-required">Registration Required</a></li>
+          <li><a href="#plugin-discovery">Plugin Discovery</a></li>
+          <li><a href="#energy-migration">Energy API Migration</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+  <footer>
+    <p>&copy; 2026, MAPLE development team.</p>
+  </footer>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

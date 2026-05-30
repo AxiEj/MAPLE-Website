@@ -59,6 +59,7 @@
               <span class="tree-section"><span class="chevron"></span> ML Models</span>
               <ul class="children">
                 <li><a href="../setup/models.html" class="active">Overview</a></li>
+                <li><a href="../setup/calculators.html">Calculator Backends</a></li>
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
@@ -138,7 +139,7 @@
 
         <h2 id="available-models">Available Models</h2>
 
-        <p>The table below lists all machine learning potentials currently supported in MAPLE, along with their keyword, element coverage, and accuracy characteristics.</p>
+        <p>The table below lists the primary user-facing machine learning potentials in MAPLE, along with their keyword, element coverage, and accuracy characteristics. For periodic, charge/spin, Hessian, solvent, D4, HVP, and development backends such as MACE-Polar, see the <a href="../setup/calculators.html">calculator backend capability matrix</a>.</p>
 
         <table>
           <thead>
@@ -234,23 +235,24 @@
           <li><strong>Organic molecules with halogens (F, S, Cl):</strong> Use <code>ani2x</code>, <code>maceoff23m</code>, or <code>egret</code>. For the highest accuracy, try <code>maceoff23l</code>.</li>
           <li><strong>Systems with heavier elements (Br, I, P, Si, etc.):</strong> Use <code>aimnet2</code> or <code>maceomol</code>, which support a broader range of elements.</li>
           <li><strong>Diverse or unknown systems:</strong> Use <code>uma</code> as a reliable general-purpose potential with the widest element coverage. Specify a <a href="../setup/model_uma.html">task domain</a> for best accuracy.</li>
-          <li><strong>Periodic materials / catalysis:</strong> Use <code>uma</code> with a materials task such as <code>omat</code>, <code>oc20</code>, or <code>omc</code>.</li>
+          <li><strong>Periodic materials / catalysis:</strong> Use <code>uma</code> with an explicit periodic-capable task such as <code>omat</code>, <code>oc20</code>, <code>oc22</code>, <code>oc25</code>, <code>omc</code>, or <code>odac</code>. Stress and virial output are not yet validated.</li>
+          <li><strong>Charged or open-shell molecules:</strong> Use <code>aimnet2</code> or <code>uma</code> with the <code>omol</code> task. Molecular wrappers such as ANI and MACE-OFF do not honor charge or multiplicity.</li>
           <li><strong>Speed-critical workflows:</strong> Use <code>maceoff23s</code> or <code>ani2x</code> for the fastest evaluation times. The ANI models are particularly fast on GPUs.</li>
           <li><strong>Publication-quality results:</strong> Use <code>maceoff23l</code> or <code>ani1ccx</code> for the highest available accuracy within their element ranges.</li>
         </ul>
 
         <h2 id="physical-corrections">Physical Corrections</h2>
 
-        <p>ML potentials can be augmented with physical corrections to improve accuracy for specific interactions that are challenging for neural network models.</p>
+        <p>ML potentials can be augmented with physical corrections to improve accuracy for specific interactions that are challenging for neural network models. Support is backend-specific; do not assume a correction is available for every model.</p>
 
         <h3 id="d4-dispersion">DFT-D4 Dispersion Correction</h3>
-        <p>The D4 dispersion correction adds London dispersion interactions (van der Waals forces) to the ML potential energy. This is particularly important for non-covalent interactions, stacking, and large molecular systems where dispersion forces play a significant role.</p>
+        <p>The D4 dispersion correction adds London dispersion interactions (van der Waals forces) to the ML potential energy. In the current MAPLE calculator layer, D4 is supported for ANI backends only.</p>
         <pre><code>#model = ani2x
 #d4
 #opt</code></pre>
 
         <h3 id="gbsa-solvation">GBSA Solvation</h3>
-        <p>The Generalized Born with Solvent-Accessible Surface Area (GBSA) model provides implicit solvation corrections. This is configured through the <code>#solv</code> command. See the <a href="../functions/solvent.html">Solvation</a> page for details.</p>
+        <p>The Generalized Born with Solvent-Accessible Surface Area (GBSA) model provides implicit solvation corrections for energy and force evaluations. Analytic Hessians and ANI HVP with implicit solvent are not supported. Configure solvation through the <code>#solv</code> command; see the <a href="../functions/solvent.html">Solvation</a> page for details.</p>
         <pre><code>#model = uma
 #solv(implicit=gbsa)
 #opt</code></pre>
@@ -296,18 +298,15 @@ XYZ /path/to/reactant.xyz
 
 XYZ /path/to/product.xyz</code></pre>
 
-        <h3>High-accuracy calculation with AIMNet2 and D4</h3>
+        <h3>Charged-molecule calculation with AIMNet2</h3>
         <pre><code>#model = aimnet2
-#d4
 #device = gpu0
 #opt(method=lbfgs, level=extratight)
 
-0 1
+-1 1
 C    0.000000    0.000000    0.000000
-Br   1.940000    0.000000    0.000000
-H   -0.390000    0.000000    1.028000
-H   -0.390000    0.890000   -0.514000
-H   -0.390000   -0.890000   -0.514000</code></pre>
+O    1.250000    0.000000    0.000000
+O   -1.250000    0.000000    0.000000</code></pre>
 
         <h3>Frequency calculation with MACE-OFF23</h3>
         <pre><code>#model = maceoff23m
@@ -326,7 +325,7 @@ XYZ /path/to/large_molecule.xyz</code></pre>
       </article>
       <nav class="page-nav">
         <a class="prev" href="../setup/coordinates.html">&larr; Previous: Coordinates</a>
-        <a class="next" href="../tasks/singlepoint.html">Next: Single Point &rarr;</a>
+        <a class="next" href="../setup/calculators.html">Next: Calculator Backends &rarr;</a>
       </nav>
     </main>
 
