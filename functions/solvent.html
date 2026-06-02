@@ -172,7 +172,7 @@
 
         <h2 id="implicit-gbqeq">Implicit GB-polar/QEq</h2>
 
-        <p>Implicit solvation uses <code>method=gbsa</code> with an <code>implicit</code> solvent name. MAPLE computes QEq charges for the current geometry and adds an experimental GB-polar energy term. Because the QEq charges are geometry-dependent and not variationally coupled to the solvent expression, solvent forces, Hessians, stress, and HVPs are disabled.</p>
+        <p>Implicit solvation uses <code>method=gbsa</code> with an <code>implicit</code> solvent name. MAPLE computes QEq charges for the current geometry and adds an experimental GB-polar energy term. Because the QEq charges are geometry-dependent and not variationally coupled to the solvent expression, solvent forces, Hessians, stress, and HVPs are <strong>disabled</strong>.</p>
 
         <pre><code>#model = uma
 #solv(method=gbsa, implicit=water, experimental=true)
