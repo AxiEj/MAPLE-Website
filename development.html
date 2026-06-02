@@ -39,8 +39,16 @@
   <div class="page-body">
     <article>
       <h2 id="changelog">Changelog</h2>
-      <p>The five most recent development versions are listed below.</p>
+      <p>Recent release and development milestones are listed below.</p>
       <p><a href="https://github.com/ClickFF/MAPLE/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary">All Releases on GitHub &rarr;</a></p>
+
+      <h3 id="v0-1-4-dev">Version 0.1.4 <span class="text-muted">&mdash; May 2026 development</span></h3>
+      <p>Development milestone for calculator-layer hardening and documentation. This entry documents in-progress branch behavior and is not a GitHub release claim.</p>
+      <ul>
+        <li><strong>Calculator registry contract</strong> &mdash; Backends declare model names, energy units, Hessian modes, charge/multiplicity support, PBC support, model-path behavior, and supported options before construction.</li>
+        <li><strong>Capability matrix</strong> &mdash; Added documentation for PBC, charge/spin, Hessian, implicit-solvent, D4, HVP, and checkpoint behavior across ANI, AIMNet2, MACE-family, and UMA backends.</li>
+        <li><strong>Energy API cleanup</strong> &mdash; Developer docs direct downstream code to ASE's <code>atoms.get_potential_energy()</code> pattern instead of legacy backend-specific <code>get_energy()</code> calls.</li>
+      </ul>
 
       <h3 id="v0-1-3">Version 0.1.3 <span class="text-muted">&mdash; April 1, 2026</span></h3>
       <p>April monthly update with expanded MD workflows, better model integration, and release-line cleanup.</p>
@@ -75,8 +83,8 @@
         <li><strong>PES scan</strong> &mdash; 1D, 2D, and 3D relaxed or rigid scans along bonds, angles, and dihedrals.</li>
         <li><strong>Solvation</strong> &mdash; GBSA implicit solvation and explicit solvent models.</li>
         <li><strong>Constraints</strong> &mdash; Fix atoms, bonds, angles, and dihedral angles during optimization.</li>
-        <li><strong>GPU acceleration</strong> &mdash; Full CUDA support for all ML potential evaluations.</li>
-        <li><strong>D4 dispersion</strong> &mdash; Optional DFT-D4 dispersion correction for all calculation types.</li>
+        <li><strong>GPU acceleration</strong> &mdash; CUDA support for ML potential evaluations when the selected backend and runtime support GPU execution.</li>
+        <li><strong>D4 dispersion</strong> &mdash; Optional DFT-D4 dispersion correction where the selected calculator backend supports it.</li>
       </ul>
     </article>
   </div>

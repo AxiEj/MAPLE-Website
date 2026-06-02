@@ -139,7 +139,7 @@
 
         <h2 id="overview">Overview</h2>
         <p>The Dimer method is a minimum-mode following algorithm for locating first-order saddle points on the potential energy surface. Unlike path-based methods such as NEB or String, the Dimer method requires only a single starting structure and does not need knowledge of the product geometry.</p>
-        <p>The method works by rotating a trial direction toward the lowest curvature mode of the PES, then translating the structure along that mode. The current runtime uses calculator Hessian-vector products through <code>get_hvp()</code> for this rotation/translation loop, so Dimer requires a model backend that exposes that capability.</p>
+        <p>The method works by rotating a trial direction toward the lowest curvature mode of the PES, then translating the structure along that mode. The current runtime uses calculator Hessian-vector products through <code>get_hvp()</code> for this rotation/translation loop, so Dimer requires a model backend that exposes that capability. Among shipped MAPLE backends, this currently means ANI in gas phase.</p>
 
         <h2 id="parameters">Parameters</h2>
         <div class="table-wrapper">
@@ -157,7 +157,7 @@
                 <td><code>use_hvp</code></td>
                 <td>bool</td>
                 <td>False</td>
-                <td>Compatibility flag. The current Dimer execution path requires calculator <code>get_hvp()</code> support regardless of this setting.</td>
+                <td>Compatibility flag. The current Dimer execution path requires calculator <code>get_hvp()</code> support regardless of this setting; shipped support is ANI gas phase only.</td>
               </tr>
               <tr>
                 <td><code>delta</code></td>
@@ -291,7 +291,7 @@ H    2.2951253096  -0.7293808119   0.3397718379</code></pre>
             Important
           </div>
           <div class="admonition-body">
-            <p>Dimer is single-ended, but it is not model-agnostic: the active calculator must implement <code>get_hvp()</code>. If a selected model does not provide Hessian-vector products, choose P-RFO/NEB/String instead or switch to a compatible backend.</p>
+            <p>Dimer is single-ended, but it is not model-agnostic: the active calculator must implement <code>get_hvp()</code>. If a selected model does not provide Hessian-vector products, choose P-RFO/NEB/String instead or switch to ANI gas phase.</p>
           </div>
         </div>
 
