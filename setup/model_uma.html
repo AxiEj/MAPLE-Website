@@ -59,6 +59,7 @@
               <span class="tree-section"><span class="chevron"></span> ML Models</span>
               <ul class="children">
                 <li><a href="../setup/models.html">Overview</a></li>
+                <li><a href="../setup/calculators.html">Calculator Backends</a></li>
                 <li><a href="../setup/model_uma.html" class="active">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
@@ -136,7 +137,7 @@
 
         <p><strong>UMA</strong> is a family of universal machine-learning interatomic potentials developed by Meta's FAIR Chemistry team. Trained on approximately 500 million unique 3D atomic structures spanning molecules, materials, and catalysts, UMA is designed to serve as a single universal model that handles diverse chemical domains without requiring fine-tuning.</p>
 
-        <p>MAPLE defaults to the small UMA v1.1 checkpoint (<code>uma-s-1p1</code>) for compatibility. You can explicitly select newer or larger checkpoints, and you can choose the FAIR Chemistry inference interface for speed-critical GPU workloads.</p>
+        <p>MAPLE defaults to the small UMA v1.1 checkpoint (<code>uma-s-1p1</code>) for compatibility. You can explicitly select newer or larger checkpoints, choose the FAIR Chemistry inference interface for speed-critical GPU workloads, or provide a checkpoint through <code>checkpoint_path</code>.</p>
 
         <h2 id="configuration">Configuration</h2>
 
@@ -315,7 +316,16 @@ O    1.210000    0.000000    0.000000</code></pre>
 
         <div class="admonition warning">
           <p class="admonition-title">Warning</p>
-          <p>Charge and spin are only meaningful for the <code>omol</code> task. Other tasks (materials, catalysis) do not use these parameters.</p>
+          <p>Charge and spin are only accepted for the <code>omol</code> task. Other tasks (materials, catalysis) reject non-default charge or multiplicity. Treat charged/open-shell UMA results as values that need reference validation.</p>
+        </div>
+
+        <h2 id="pbc-and-stress">PBC and Stress</h2>
+
+        <p>UMA is the only shipped MAPLE backend that supports periodic boundary conditions. Non-periodic systems use the molecular <code>omol</code> task by default; periodic systems must select an explicit non-<code>omol</code> task such as <code>omat</code>, <code>oc20</code>, <code>oc22</code>, <code>oc25</code>, <code>omc</code>, or <code>odac</code>.</p>
+
+        <div class="admonition important">
+          <p class="admonition-title">Important</p>
+          <p>MAPLE currently rejects UMA stress and virial requests until stress-unit conversion is validated. Use UMA PBC for energies and forces, not for production stress/NPT claims.</p>
         </div>
 
         <h2 id="examples">Usage Examples</h2>
@@ -380,13 +390,14 @@ H   -0.540000   -0.940000    0.000000</code></pre>
           <li><strong>D4 dispersion:</strong> Not supported with UMA. The model's training data already includes dispersion-corrected DFT for relevant tasks (PBE+D3 for omc, odac, oc25).</li>
           <li><strong>Experimental implicit solvation:</strong> Available for energy-only <code>#sp</code> calculations with <code>#solv(method=gbsa, implicit=&lt;solvent&gt;, experimental=true)</code>. Solvent forces, Hessians, optimization, MD, TS, scan, and frequency workflows are disabled for this correction.</li>
           <li><strong>All MAPLE job types</strong> are compatible with UMA without implicit solvent: single point, optimization, transition state search, IRC, frequency, PES scan, and molecular dynamics.</li>
+          <li><strong>Hessian-vector products:</strong> UMA does not implement <code>get_hvp()</code>; use a non-HVP transition-state path or a backend that implements HVP.</li>
           <li><strong>UMA inference interface:</strong> use <code>inference=turbo</code> only when you explicitly want the CUDA fast path; otherwise keep the default interface.</li>
-          <li><strong>Requires</strong> <code>fairchem-core</code> Python package (v2.9+) and a HuggingFace account with access to the <code>facebook/UMA</code> repository.</li>
+          <li><strong>Requires</strong> a FAIR-Chem release with UMA support, installed after the PyTorch build that matches your CPU/CUDA runtime.</li>
         </ul>
 
       </article>
       <nav class="page-nav">
-        <a class="prev" href="../setup/models.html">&larr; Previous: ML Models</a>
+        <a class="prev" href="../setup/calculators.html">&larr; Previous: Calculator Backends</a>
         <a class="next" href="../setup/model_ani.html">Next: ANI &rarr;</a>
       </nav>
     </main>
@@ -400,6 +411,7 @@ H   -0.540000   -0.940000    0.000000</code></pre>
           <li><a href="#inference-interface">Inference Interface</a></li>
           <li><a href="#task-domains">Task Domains</a></li>
           <li><a href="#charge-spin">Charge and Spin</a></li>
+          <li><a href="#pbc-and-stress">PBC and Stress</a></li>
           <li><a href="#examples">Usage Examples</a></li>
           <li><a href="#compatibility">Compatibility Notes</a></li>
         </ul>

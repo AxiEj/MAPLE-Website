@@ -59,6 +59,7 @@
               <span class="tree-section"><span class="chevron"></span> ML Models</span>
               <ul class="children">
                 <li><a href="../setup/models.html">Overview</a></li>
+                <li><a href="../setup/calculators.html">Calculator Backends</a></li>
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
@@ -134,7 +135,7 @@
       <article>
         <h1>MACE &amp; EGRET Models</h1>
 
-        <p><strong>MACE</strong> (Multi-ACE) is a family of equivariant message-passing neural network potentials that achieves excellent accuracy through higher-order many-body interactions. <strong>EGRET</strong> is a related graph-based equivariant model with competitive accuracy for drug-like molecules.</p>
+        <p><strong>MACE</strong> (Multi-ACE) is a family of equivariant message-passing neural network potentials that achieves excellent accuracy through higher-order many-body interactions. <strong>EGRET</strong> is a related graph-based equivariant model with competitive accuracy for drug-like molecules. The MAPLE hand-wrapped MACE and EGRET backends are molecular no-PBC calculators.</p>
 
         <h2 id="mace-off23">MACE-OFF23 Family</h2>
 
@@ -200,6 +201,18 @@ F    1.570000    0.000000    0.000000</code></pre>
 
 XYZ /path/to/drug_molecule.xyz</code></pre>
 
+        <h2 id="model-files">Model Files</h2>
+        <p>MAPLE can auto-download <code>maceoff23m</code> and <code>egret</code> checkpoints from the MAPLE model repository. <code>maceoff23s</code>, <code>maceoff23l</code>, <code>maceomol</code>, and the MACE-Polar development backends require a local checkpoint in <code>maple/function/calculator/model/</code> or an explicit <code>model_path</code>.</p>
+
+        <h2 id="calculator-capabilities">Calculator Capabilities</h2>
+        <ul>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians (analytic or numerical) are not supported.</li>
+          <li><strong>Implicit solvent:</strong> MAPLE's experimental GB-polar/QEq correction is energy-only (<code>#sp</code> with <code>experimental=true</code>); solvent forces and Hessians are not supported.</li>
+          <li><strong>PBC and stress:</strong> the MAPLE MACE wrappers build no-PBC molecular graphs and do not provide validated stress or virial output.</li>
+          <li><strong>HVP:</strong> MACE and EGRET do not implement <code>get_hvp()</code>.</li>
+          <li><strong>MACE-Polar:</strong> development keywords <code>macepols</code>, <code>macepolm</code>, and <code>macepoll</code> support charge/multiplicity through <code>spin = mult - 1</code>, but remain no-PBC and local-checkpoint backends.</li>
+        </ul>
+
         <h2 id="examples">Usage Examples</h2>
 
         <h3>Quick screening with MACE-OFF23 Small</h3>
@@ -232,9 +245,9 @@ XYZ /path/to/large_system.xyz</code></pre>
 
         <h2 id="limitations">Limitations</h2>
         <ul>
-          <li><strong>No charge/multiplicity support.</strong> All MACE and EGRET models assume neutral singlet state.</li>
+          <li><strong>No charge/multiplicity support for MACE-OFF, MACE-OMol, or EGRET.</strong> Use AIMNet2, UMA <code>omol</code>, or a validated MACE-Polar checkpoint for charged/open-shell molecular inputs.</li>
           <li><strong>No D4 dispersion.</strong> D4 correction is not available for MACE or EGRET models.</li>
-          <li><strong>No periodic systems.</strong> These models do not support periodic boundary conditions.</li>
+          <li><strong>No periodic systems.</strong> These wrappers do not support periodic boundary conditions; periodic atoms fail fast.</li>
           <li><strong>Limited elements.</strong> MACE-OFF23 and EGRET cover 7 elements; MACE-OMol covers 17 elements. For broader coverage, use <code>uma</code>.</li>
         </ul>
 
@@ -252,6 +265,8 @@ XYZ /path/to/large_system.xyz</code></pre>
           <li><a href="#mace-off23">MACE-OFF23 Family</a></li>
           <li><a href="#mace-omol">MACE-OMol</a></li>
           <li><a href="#egret">EGRET</a></li>
+          <li><a href="#model-files">Model Files</a></li>
+          <li><a href="#calculator-capabilities">Calculator Capabilities</a></li>
           <li><a href="#examples">Usage Examples</a></li>
           <li><a href="#limitations">Limitations</a></li>
         </ul>

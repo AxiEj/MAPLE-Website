@@ -59,6 +59,7 @@
               <span class="tree-section"><span class="chevron"></span> ML Models</span>
               <ul class="children">
                 <li><a href="../setup/models.html">Overview</a></li>
+                <li><a href="../setup/calculators.html">Calculator Backends</a></li>
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html" class="active">AIMNet2</a></li>
@@ -134,7 +135,7 @@
       <article>
         <h1>AIMNet2</h1>
 
-        <p><strong>AIMNet2</strong> is a neural network potential that provides broad element coverage (14 elements) with &omega;B97M-D3BJ accuracy. It is one of only two models in MAPLE (along with UMA) that natively supports charged and open-shell molecular systems.</p>
+        <p><strong>AIMNet2</strong> is a neural network potential that provides broad element coverage (14 elements) with &omega;B97M-D3BJ accuracy. It is a molecular, no-PBC backend that supports charge and multiplicity for charged or open-shell molecules.</p>
 
         <h2 id="variants">Variants</h2>
 
@@ -190,6 +191,14 @@ C    0.000000    0.000000    0.000000
 O    1.250000    0.000000    0.000000
 O   -1.250000    0.000000    0.000000</code></pre>
 
+        <h2 id="calculator-capabilities">Calculator Capabilities</h2>
+        <ul>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians (analytic or numerical) are not supported.</li>
+          <li><strong>PBC:</strong> AIMNet2 is a no-PBC wrapper in MAPLE. Periodic atoms fail fast, and <code>coulomb_method=ewald</code> is disabled until validated cell/PBC/MIC support exists.</li>
+          <li><strong>HVP:</strong> AIMNet2 does not implement <code>get_hvp()</code>; use non-HVP transition-state workflows such as P-RFO, NEB, or String instead.</li>
+          <li><strong>Model files:</strong> MAPLE can auto-download AIMNet2 checkpoints from the MAPLE model repository, or you can provide an explicit <code>model_path</code>. Supported Coulomb options are <code>simple</code> and <code>dsf</code>.</li>
+        </ul>
+
         <h2 id="examples">Usage Examples</h2>
 
         <h3>Optimization with heavy elements (Br, I)</h3>
@@ -237,6 +246,7 @@ H   -0.390000   -0.890000   -0.514000</code></pre>
           <li><a href="#variants">Variants</a></li>
           <li><a href="#charge-spin">Charge and Spin</a></li>
           <li><a href="#solvation">Energy-only Implicit Solvation</a></li>
+          <li><a href="#calculator-capabilities">Calculator Capabilities</a></li>
           <li><a href="#examples">Usage Examples</a></li>
           <li><a href="#limitations">Limitations</a></li>
         </ul>

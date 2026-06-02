@@ -45,6 +45,7 @@
 
       <h2 id="ml-potentials">Supported ML Potentials</h2>
       <p>MAPLE supports a wide range of machine learning interatomic potentials. Each model offers different trade-offs between speed, accuracy, and element coverage.</p>
+      <p>Backend support for periodic cells, charge/multiplicity, Hessians, implicit solvent, D4, HVP, and checkpoint loading is model-specific; see the <a href="setup/calculators.html">calculator backend matrix</a> before choosing a production backend.</p>
 
       <section class="ml-family-section" id="uma-family">
         <h3>UMA &mdash; Universal Model</h3>
@@ -172,12 +173,17 @@
         <div class="card">
           <div class="card-tag">Runtime</div>
           <h3>GPU Acceleration</h3>
-          <p>Full CUDA support for ML potential evaluation, providing orders of magnitude speedup over traditional QM methods.</p>
+          <p>CUDA acceleration for ML potential evaluation when the selected backend and runtime support GPU execution.</p>
         </div>
         <a class="card" href="setup/models.html#d4-dispersion">
           <div class="card-tag">Correction</div>
           <h3>D4 Dispersion</h3>
-          <p>DFT-D4 dispersion correction available as a global option for any calculation.</p>
+          <p>DFT-D4 dispersion correction for ANI-backed calculations where the calculator supports the D4 option.</p>
+        </a>
+        <a class="card" href="setup/calculators.html">
+          <div class="card-tag">Reference</div>
+          <h3>Calculator Matrix</h3>
+          <p>Compare PBC, charge/spin, Hessian, solvent, D4, HVP, and model-file support across MAPLE backends.</p>
         </a>
       </div>
     </article>

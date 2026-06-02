@@ -59,6 +59,7 @@
               <span class="tree-section"><span class="chevron"></span> ML Models</span>
               <ul class="children">
                 <li><a href="../setup/models.html">Overview</a></li>
+                <li><a href="../setup/calculators.html">Calculator Backends</a></li>
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
@@ -151,7 +152,7 @@
                     <tbody>
                         <tr>
                             <td><strong>Python</strong></td>
-                            <td>>= 3.9</td>
+                            <td>>= 3.10</td>
                         </tr>
                         <tr>
                             <td><strong>GPU</strong></td>
@@ -187,7 +188,7 @@
                 <p>Clone the MAPLE repository and install it in development mode:</p>
 
                 <pre><code># Clone the repository
-git clone https://github.com/MAPLE-project/MAPLE.git
+git clone https://github.com/ClickFF/MAPLE.git
 cd MAPLE
 
 # Install in editable/development mode
@@ -208,7 +209,7 @@ pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
 
                         <p>The same <code>-i https://pypi.tuna.tsinghua.edu.cn/simple</code> option can also be appended to later PyPI-based <code>pip install</code> commands on this page, such as the core dependencies or <code>fairchem-core</code>.</p>
 
-                        <p>MAPLE auto-downloads model files from <a href="https://huggingface.co/Wayne7815/MAPLE_models" target="_blank">https://huggingface.co/Wayne7815/MAPLE_models</a>. If you download model files manually through a reachable mirror, keep the same filenames and place them in <code>maple/function/calculator/model/</code>.</p>
+                        <p>MAPLE auto-downloads supported MAPLE-hosted model files from <a href="https://huggingface.co/Wayne7815/MAPLE_models" target="_blank">https://huggingface.co/Wayne7815/MAPLE_models</a>. If you download model files manually through a reachable mirror, keep the same filenames and place them in <code>maple/function/calculator/model/</code>.</p>
 
                         <p><strong>Tip:</strong> If the local model directory does not exist, create <code>maple/function/calculator/model/</code> before placing files there.</p>
                     </div>
@@ -220,7 +221,7 @@ pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
 
                 <p>The core scientific libraries are installed automatically with <code>pip install -e .</code>, but you can also install them manually:</p>
 
-                <pre><code>pip install numpy scipy matplotlib ase</code></pre>
+                <pre><code>pip install numpy scipy ase</code></pre>
 
                 <h3>PyTorch</h3>
 
@@ -246,18 +247,20 @@ pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
 
                 <h3>ML Potentials</h3>
 
-                <p>To use specific ML potential models (ANI, AIMNet2, MACE, etc.), install the <code>fairchem-core</code> package:</p>
+                <p>ANI, AIMNet2, MACE, MACE-Polar, and UMA are torch-backed calculators, so install PyTorch separately for your hardware before using them. Install <code>fairchem-core</code> only when you need UMA or FAIR-Chem-backed/PBC workflows:</p>
 
                 <pre><code>pip install fairchem-core</code></pre>
 
-                <p>This provides access to the following models:</p>
+                <p>Checkpoint and runtime boundaries:</p>
 
                 <ul>
-                    <li><strong>ANI</strong> family: <code>ani2x</code>, <code>ani1x</code>, <code>ani1ccx</code>, <code>ani1xnr</code></li>
-                    <li><strong>AIMNet2</strong>: <code>aimnet2</code></li>
-                    <li><strong>MACE-OFF23</strong>: <code>maceoff23s</code>, <code>maceoff23m</code>, <code>maceoff23l</code></li>
-                    <li><strong>Other</strong>: <code>egret</code>, <code>uma</code></li>
+                    <li><strong>Core install:</strong> <code>pip install -e .</code> installs MAPLE plus <code>ase</code>, <code>numpy</code>, and <code>scipy</code>; it does not select a PyTorch/CUDA stack for you.</li>
+                    <li><strong>MAPLE-hosted checkpoints:</strong> ANI, AIMNet2, <code>maceoff23m</code>, and <code>egret</code> can be auto-downloaded from <a href="https://huggingface.co/Wayne7815/MAPLE_models" target="_blank">MAPLE_models</a>.</li>
+                    <li><strong>Local checkpoints:</strong> backend-specific files such as <code>maceoff23s</code>, <code>maceoff23l</code>, <code>maceomol</code>, and MACE-Polar checkpoints must be placed in <code>maple/function/calculator/model/</code> or supplied through <code>model_path</code>.</li>
+                    <li><strong>UMA:</strong> UMA checkpoints resolve through <code>checkpoint_path</code>, a local <code>maple/function/calculator/model/uma-*.pt</code> file, or FAIR-Chem's official loading path.</li>
                 </ul>
+
+                <p>See the <a href="../setup/calculators.html">calculator backend matrix</a> for the exact PBC, charge/multiplicity, Hessian, D4, solvent, HVP, and checkpoint support of each backend.</p>
 
                 <h2 id="verify-installation">Verify Installation</h2>
 

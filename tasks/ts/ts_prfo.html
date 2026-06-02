@@ -139,6 +139,7 @@
 
         <h2 id="overview">Overview</h2>
         <p>P-RFO is a second-order saddle point optimizer based on the Partitioned Rational Function Optimization algorithm. It works by partitioning the Hessian eigenspace into one mode to maximize along (the reaction coordinate) and all remaining modes to minimize along. This dual-shift approach, combined with a trust-region framework and mode-following in mass-weighted coordinates, efficiently converges to the nearest first-order saddle point from an initial guess geometry.</p>
+        <p>By default, MAPLE recalculates the exact Hessian at every P-RFO iteration. For larger systems, <code>recalc</code> can be used to recompute the Hessian periodically while updating the working Hessian between recalculations with either the Bofill or BFGS update formula. The default update method is <code>bofill</code>.</p>
         <p>P-RFO is the local TS optimizer used directly with <code>#ts(method=prfo)</code> and as the final optimization step for NEB-TS/String-TS refinement workflows. It requires a good starting geometry that is already close to the true TS.</p>
 
         <h2 id="parameters">Parameters</h2>
@@ -206,6 +207,18 @@
                 <td>int</td>
                 <td>60</td>
                 <td>Maximum bisection iterations for level-shift.</td>
+              </tr>
+              <tr>
+                <td><code>recalc</code></td>
+                <td>int</td>
+                <td>1</td>
+                <td>Exact Hessian recalculation interval. <code>1</code> recalculates the Hessian every iteration.</td>
+              </tr>
+              <tr>
+                <td><code>hessian_update</code></td>
+                <td>string</td>
+                <td>bofill</td>
+                <td>Approximate Hessian update used between recalculations. Available options are <code>bofill</code> and <code>bfgs</code>.</td>
               </tr>
               <tr>
                 <td><code>f_max_th</code></td>
