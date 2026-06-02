@@ -178,13 +178,13 @@ O   -1.250000    0.000000    0.000000</code></pre>
 
         <p>The first line specifies <code>charge multiplicity</code> (here: charge = &minus;1, multiplicity = 1 for a formate anion).</p>
 
-        <h2 id="solvation">Implicit Solvation</h2>
+        <h2 id="solvation">Energy-only Implicit Solvation</h2>
 
-        <p>AIMNet2 supports GBSA implicit solvation correction. QEq charges are computed automatically:</p>
+        <p>AIMNet2 can use MAPLE's experimental implicit GB-polar/QEq correction for single-point energies. Add <code>experimental=true</code> and use <code>#sp</code>; solvent forces, optimizations, Hessians, and frequency workflows are not supported for this correction.</p>
 
         <pre><code><span class="keyword">#model</span>=<span class="value">aimnet2</span>
-<span class="keyword">#solv</span>(<span class="param">method</span>=<span class="value">gbsa</span>, <span class="param">implicit</span>=<span class="value">water</span>)
-<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
+<span class="keyword">#solv</span>(<span class="param">method</span>=<span class="value">gbsa</span>, <span class="param">implicit</span>=<span class="value">water</span>, <span class="param">experimental</span>=<span class="value">true</span>)
+<span class="keyword">#sp</span>
 
 -1 1
 C    0.000000    0.000000    0.000000
@@ -193,7 +193,7 @@ O   -1.250000    0.000000    0.000000</code></pre>
 
         <h2 id="calculator-capabilities">Calculator Capabilities</h2>
         <ul>
-          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Analytic Hessian with implicit solvent is not supported.</li>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians (analytic or numerical) are not supported.</li>
           <li><strong>PBC:</strong> AIMNet2 is a no-PBC wrapper in MAPLE. Periodic atoms fail fast, and <code>coulomb_method=ewald</code> is disabled until validated cell/PBC/MIC support exists.</li>
           <li><strong>HVP:</strong> AIMNet2 does not implement <code>get_hvp()</code>; use non-HVP transition-state workflows such as P-RFO, NEB, or String instead.</li>
           <li><strong>Model files:</strong> MAPLE can auto-download AIMNet2 checkpoints from the MAPLE model repository, or you can provide an explicit <code>model_path</code>. Supported Coulomb options are <code>simple</code> and <code>dsf</code>.</li>
@@ -245,7 +245,7 @@ H   -0.390000   -0.890000   -0.514000</code></pre>
         <ul>
           <li><a href="#variants">Variants</a></li>
           <li><a href="#charge-spin">Charge and Spin</a></li>
-          <li><a href="#solvation">Implicit Solvation</a></li>
+          <li><a href="#solvation">Energy-only Implicit Solvation</a></li>
           <li><a href="#calculator-capabilities">Calculator Capabilities</a></li>
           <li><a href="#examples">Usage Examples</a></li>
           <li><a href="#limitations">Limitations</a></li>

@@ -206,8 +206,8 @@ XYZ /path/to/drug_molecule.xyz</code></pre>
 
         <h2 id="calculator-capabilities">Calculator Capabilities</h2>
         <ul>
-          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Analytic Hessian with implicit solvent is not supported.</li>
-          <li><strong>Implicit solvent:</strong> GBSA is supported for energy and force evaluations.</li>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians (analytic or numerical) are not supported.</li>
+          <li><strong>Implicit solvent:</strong> MAPLE's experimental GB-polar/QEq correction is energy-only (<code>#sp</code> with <code>experimental=true</code>); solvent forces and Hessians are not supported.</li>
           <li><strong>PBC and stress:</strong> the MAPLE MACE wrappers build no-PBC molecular graphs and do not provide validated stress or virial output.</li>
           <li><strong>HVP:</strong> MACE and EGRET do not implement <code>get_hvp()</code>.</li>
           <li><strong>MACE-Polar:</strong> development keywords <code>macepols</code>, <code>macepolm</code>, and <code>macepoll</code> support charge/multiplicity through <code>spin = mult - 1</code>, but remain no-PBC and local-checkpoint backends.</li>

@@ -158,8 +158,8 @@
             <dl class="capability-list">
               <div><dt>PBC</dt><dd>No; periodic atoms fail fast.</dd></div>
               <div><dt>Charge / mult</dt><dd>No; values are not honored by the backend.</dd></div>
-              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
-              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is supported.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical (gas phase). Implicit-solvent Hessians are unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>Experimental GBSA, energy-only; D4 is supported.</dd></div>
               <div><dt>Model files</dt><dd>MAPLE-hosted checkpoints auto-download; explicit <code>model_path</code> is accepted.</dd></div>
             </dl>
           </section>
@@ -177,8 +177,8 @@
             <dl class="capability-list">
               <div><dt>PBC</dt><dd>No; periodic atoms fail fast. <code>coulomb_method=ewald</code> is disabled.</dd></div>
               <div><dt>Charge / mult</dt><dd>Yes.</dd></div>
-              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
-              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical (gas phase). Implicit-solvent Hessians are unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>Experimental GBSA, energy-only; D4 is not supported.</dd></div>
               <div><dt>Model files</dt><dd>MAPLE-hosted checkpoints auto-download; explicit <code>model_path</code> is accepted.</dd></div>
             </dl>
           </section>
@@ -196,8 +196,8 @@
             <dl class="capability-list">
               <div><dt>PBC</dt><dd>No; periodic atoms fail fast.</dd></div>
               <div><dt>Charge / mult</dt><dd>No.</dd></div>
-              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
-              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical (gas phase). Implicit-solvent Hessians are unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>Experimental GBSA, energy-only; D4 is not supported.</dd></div>
               <div><dt>Model files</dt><dd><code>maceoff23m</code> and <code>egret</code> can auto-download; <code>maceoff23s</code> and <code>maceoff23l</code> require a local file or <code>model_path</code>.</dd></div>
             </dl>
           </section>
@@ -215,8 +215,8 @@
             <dl class="capability-list">
               <div><dt>PBC</dt><dd>No; periodic atoms fail fast.</dd></div>
               <div><dt>Charge / mult</dt><dd>No.</dd></div>
-              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
-              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical (gas phase). Implicit-solvent Hessians are unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>Experimental GBSA, energy-only; D4 is not supported.</dd></div>
               <div><dt>Model files</dt><dd>Requires a local checkpoint in the model directory or explicit <code>model_path</code>.</dd></div>
             </dl>
           </section>
@@ -234,8 +234,8 @@
             <dl class="capability-list">
               <div><dt>PBC</dt><dd>No; periodic atoms fail fast. No external-field interface is exposed.</dd></div>
               <div><dt>Charge / mult</dt><dd>Yes; multiplicity is converted to unpaired-electron spin as <code>mult - 1</code>.</dd></div>
-              <div><dt>Hessian</dt><dd>Analytic and numerical. Analytic Hessian with implicit solvent is unsupported.</dd></div>
-              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Hessian</dt><dd>Analytic and numerical (gas phase). Implicit-solvent Hessians are unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>Experimental GBSA, energy-only; D4 is not supported.</dd></div>
               <div><dt>Model files</dt><dd>Requires a local checkpoint in the model directory or explicit <code>model_path</code>.</dd></div>
             </dl>
           </section>
@@ -253,8 +253,8 @@
             <dl class="capability-list">
               <div><dt>PBC</dt><dd>Yes through FAIR-Chem. Non-periodic input uses <code>omol</code>; periodic input must specify a non-<code>omol</code> task. Stress / virial requests are rejected until validated.</dd></div>
               <div><dt>Charge / mult</dt><dd><code>omol</code> only; non-<code>omol</code> tasks reject non-default charge / multiplicity. FAIR-Chem receives spin multiplicity as <code>mult</code>.</dd></div>
-              <div><dt>Hessian</dt><dd>Numerical only.</dd></div>
-              <div><dt>Solvent / D4</dt><dd>GBSA for energy/forces; D4 is not supported.</dd></div>
+              <div><dt>Hessian</dt><dd>Numerical only (gas phase). Implicit-solvent Hessians are unsupported.</dd></div>
+              <div><dt>Solvent / D4</dt><dd>Experimental GBSA, energy-only; D4 is not supported.</dd></div>
               <div><dt>Model files</dt><dd>Resolved from <code>checkpoint_path</code>, a local <code>maple/function/calculator/model/uma-*.pt</code> file, or FAIR-Chem's official loading path.</dd></div>
             </dl>
           </section>
@@ -266,7 +266,7 @@
           <li><strong>Charged or open-shell molecules:</strong> use <code>aimnet2</code> for molecular systems, or <code>uma</code> with the <code>omol</code> task. Treat charged/open-shell UMA chemistry as a result to verify against references.</li>
           <li><strong>D4 dispersion:</strong> use ANI. Other shipped backends reject or ignore D4 because it is not part of their MAPLE calculator contract.</li>
           <li><strong>HVP-enabled Dimer:</strong> ANI is the only shipped backend with <code>get_hvp()</code>, and it is gas-phase only. If a selected backend lacks HVP support, use a different transition-state method or a future finite-difference Dimer path once validated.</li>
-          <li><strong>Implicit-solvent Hessians:</strong> analytic Hessians with GBSA are not supported; gas-phase analytic Hessians or numerical Hessians are the supported paths.</li>
+          <li><strong>Implicit-solvent Hessians:</strong> GBSA Hessians (analytic or numerical) are not supported; Hessians are available only in gas phase.</li>
         </ul>
 
         <h2 id="calculator-contract">Developer Backend Contract</h2>

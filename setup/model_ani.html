@@ -196,9 +196,9 @@
 
         <h2 id="calculator-capabilities">Calculator Capabilities</h2>
         <ul>
-          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Analytic Hessian with implicit solvent is not supported.</li>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians (analytic or numerical) are not supported.</li>
           <li><strong>HVP:</strong> ANI is the only shipped backend that implements <code>get_hvp()</code> for the HVP-enabled Dimer path. ANI HVP is gas-phase only.</li>
-          <li><strong>Implicit solvent:</strong> GBSA is supported for energy and force evaluations, but not for HVP or analytic Hessians.</li>
+          <li><strong>Implicit solvent:</strong> MAPLE's experimental GB-polar/QEq correction is energy-only (<code>#sp</code> with <code>experimental=true</code>); solvent forces, HVP, and Hessians are not supported.</li>
           <li><strong>Model files:</strong> MAPLE can auto-download ANI checkpoints from the MAPLE model repository, or you can provide an explicit <code>model_path</code>.</li>
         </ul>
 
@@ -237,7 +237,8 @@ XYZ /path/to/dimer_complex.xyz</code></pre>
         <ul>
           <li><strong>No charge/multiplicity support.</strong> ANI models assume neutral, singlet ground state; use AIMNet2 or UMA <code>omol</code> for charged/open-shell inputs.</li>
           <li><strong>Limited elements.</strong> ANI-2x covers 7 elements; ANI-1x/1ccx/1xnr cover only H, C, N, O.</li>
-          <li><strong>No periodic systems.</strong> ANI models do not support periodic boundary conditions; periodic atoms fail fast.</li>
+          <li><strong>No periodic systems.</strong> ANI models do not support periodic boundary conditions.</li>
+          <li><strong>Implicit solvation is energy-only.</strong> MAPLE's experimental GB-polar/QEq correction can be requested for <code>#sp</code> with <code>experimental=true</code>; solvent forces, optimization, MD, TS, scan, and frequency workflows remain unsupported for that correction.</li>
         </ul>
 
       </article>

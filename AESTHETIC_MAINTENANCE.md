@@ -212,7 +212,7 @@ MAPLE input blocks should be recognized automatically in `assets/js/main.js` and
 
 The shared highlighter currently recognizes:
 
-- MAPLE directives such as `#model`, `#device`, `#charge`, `#mult`, `#sp`, `#opt`, `#ts`, `#scan`, `#irc`, `#freq`, `#md`, `#solvent`, `#constraint`, `#constraints`.
+- MAPLE directives such as `#model`, `#device`, `#charge`, `#mult`, `#sp`, `#opt`, `#ts`, `#scan`, `#irc`, `#freq`, `#md`, `#solv`, `#constraint`, `#constraints`.
 - Direct values, e.g. `#model=uma`.
 - Parenthesized parameters, e.g. `#opt(method=rfo)`.
 - Coordinate rows: an atom label followed by **three or more decimal floats** (each token must contain a `.`). Integer-only rows do not qualify and are passed through as plain text — this disambiguates coordinates from SCAN commands.
