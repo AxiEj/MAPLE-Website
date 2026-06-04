@@ -1,7 +1,7 @@
 # Documentation Figure Tools
 
 Scripts for generating the figures and animations used in the MAPLE documentation site.
-Both scripts live in `assets/images/opt/` alongside the PNG/GIF output they produce.
+The scripts live in `assets/images/opt/tools/`; generated PNG/GIF assets are written next to the relevant documentation image folder.
 
 **Dependencies**
 
@@ -65,6 +65,34 @@ the filename. Output files are named `energy_vs_iter_<method>.png` and
 Works with **any number of input files** (≥ 2). Duplicate methods get a numbered
 suffix in the legend (e.g. `LBFGS`, `LBFGS (2)`). Each curve gets a distinct
 colour, line style, and marker automatically.
+
+---
+
+## render_xyz_cluster.py — Static explicit-solvent cluster figures
+
+Reads a single-frame XYZ file and renders a documentation PNG with CPK-like colours, guessed covalent bonds, and optional highlighting for the first N solute atoms. This is useful for explicit-solvent sidecars such as `solv1_solvated.xyz`, where the goal is to show the generated cluster rather than an optimization trajectory.
+
+### Usage
+
+```bash
+python render_xyz_cluster.py solv1_solvated.xyz \
+  --out ../exp-solv/solv1_water_sphere.png \
+  --solute-atoms 22
+
+python render_xyz_cluster.py solv1_cube_density_solvated.xyz \
+  --out ../exp-solv/solv1_water_cube.png \
+  --solute-atoms 22 \
+  --rotation=0,0,0
+```
+
+### Options
+
+| Option | Default | Description |
+|---|---|---|
+| `--solute-atoms N` | `0` | Highlight the first N atoms as the solute. |
+| `--rotation x,y,z` | `-62,0,34` | Euler rotation in degrees before orthographic projection. |
+| `--zoom F` | `1.0` | Scale multiplier after fitting the cluster to the canvas. |
+| `--width N` / `--height N` | `900` / `650` | Output image size in pixels. |
 
 ---
 

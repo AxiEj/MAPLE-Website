@@ -209,31 +209,158 @@
 
         <p>Explicit solvation currently supports exactly one input structure. Remove <code>#pbc</code> for explicit-solvent jobs. If you need to hold solute atoms or selected solvent atoms fixed during an optimization, use the normal constraint commands after the coordinate block; the solvent builder itself only generates coordinates.</p>
 
-        <h3>Template solvent names</h3>
-        <p>Bundled templates are stored as solvent PDB files. Common names include:</p>
+        <p>For documentation previews, use the generated <code>*_solvated.xyz</code> sidecars directly. The figures below come from the source examples in <code>examples/opt/exp-solv/</code> before any optimization frames are used.</p>
+
+        <div class="figure-row">
+          <figure class="doc-figure">
+            <img src="../assets/images/opt/exp-solv/solv1_water_sphere.png" alt="Explicit water sphere cluster from solv1_solvated.xyz">
+            <figcaption>Example 1 — water sphere cluster from <code>solv1_solvated.xyz</code>.</figcaption>
+          </figure>
+          <figure class="doc-figure">
+            <img src="../assets/images/opt/exp-solv/solv2_toluene_sphere.png" alt="Explicit toluene sphere cluster from solv2_solvated.xyz">
+            <figcaption>Example 2 — toluene sphere cluster from <code>solv2_solvated.xyz</code>.</figcaption>
+          </figure>
+          <figure class="doc-figure">
+            <img src="../assets/images/opt/exp-solv/solv1_water_cube.png" alt="Explicit water cube cluster generated from example 1 solute">
+            <figcaption>Example 1 cube variant — same solute, <code>shape=cube</code>, <code>box_size=20.0</code>, default water density.</figcaption>
+          </figure>
+        </div>
+
+        <h3>Bundled explicit-solvent templates</h3>
+        <p>The current MAPLE source ships the following explicit-solvent PDB template stems. Use exactly the filename stem as the <code>explicit=</code> value:</p>
         <ul class="column-list">
-          <li>water</li>
-          <li>methanol</li>
-          <li>ethanol</li>
-          <li>acetone</li>
-          <li>acetonitrile</li>
-          <li>benzene</li>
-          <li>chloroform</li>
-          <li>cyclohexane</li>
-          <li>dichloroethane</li>
-          <li>ether</li>
-          <li>dimethylformamide</li>
-          <li>dimethylsulfoxide</li>
-          <li>heptane</li>
-          <li>hexane</li>
-          <li>isopropanol</li>
-          <li>methylenechloride</li>
-          <li>octane</li>
-          <li>pentane</li>
-          <li>pyridine</li>
-          <li>tetrahydrofuran</li>
-          <li>toluene</li>
-          <li>xylene</li>
+          <li><code>2methyl2propanol</code></li>
+          <li><code>2methylpyridine</code></li>
+          <li><code>4methyl2pentanone</code></li>
+          <li><code>aceticacid</code></li>
+          <li><code>acetone</code></li>
+          <li><code>acetonitrile</code></li>
+          <li><code>acetophenone</code></li>
+          <li><code>aniline</code></li>
+          <li><code>anisole</code></li>
+          <li><code>benzene</code></li>
+          <li><code>benzonitrile</code></li>
+          <li><code>benzylalcohol</code></li>
+          <li><code>bromobenzene</code></li>
+          <li><code>bromoethane</code></li>
+          <li><code>bromoform</code></li>
+          <li><code>bromooctane</code></li>
+          <li><code>butanol</code></li>
+          <li><code>butanone</code></li>
+          <li><code>butylacetate</code></li>
+          <li><code>butylbenzene</code></li>
+          <li><code>carbontet</code></li>
+          <li><code>chlorobenzene</code></li>
+          <li><code>chloroform</code></li>
+          <li><code>chlorohexane</code></li>
+          <li><code>cyclohexane</code></li>
+          <li><code>cyclohexanone</code></li>
+          <li><code>decalin</code></li>
+          <li><code>decane</code></li>
+          <li><code>decanol</code></li>
+          <li><code>dibromoethane</code></li>
+          <li><code>dibutylether</code></li>
+          <li><code>dichloroethane</code></li>
+          <li><code>diethylamine</code></li>
+          <li><code>diisopropylether</code></li>
+          <li><code>dimethylacetamide</code></li>
+          <li><code>dimethylformamide</code></li>
+          <li><code>dimethylpyridine</code></li>
+          <li><code>dimethylsulfoxide</code></li>
+          <li><code>dodecane</code></li>
+          <li><code>ethanol</code></li>
+          <li><code>ether</code></li>
+          <li><code>ethoxybenzene</code></li>
+          <li><code>ethylacetate</code></li>
+          <li><code>ethylbenzene</code></li>
+          <li><code>fluorobenzene</code></li>
+          <li><code>fluoroctane</code></li>
+          <li><code>heptane</code></li>
+          <li><code>heptanol</code></li>
+          <li><code>hexadecane</code></li>
+          <li><code>hexadecyliodide</code></li>
+          <li><code>hexane</code></li>
+          <li><code>hexanol</code></li>
+          <li><code>iodobenzene</code></li>
+          <li><code>isobutanol</code></li>
+          <li><code>isooctane</code></li>
+          <li><code>isopropanol</code></li>
+          <li><code>isopropylbenzene</code></li>
+          <li><code>isopropyltoluene</code></li>
+          <li><code>mcresol</code></li>
+          <li><code>mesitylene</code></li>
+          <li><code>methanol</code></li>
+          <li><code>methoxyethanol</code></li>
+          <li><code>methylenechloride</code></li>
+          <li><code>methylformamide</code></li>
+          <li><code>nitrobenzene</code></li>
+          <li><code>nitroethane</code></li>
+          <li><code>nitromethane</code></li>
+          <li><code>nonane</code></li>
+          <li><code>nonanol</code></li>
+          <li><code>octane</code></li>
+          <li><code>octanol</code></li>
+          <li><code>odichlorobenzene</code></li>
+          <li><code>old_aceticacid</code></li>
+          <li><code>old_tributylphosphate</code></li>
+          <li><code>onitrotoluene</code></li>
+          <li><code>pentadecane</code></li>
+          <li><code>pentane</code></li>
+          <li><code>pentanol</code></li>
+          <li><code>perfluorobenzene</code></li>
+          <li><code>phenylether</code></li>
+          <li><code>propanol</code></li>
+          <li><code>pyridine</code></li>
+          <li><code>secbutanol</code></li>
+          <li><code>secbutylbenzene</code></li>
+          <li><code>tbutylbenzene</code></li>
+          <li><code>tetrachloroethene</code></li>
+          <li><code>tetrahydrofuran</code></li>
+          <li><code>tetrahydrothiophenedioxide</code></li>
+          <li><code>tetralin</code></li>
+          <li><code>toluene</code></li>
+          <li><code>tributylphosphate</code></li>
+          <li><code>triethylamine</code></li>
+          <li><code>trimethylbenzene</code></li>
+          <li><code>undecane</code></li>
+          <li><code>water</code></li>
+          <li><code>xylene</code></li>
+        </ul>
+        <p>Two legacy duplicate template stems, <code>old_aceticacid</code> and <code>old_tributylphosphate</code>, are bundled files too; prefer <code>aceticacid</code> and <code>tributylphosphate</code> for new inputs.</p>
+
+        <h3>Templates with default density values</h3>
+        <p>MAPLE has built-in density values for these explicit-solvent names when neither <code>density=</code> nor <code>number=</code> is supplied:</p>
+        <ul class="column-list">
+          <li><code>aceticacid</code></li>
+          <li><code>acetone</code></li>
+          <li><code>acetonitrile</code></li>
+          <li><code>aniline</code></li>
+          <li><code>benzene</code></li>
+          <li><code>butanol</code></li>
+          <li><code>carbontet</code></li>
+          <li><code>chloroform</code></li>
+          <li><code>cyclohexane</code></li>
+          <li><code>dichloroethane</code></li>
+          <li><code>dimethylacetamide</code></li>
+          <li><code>dimethylformamide</code></li>
+          <li><code>dimethylsulfoxide</code></li>
+          <li><code>ethanol</code></li>
+          <li><code>ether</code></li>
+          <li><code>ethylacetate</code></li>
+          <li><code>heptane</code></li>
+          <li><code>hexane</code></li>
+          <li><code>isopropanol</code></li>
+          <li><code>methanol</code></li>
+          <li><code>methylenechloride</code></li>
+          <li><code>nitrobenzene</code></li>
+          <li><code>nitromethane</code></li>
+          <li><code>octane</code></li>
+          <li><code>propanol</code></li>
+          <li><code>pyridine</code></li>
+          <li><code>tetrahydrofuran</code></li>
+          <li><code>toluene</code></li>
+          <li><code>water</code></li>
+          <li><code>xylene</code></li>
         </ul>
         <p>For bundled templates, use the template filename stem as the <code>explicit=</code> value. For example, the bundled <code>water.pdb</code> template is selected with <code>explicit=water</code>. If a solvent has no tabulated density, provide <code>density=&lt;g/mL&gt;</code> or <code>number=&lt;int&gt;</code>.</p>
 
