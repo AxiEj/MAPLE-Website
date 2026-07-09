@@ -63,6 +63,7 @@
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../setup/model_fennol.html">FeNNol</a></li>
                 <li><a href="../setup/model_mace.html">MACE</a></li>
                 <li><a href="../setup/model_custom.html" class="active">Custom Model</a></li>
               </ul>
@@ -111,6 +112,14 @@
                     <li><a href="../tasks/irc/irc_eulerpc.html">EulerPC</a></li>
                   </ul>
                 </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/parmfit/parmfit.html">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/parmfit/parmfit_correction.html">Correction</a></li>
+                    <li><a href="../tasks/parmfit/parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="../tasks/parmfit/parmfit_metalaa.html">MetalAA</a></li>
+                  </ul>
+                </li>
               </ul>
             </li>
             <li>
@@ -136,7 +145,7 @@
       <article>
         <h1>Bring Your Own Model</h1>
 
-        <p>MAPLE is not limited to its shipped backends (UMA, ANI, AIMNet2, MACE). You can plug in <strong>your own machine-learning potential</strong> &mdash; trained in your group, exported as a TorchScript <code>.pt</code>/<code>.jpt</code> or an ordinary PyTorch <code>.pt</code>/<code>.model</code> checkpoint &mdash; <strong>without editing MAPLE's source code</strong>. A custom backend is just a small Python class that exposes a few methods; once registered, it works with every task (single point, optimization, frequency, TS search, IRC, scan, MD).</p>
+        <p>MAPLE is not limited to its shipped backends. You can plug in <strong>your own machine-learning potential</strong> &mdash; trained in your group, exported as a TorchScript <code>.pt</code>/<code>.jpt</code> or an ordinary PyTorch <code>.pt</code>/<code>.model</code> checkpoint &mdash; <strong>without editing MAPLE's source code</strong>. A custom backend is just a small Python class that exposes a few methods; once registered, it works with every task (single point, optimization, frequency, TS search, IRC, scan, MD).</p>
 
         <div class="admonition note">
           <p class="admonition-title">Before you start</p>
@@ -144,7 +153,9 @@
         </div>
 
         <h2 id="how-it-works">How it works</h2>
-        <p>Two header keys do all the wiring:</p>
+        <p>If you already have a FeNNix <code>.fnx</code> file, use the <a href="../setup/model_fennol.html">FeNNol model page</a> instead of writing a Python plugin.</p>
+
+        <p>For Python plugin calculators, two header keys do all the wiring:</p>
         <ul>
           <li><code>module=</code> &mdash; the import path of your plugin file/package. MAPLE imports it, which runs the <code>@register_calculator</code> decorator and adds your model name to the registry.</li>
           <li><code>model_path=</code> &mdash; the checkpoint file MAPLE validates (it must exist) and hands to your class. <strong>Your code decides how to load it</strong> &mdash; this is where your <code>.pt</code> / <code>.jpt</code> / <code>.model</code> comes in.</li>

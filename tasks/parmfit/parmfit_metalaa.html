@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parmfit MetalAA - MAPLE</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
+
+  <style>
+    .parmfit-inputs {
+      margin: 1.5rem 0;
+    }
+
+    .parmfit-input-item {
+      border: 1px solid #e6e8ee;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+    }
+
+    .parmfit-input-item summary {
+      position: relative;
+      list-style: none;
+      cursor: pointer;
+      padding: 1.25rem 3.75rem 1.25rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      user-select: none;
+    }
+
+    .parmfit-input-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .parmfit-input-item summary::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 1.4rem;
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid #7b8190;
+      border-bottom: 2px solid #7b8190;
+      transform: translateY(-65%) rotate(45deg);
+      transition: transform 0.2s ease;
+    }
+
+    .parmfit-input-item[open] summary::after {
+      transform: translateY(-35%) rotate(-135deg);
+    }
+
+    .parmfit-input-body {
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-top: 1px solid #eef1f5;
+    }
+
+    .parmfit-input-body pre {
+      margin: 0;
+    }
+
+    @media (max-width: 52em) {
+      .parmfit-input-item summary {
+        padding-left: 1rem;
+        padding-right: 3.25rem;
+      }
+
+      .parmfit-input-body {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-nav">
+    <div class="container">
+      <div class="brand">
+        <a href="../../index.html"><img src="../../assets/images/logo.jpg" alt="MAPLE Logo"></a>
+        <a href="../../index.html">MAPLE</a>
+      </div>
+      <button class="mobile-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../general.html">About</a></li>
+          <li><a href="../../tutorials/installation.html">Documentation</a></li>
+          <li><a href="../../articles.html">Articles &amp; News</a></li>
+          <li><a href="../../downloads.html">Downloads</a></li>
+          <li><a href="../../development.html">Development</a></li>
+          <li><a href="../../issues.html">Report Issue</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-brand">
+          <img src="../../assets/images/logo.jpg" alt="MAPLE">
+          <span>MAPLE Docs</span>
+        </div>
+        <div class="sidebar-tree">
+          <ul>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Getting Started</span>
+              <ul class="children">
+                <li><a href="../../tutorials/installation.html">Installation</a></li>
+                <li><a href="../../tutorials/quickstart.html">Quick Start</a></li>
+                <li><a href="../../tutorials/input_output.html">Input &amp; Output</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Input Setup</span>
+              <ul class="children">
+                <li><a href="../../setup/settings.html">Settings</a></li>
+                <li><a href="../../setup/coordinates.html">Coordinates</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> ML Models</span>
+              <ul class="children">
+                <li><a href="../../setup/models.html">Overview</a></li>
+                <li><a href="../../setup/model_uma.html">UMA</a></li>
+                <li><a href="../../setup/model_ani.html">ANI</a></li>
+                <li><a href="../../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../../setup/model_fennol.html">FeNNol</a></li>
+                <li><a href="../../setup/model_mace.html">MACE</a></li>
+                <li><a href="../../setup/model_custom.html">Custom Model</a></li>
+              </ul>
+            </li>
+            <li class="open">
+              <span class="tree-section"><span class="chevron"></span> Tasks</span>
+              <ul class="children">
+                <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
+                <li><a href="../../tasks/frequency.html">Frequency</a></li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../opt/optimization.html">Optimization</a></span>
+                  <ul class="children">
+                    <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../opt/opt_rfo.html">RFO</a></li>
+                    <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../ts/ts.html">Transition State</a></span>
+                  <ul class="children">
+                    <li><a href="../ts/ts_prfo.html">P-RFO</a></li>
+                    <li><a href="../ts/ts_neb.html">NEB</a></li>
+                    <li><a href="../ts/ts_dimmer.html">Dimer</a></li>
+                    <li><a href="../ts/ts_string.html">String/GSM</a></li>
+                    <li><a href="../ts/ts_dmf.html">DMF</a></li>
+                    <li><a href="../ts/ts_autoneb.html">AutoNEB</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
+                  <ul class="children">
+                    <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../scan/scan_sd.html">SD</a></li>
+                    <li><a href="../scan/scan_cg.html">CG</a></li>
+                    <li><a href="../scan/scan_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../irc/irc.html">IRC</a></span>
+                  <ul class="children">
+                    <li><a href="../irc/irc_gs.html">GS</a></li>
+                    <li><a href="../irc/irc_lqa.html">LQA</a></li>
+                    <li><a href="../irc/irc_hpc.html">HPC</a></li>
+                    <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li class="open">
+                  <span class="tree-label"><span class="chevron"></span> <a href="parmfit.html" class="active">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="parmfit.html">Overview</a></li>
+                    <li><a href="parmfit_correction.html">Correction</a></li>
+                    <li><a href="parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="parmfit_metalaa.html" class="active">MetalAA</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Functions</span>
+              <ul class="children">
+                <li><a href="../../functions/solvent.html">Solvation</a></li>
+                <li><a href="../../functions/constrain.html">Constraints</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <nav class="breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="separator">/</span>
+        <a href="../../tasks/singlepoint.html">Tasks</a>
+        <span class="separator">/</span>
+        <a href="parmfit.html">Parmfit</a>
+        <span class="separator">/</span>
+        <span class="current">MetalAA</span>
+      </nav>
+
+      <article>
+        <h1>Parmfit MetalAA</h1>
+
+        <h2 id="overview">Overview</h2>
+        <p>MetalAA is the <code>parmfit(method=abinitio)</code> route for a PDB target classified as an ion. It locates the target ion and identifies its coordination environment: donor atoms are detected among <strong>N, O, S, P, Se, F, Cl, Br, I</strong> within <code>donor_cutoff</code> (default 2.7&nbsp;Å). The target ion together with donor residues and any <code>add_resid</code> entries form the <strong>core</strong>. Explicit metal-donor SERIAL pairs can be provided via <code>set_bonded</code> to override automatic recognition.</p>
+        <p>MetalAA then constructs two models. A <strong>large model</strong> (core + environment residues within <code>cluster_cutoff</code> + span closure) is built for MLIP optimization, RESP charge fitting, and Hessian-based bonded parameterization. Broken peptide boundaries are sealed with <strong>ACE/NME caps</strong>, and sequence gaps are replaced with <strong>Gly bridges</strong> to maintain backbone connectivity. A <strong>site model</strong> (target metal + final core residues only) is the deployable output; RESP charges from the large model are projected onto the site model by original PDB atom serial. In the deployable site model, residue names are shortened to export codes (e.g. <code>CYM</code> becomes <code>CM1</code>, <code>HIS</code> becomes <code>HS1</code>) and atom types are renamed locally: the metal receives <code>M1</code>/<code>M2</code>/..., each direct donor atom receives <code>Y1</code>/<code>Y2</code>/..., while other atoms retain their original forcefield types.</p>
+
+        <div class="admonition tip">
+          <p class="admonition-title">Initial Prepare</p>
+          <p>The input PDB should carry reasonable protonation states and residue naming. Incorrect assignments will propagate into the large-model charge inference.</p>
+        </div>
+
+        <div class="admonition important">
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Important
+          </div>
+          <div class="admonition-body">
+            <p>Use <code>method=abinitio</code>, not a separate MetalAA method keyword. MAPLE enters this route only when the selected <code>target</code> is recognized as an ion residue in the PDB.</p>
+          </div>
+        </div>
+
+        <div class="admonition note">
+          <p class="admonition-title">Charge convention (cmo)</p>
+          <p>The charge in <code>cmo</code> refers to the <strong>metal ion plus any non-protein ligands or cofactors</strong>&mdash;it is not the total system charge. Standard protein residues carry pre-set formal charges that MAPLE automatically adds when inferring the large-model charge:</p>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Residue</th><th>ASP</th><th>GLU</th><th>LYS</th><th>ARG</th><th>HIP</th><th>CYM</th></tr></thead>
+              <tbody><tr><td>Formal charge</td><td>-1</td><td>-1</td><td>+1</td><td>+1</td><td>+1</td><td>-1</td></tr></tbody>
+            </table>
+          </div>
+          <p>The large-model charge is <code>Q_large = cmo_charge + &Sigma; formal_charge(protein residues)</code>. The optional third <code>cmo</code> value (<code>oxy</code>) controls the metal formal charge identity (e.g. Fe<sup>2+</sup> vs Fe<sup>3+</sup>) but does not participate in the total charge.</p>
+          <p>Correct protein preprocessing is essential: a deprotonated cysteine must be named <strong>CYM</strong> (charge -1), not CYS (neutral), or the inferred large-model charge will be wrong.</p>
+        </div>
+
+        <h2 id="workflow">Workflow</h2>
+        <ol>
+          <li><strong>Metal-site recognition.</strong> Locate the target ion, donor atoms, core residues, and optional user-added residues.</li>
+          <li><strong>Large model.</strong> Build and optimize a large metal-site model for RESP, Hessian, and parameter fitting.</li>
+          <li><strong>RESP charges.</strong> Run Gaussian ESP and RESP, then project charges from the large model to the deployable site model.</li>
+          <li><strong>Bonded fitting.</strong> Use Seminario or modified Seminario to fit metal-related bond and angle terms.</li>
+          <li><strong>Deployment files.</strong> Write site mol2, final metal frcmod, tleap PDB/input, and dry/solvated tleap outputs.</li>
+        </ol>
+
+        <h2 id="parameters">Core Parameters</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>target</code></td><td>Required</td><td>PDB ion residue selector for the metal center.</td></tr>
+              <tr><td><code>cmo</code></td><td><code>0 1</code></td><td><code>&lt;charge&gt; &lt;multiplicity&gt; [oxidation]</code>. Oxidation is optional and used for metal identity/formal charge handling.</td></tr>
+              <tr><td><code>cfmol2</code></td><td>None</td><td>One or more cofactor/ligand mol2 templates for nonprotein residues near the metal site.</td></tr>
+              <tr><td><code>add_resid</code></td><td>None</td><td>Additional residues to force into the metal-site core.</td></tr>
+              <tr><td><code>set_bonded</code></td><td>Auto</td><td>Explicit metal-donor serial pairs, written as <code>SERIAL-SERIAL</code> tokens.</td></tr>
+              <tr><td><code>cluster_cutoff</code></td><td><code>3.0</code></td><td>Cutoff in Angstrom for collecting large-model environment residues.</td></tr>
+              <tr><td><code>donor_cutoff</code></td><td><code>2.7</code></td><td>Cutoff in Angstrom for automatic metal-donor detection.</td></tr>
+              <tr><td><code>chgmod</code></td><td><code>1</code></td><td>RESP fixed-charge policy for standard backbone atoms.</td></tr>
+              <tr><td><code>fixchg_resids</code></td><td>None</td><td>Residues whose charges should be fixed to standard Amber references during RESP.</td></tr>
+              <tr><td><code>iqm</code></td><td><code>false</code></td><td>QM reference for geometry optimization and Hessian work. See the <a href="parmfit.html#iqm">main Parmfit page</a> for details.</td></tr>
+              <tr><td><code>chg_level</code></td><td><code>PBE1PBE/def2SVP</code></td><td>Gaussian level for RESP ESP generation. Always active regardless of <code>iqm</code>.</td></tr>
+              <tr><td><code>prom</code>, <code>watm</code>, <code>ionm</code></td><td><code>ff14SB</code>, <code>tip3p</code>, <code>12_6</code></td><td>Protein, water, and ion parameter models for tleap deployment.</td></tr>
+              <tr><td><code>bonded</code></td><td><code>mseminario</code></td><td>Metal-related bond/angle fitting: <code>mseminario</code> or <code>seminario</code>.</td></tr>
+              <tr><td><code>vib_scale</code></td><td><code>1.0</code></td><td>Force constant scaling factor for Seminario/mSeminario Hessian-based fitting</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>For <code>qm_engine</code>, <code>opt_level</code>, QM job resources, and MLIP optimization controls, see the <a href="parmfit.html#general-settings">General Settings</a> and <a href="parmfit.html#iqm">QM Reference</a> sections of the main Parmfit page.</p>
+
+        <h2 id="chgmod">RESP Fixed Charges (chgmod)</h2>
+
+        <p>The <code>chgmod</code> parameter controls which standard backbone atoms are fixed to their Amber reference charges during RESP fitting. Higher values include more atoms in the fixed set:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th><code>chgmod</code></th><th>Fixed atoms</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>(none)</td><td>No automatic backbone fixing; user controls charges through <code>fixchg_resids</code></td></tr>
+              <tr><td>1</td><td>N, CA, C, O, OXT</td><td>Fix backbone heavy atoms to Amber reference charges</td></tr>
+              <tr><td>2</td><td>N, H, HA, CA, C, O, OXT</td><td>Add amide H and alpha H</td></tr>
+              <tr><td>3</td><td>N, H, HA, CA, CB, C, O, OXT</td><td>Add CB (sidechain anchor)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Use <code>fixchg_resids</code> to lock entire residues to standard Amber reference charges regardless of the <code>chgmod</code> policy. Specifying a non-standard residue that lacks a reference charge entry will cause a startup error.</p>
+
+        <h2 id="parmfit-input">Full Parmfit Input</h2>
+        <p>Checked-in Parmfit config: <code>examples/parmfit/MetalAA.parmfit</code>. Use it from a MAPLE input with <code>#parmfit(method=abinitio,input=MetalAA.parmfit)</code>.</p>
+        <div class="parmfit-inputs">
+          <details class="parmfit-input-item">
+            <summary>MetalAA.parmfit</summary>
+            <div class="parmfit-input-body">
+              <pre><code>method=abinitio
+target=A462
+cmo=-1 6 3
+
+# QM reference
+iqm=false
+qm_engine=g16
+opt_level=PBE1PBE/def2SVP
+opt_route=Guess=Read
+sp_route=
+qm_mode=1
+qm_compare=false
+qm_nproc=8
+qm_mem=24
+
+# RESP charges
+resp_backend=gaussian
+chg_level=PBE1PBE/def2SVP
+chg_route=Guess=Read
+chgmod=1
+fixchg_resids=
+
+# Force field, water, ion, and bonded fitting
+prom=ff14SB
+watm=tip3p
+ionm=12_6
+bonded=mseminario
+vib_scale=1.0
+
+# MLIP geometry optimization controls
+opt_max_iter=256
+opt_max_step=0.2
+
+# Custom cofactor mol2, config-relative path
+cfmol2=HEM_ff.mol2
+
+# MetalAA site selection
+add_resid=
+set_bonded=
+cluster_cutoff=3.0
+donor_cutoff=2.7</code></pre>
+            </div>
+          </details>
+        </div>
+
+        <h2 id="output-files">Output Files</h2>
+        <ul>
+          <li><code>&lt;base&gt;_metal_large_raw.pdb</code> and <code>&lt;base&gt;_metal_large_opt.pdb</code>: Large model before and after optimization.</li>
+          <li><code>&lt;base&gt;_metal_site_opt.pdb</code> and <code>&lt;base&gt;_metal_site.mol2</code>: Deployable metal-site model.</li>
+          <li><code>&lt;base&gt;_metal.frcmod</code>: Final metal/cofactor frcmod file.</li>
+          <li><code>&lt;base&gt;_metal_tleap.pdb</code>, <code>&lt;base&gt;_metal_tleap.in</code>, and <code>&lt;base&gt;_metal_tleap.out</code>: tleap deployment and validation files.</li>
+          <li><code>&lt;base&gt;_metal_tleap_dry.*</code> and <code>&lt;base&gt;_metal_tleap_solvated.*</code>: dry and solvated topology/coordinate outputs.</li>
+          <li><code>&lt;base&gt;_work/metalaa/</code>: Gaussian ESP, RESP, and intermediate charge-fitting files.</li>
+        </ul>
+
+        <h2 id="requirements">Requirements and Limits</h2>
+        <ul>
+          <li>Current MetalAA is intended for a single metal center. Another ion inside the donor cutoff is treated as an unsupported case.</li>
+          <li>Ligand or cofactor residues without reliable atom types should be supplied through <code>cfmol2</code>.</li>
+          <li>When automatic donor detection is not sufficient, use <code>set_bonded</code> to provide explicit metal-donor serial pairs.</li>
+        </ul>
+
+        <nav class="page-nav">
+          <a href="parmfit_ncaa.html">&larr; Previous: NCAA</a>
+          <a class="next" href="../../functions/solvent.html">Next: Solvation &rarr;</a>
+        </nav>
+      </article>
+    </main>
+
+    <aside class="toc"><div class="toc-sticky"><h3>On this page</h3><ul></ul></div></aside>
+  </div>
+  <div class="sidebar-overlay"></div>
+  <footer><p>&copy; 2026, MAPLE development team.</p></footer>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

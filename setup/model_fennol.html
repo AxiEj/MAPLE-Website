@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MACE &amp; EGRET - MAPLE Documentation</title>
+  <title>FeNNol - MAPLE Documentation</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
   <link rel="icon" href="../favicon.ico">
 </head>
@@ -63,8 +63,8 @@
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
-                <li><a href="../setup/model_fennol.html">FeNNol</a></li>
-                <li><a href="../setup/model_mace.html" class="active">MACE</a></li>
+                <li><a href="../setup/model_fennol.html" class="active">FeNNol</a></li>
+                <li><a href="../setup/model_mace.html">MACE</a></li>
                 <li><a href="../setup/model_custom.html">Custom Model</a></li>
               </ul>
             </li>
@@ -140,131 +140,148 @@
         <span class="separator">/</span>
         <a href="../setup/models.html">ML Models</a>
         <span class="separator">/</span>
-        <span class="current">MACE &amp; EGRET</span>
+        <span class="current">FeNNol</span>
       </nav>
       <article>
-        <h1>MACE &amp; EGRET Models</h1>
+        <h1>FeNNol Models</h1>
 
-        <p><strong>MACE</strong> (Multi-ACE) is a family of equivariant message-passing neural network potentials that achieves excellent accuracy through higher-order many-body interactions. <strong>EGRET</strong> is a related graph-based equivariant model with competitive accuracy for drug-like molecules. The MAPLE hand-wrapped MACE and EGRET backends are molecular no-PBC calculators.</p>
+        <p><strong>FeNNol</strong> (Force-field-enhanced Neural Networks optimized library) is MAPLE's framework for FENNIX-format <code>.fnx</code> machine-learning potential files. MAPLE ships the <strong>FeNNix-Bio1</strong> family of foundation models for condensed-phase biomolecular simulations, and also supports loading external <code>.fnx</code> models through <code>model_path</code>.</p>
 
-        <h2 id="mace-off23">MACE-OFF23 Family</h2>
+        <div class="admonition note">
+          <p class="admonition-title">Runtime note</p>
+          <p>FeNNol uses a JAX/Flax runtime for <code>.fnx</code> programs and does not use the PyTorch calculator runtime. GPU execution, when available, is controlled by the installed JAX runtime and its platform configuration.</p>
+        </div>
 
-        <p>The MACE-OFF23 models are trained on the SPICE dataset for organic molecules containing H, C, N, O, F, S, Cl. Three sizes are available with increasing accuracy and cost:</p>
+        <h2 id="fennix-bio1">FeNNix-Bio1 Family</h2>
+
+        <p>FeNNix-Bio1 is a family of scalable foundation models for reactive condensed-phase molecular dynamics, built on the FeNNol library within the Jax framework. Two sizes are available with different accuracy and throughput trade-offs:</p>
 
         <table>
           <thead>
             <tr>
               <th>Model</th>
               <th>Keyword</th>
-              <th>Parameters</th>
               <th>Best For</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>MACE-OFF23 (Small)</td>
-              <td><code>maceoff23s</code></td>
-              <td>~0.5M</td>
-              <td>Fast screening, large systems, speed-critical workflows</td>
+              <td>FeNNix-Bio1S</td>
+              <td><code>fennix-bio1s</code></td>
+              <td>Light-weight high-throughput model for rapid screening</td>
             </tr>
             <tr>
-              <td>MACE-OFF23 (Medium)</td>
-              <td><code>maceoff23m</code></td>
-              <td>~2M</td>
-              <td>Balanced speed/accuracy for production calculations</td>
-            </tr>
-            <tr>
-              <td>MACE-OFF23 (Large)</td>
-              <td><code>maceoff23l</code></td>
-              <td>~8M</td>
-              <td>Publication-quality results, final geometries</td>
+              <td>FeNNix-Bio1M</td>
+              <td><code>fennix-bio1m</code></td>
+              <td>Higher-accuracy model for production-quality condensed-phase simulations</td>
             </tr>
           </tbody>
         </table>
 
         <div class="admonition important">
           <p class="admonition-title">Important</p>
-          <p><code>maceoff23l</code> requires significantly more GPU memory than the smaller variants. If you encounter out-of-memory errors, switch to <code>maceoff23m</code> or <code>maceoff23s</code>, or use <code>#device=cpu</code>.</p>
+          <p>The medium variant (<code>fennix-bio1m</code>) requires more computational resources than the small variant. Start with <code>fennix-bio1s</code> for high-throughput screening and switch to <code>fennix-bio1m</code> for production-quality simulations.</p>
         </div>
 
-        <h2 id="mace-omol">MACE-OMol</h2>
+        <h2 id="external-fnx">External .fnx Models</h2>
 
-        <p>MACE-OMol extends element coverage beyond OFF23, supporting 17 elements including alkali and alkaline earth metals:</p>
+        <p>Use the generic <code>fennol</code> keyword to load an external <code>.fnx</code> model file. This works with any valid <code>.fnx</code> program.</p>
 
-        <p><strong>Elements:</strong> H, Li, B, C, N, O, F, Na, Mg, Si, P, S, Cl, K, Ca, Br, I</p>
+        <pre><code><span class="keyword">#model</span>=<span class="value">fennol</span>(<span class="param">model_path</span>=<span class="value">/path/to/model.fnx</span>)
+<span class="keyword">#sp</span>
 
-        <pre><code><span class="keyword">#model</span>=<span class="value">maceomol</span>
-<span class="keyword">#device</span>=<span class="value">gpu0</span>
+XYZ /path/to/structure.xyz</code></pre>
+
+        <p>The generic <code>fennol</code> keyword always requires <code>model_path</code>. The element coverage, cutoff, and energy terms are determined by the supplied <code>.fnx</code> program.</p>
+
+        <h2 id="model-files">Model Files</h2>
+        <p>The built-in FeNNix-Bio1 checkpoints are resolved from MAPLE's model directory:</p>
+        <ul>
+          <li><code>fennix-bio1s</code> &rarr; <code>fennix-bio1S-finetuneIons.fnx</code></li>
+          <li><code>fennix-bio1m</code> &rarr; <code>fennix-bio1M-finetuneIons.fnx</code></li>
+        </ul>
+        <p>The generic <code>fennol</code> keyword requires an explicit <code>model_path</code> pointing to a valid <code>.fnx</code> file.</p>
+
+        <h2 id="parameters">Model Options</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>model_path</code></td>
+              <td>built-in for <code>fennix-bio1s</code>/<code>fennix-bio1m</code></td>
+              <td>Path to an external <code>.fnx</code> file. Required for <code>#model=fennol</code>.</td>
+            </tr>
+            <tr>
+              <td><code>use_float64</code></td>
+              <td><code>false</code></td>
+              <td>Enable JAX float64 execution when tighter numerical precision is needed.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="charge-spin">Charge and Multiplicity</h2>
+
+        <p>Charge support in FeNNol depends on the loaded <code>.fnx</code> model architecture. The <strong>FeNNix-Bio1</strong> family supports total molecular charge from the coordinate block and passes it to the FENNIX charge model. External <code>.fnx</code> models may or may not support charge &mdash; consult the model's documentation.</p>
+
+        <p>The current MAPLE runtime has no spin/multiplicity input, so multiplicity must always be <code>1</code> regardless of the model.</p>
+
+        <pre><code><span class="keyword">#model</span>=<span class="value">fennix-bio1s</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
 
 0 1
-Li   0.000000    0.000000    0.000000
-F    1.570000    0.000000    0.000000</code></pre>
-
-        <h2 id="egret">EGRET</h2>
-
-        <p>EGRET is a graph-based equivariant model with competitive accuracy for drug-like molecules. It covers the same elements as MACE-OFF23 (H, C, N, O, F, S, Cl).</p>
-
-        <pre><code><span class="keyword">#model</span>=<span class="value">egret</span>
-<span class="keyword">#device</span>=<span class="value">gpu0</span>
-<span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
-
-XYZ /path/to/drug_molecule.xyz</code></pre>
-
-        <h2 id="model-files">Model Files</h2>
-        <p>MAPLE can auto-download <code>maceoff23m</code> and <code>egret</code> checkpoints from the MAPLE model repository. <code>maceoff23s</code>, <code>maceoff23l</code>, <code>maceomol</code>, and the MACE-Polar development backends require a local checkpoint in <code>maple/function/calculator/model/</code> or an explicit <code>model_path</code>.</p>
+C    0.000000    0.000000    0.000000
+O    1.230000    0.000000    0.000000
+H   -0.540000    0.940000    0.000000
+H   -0.540000   -0.940000    0.000000</code></pre>
 
         <h2 id="calculator-capabilities">Calculator Capabilities</h2>
         <ul>
-          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians (analytic or numerical) are not supported.</li>
-          <li><strong>Implicit solvent:</strong> MAPLE's experimental GB-polar/QEq correction is energy-only (<code>#sp</code> with <code>experimental=true</code>); solvent forces and Hessians are not supported.</li>
-          <li><strong>PBC and stress:</strong> the MAPLE MACE wrappers build no-PBC molecular graphs and do not provide validated stress or virial output.</li>
-          <li><strong>HVP:</strong> MACE and EGRET do not implement <code>get_hvp()</code>.</li>
-          <li><strong>MACE-Polar:</strong> development keywords <code>macepols</code>, <code>macepolm</code>, and <code>macepoll</code> support charge/multiplicity through <code>spin = mult - 1</code>, but remain no-PBC and local-checkpoint backends.</li>
+          <li><strong>Units:</strong> FeNNol models commonly report energies in eV internally; MAPLE converts final energies and forces to Hartree and Hartree per Angstrom.</li>
+          <li><strong>Hessian:</strong> analytic and numerical Hessians are available in gas phase. Implicit-solvent Hessians are not supported.</li>
+          <li><strong>HVP:</strong> FeNNol implements <code>get_hvp()</code> in gas phase, which can be used by HVP-enabled workflows.</li>
+          <li><strong>PBC:</strong> FeNNol is exposed as a no-PBC molecular calculator in MAPLE. Periodic atoms fail fast.</li>
+          <li><strong>Solvent / D4:</strong> MAPLE's experimental GB-polar/QEq correction is energy-only (<code>#sp</code> with <code>experimental=true</code>); D4 is not supported for FeNNol.</li>
         </ul>
 
         <h2 id="examples">Usage Examples</h2>
 
-        <h3>Quick screening with MACE-OFF23 Small</h3>
-        <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23s</span>
+        <h3>High-throughput screening with FeNNix-Bio1S</h3>
+        <pre><code><span class="keyword">#model</span>=<span class="value">fennix-bio1s</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">level</span>=<span class="value">loose</span>)
 
-XYZ /path/to/molecule.xyz</code></pre>
+XYZ /path/to/structure.xyz</code></pre>
 
-        <h3>Publication-quality optimization with MACE-OFF23 Large</h3>
-        <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23l</span>
+        <h3>Production-quality simulation with FeNNix-Bio1M</h3>
+        <pre><code><span class="keyword">#model</span>=<span class="value">fennix-bio1m</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">level</span>=<span class="value">tight</span>)
 
-XYZ /path/to/optimized_guess.xyz</code></pre>
+XYZ /path/to/structure.xyz</code></pre>
 
-        <h3>Frequency calculation</h3>
-        <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23m</span>
-<span class="keyword">#device</span>=<span class="value">gpu0</span>
-<span class="keyword">#freq</span>
+        <h3>Load an external .fnx model</h3>
+        <pre><code><span class="keyword">#model</span>=<span class="value">fennol</span>(<span class="param">model_path</span>=<span class="value">/path/to/custom_model.fnx</span>, <span class="param">use_float64</span>=<span class="value">true</span>)
+<span class="keyword">#sp</span>
 
-XYZ /path/to/optimized_geometry.xyz</code></pre>
-
-        <h3>CPU fallback for large systems</h3>
-        <pre><code><span class="keyword">#model</span>=<span class="value">maceoff23s</span>
-<span class="keyword">#device</span>=<span class="value">cpu</span>
-<span class="keyword">#opt</span>(<span class="param">level</span>=<span class="value">loose</span>)
-
-XYZ /path/to/large_system.xyz</code></pre>
+XYZ /path/to/structure.xyz</code></pre>
 
         <h2 id="limitations">Limitations</h2>
         <ul>
-          <li><strong>No charge/multiplicity support for MACE-OFF, MACE-OMol, or EGRET.</strong> Use AIMNet2, UMA <code>omol</code>, or a validated MACE-Polar checkpoint for charged/open-shell molecular inputs.</li>
-          <li><strong>No D4 dispersion.</strong> D4 correction is not available for MACE or EGRET models.</li>
-          <li><strong>No periodic systems.</strong> These wrappers do not support periodic boundary conditions; periodic atoms fail fast.</li>
-          <li><strong>Limited elements.</strong> MACE-OFF23 and EGRET cover 7 elements; MACE-OMol covers 17 elements. For broader coverage, use <code>uma</code>.</li>
+          <li><strong>No periodic systems.</strong> The FeNNol wrapper rejects PBC inputs.</li>
+          <li><strong>Singlet multiplicity only.</strong> Total charge may be supported depending on the model, but multiplicity must always be <code>1</code>.</li>
+          <li><strong>Runtime-specific GPU behavior.</strong> FeNNol GPU execution depends on the installed JAX build and platform configuration.</li>
+          <li><strong>External model coverage is model-defined.</strong> MAPLE can load a valid <code>.fnx</code> file, but the chemistry supported by that file is determined by its training and program contents.</li>
         </ul>
-
       </article>
       <nav class="page-nav">
-        <a class="prev" href="../setup/model_fennol.html">&larr; Previous: FeNNol</a>
-        <a class="next" href="../setup/model_custom.html">Next: Custom Model &rarr;</a>
+        <a class="prev" href="../setup/model_aimnet.html">&larr; Previous: AIMNet2</a>
+        <a class="next" href="../setup/model_mace.html">Next: MACE &rarr;</a>
       </nav>
     </main>
 
@@ -272,10 +289,11 @@ XYZ /path/to/large_system.xyz</code></pre>
       <div class="toc-sticky">
         <h3>On this page</h3>
         <ul>
-          <li><a href="#mace-off23">MACE-OFF23 Family</a></li>
-          <li><a href="#mace-omol">MACE-OMol</a></li>
-          <li><a href="#egret">EGRET</a></li>
+          <li><a href="#fennix-bio1">FeNNix-Bio1 Family</a></li>
+          <li><a href="#external-fnx">External .fnx Models</a></li>
           <li><a href="#model-files">Model Files</a></li>
+          <li><a href="#parameters">Model Options</a></li>
+          <li><a href="#charge-spin">Charge and Multiplicity</a></li>
           <li><a href="#calculator-capabilities">Calculator Capabilities</a></li>
           <li><a href="#examples">Usage Examples</a></li>
           <li><a href="#limitations">Limitations</a></li>

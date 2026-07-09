@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parmfit Correction - MAPLE</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
+
+  <style>
+    .parmfit-inputs {
+      margin: 1.5rem 0;
+    }
+
+    .parmfit-input-item {
+      border: 1px solid #e6e8ee;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+    }
+
+    .parmfit-input-item summary {
+      position: relative;
+      list-style: none;
+      cursor: pointer;
+      padding: 1.25rem 3.75rem 1.25rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      user-select: none;
+    }
+
+    .parmfit-input-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .parmfit-input-item summary::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 1.4rem;
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid #7b8190;
+      border-bottom: 2px solid #7b8190;
+      transform: translateY(-65%) rotate(45deg);
+      transition: transform 0.2s ease;
+    }
+
+    .parmfit-input-item[open] summary::after {
+      transform: translateY(-35%) rotate(-135deg);
+    }
+
+    .parmfit-input-body {
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-top: 1px solid #eef1f5;
+    }
+
+    .parmfit-input-body pre {
+      margin: 0;
+    }
+
+    @media (max-width: 52em) {
+      .parmfit-input-item summary {
+        padding-left: 1rem;
+        padding-right: 3.25rem;
+      }
+
+      .parmfit-input-body {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-nav">
+    <div class="container">
+      <div class="brand">
+        <a href="../../index.html"><img src="../../assets/images/logo.jpg" alt="MAPLE Logo"></a>
+        <a href="../../index.html">MAPLE</a>
+      </div>
+      <button class="mobile-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../general.html">About</a></li>
+          <li><a href="../../tutorials/installation.html">Documentation</a></li>
+          <li><a href="../../articles.html">Articles &amp; News</a></li>
+          <li><a href="../../downloads.html">Downloads</a></li>
+          <li><a href="../../development.html">Development</a></li>
+          <li><a href="../../issues.html">Report Issue</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-brand">
+          <img src="../../assets/images/logo.jpg" alt="MAPLE">
+          <span>MAPLE Docs</span>
+        </div>
+        <div class="sidebar-tree">
+          <ul>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Getting Started</span>
+              <ul class="children">
+                <li><a href="../../tutorials/installation.html">Installation</a></li>
+                <li><a href="../../tutorials/quickstart.html">Quick Start</a></li>
+                <li><a href="../../tutorials/input_output.html">Input &amp; Output</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Input Setup</span>
+              <ul class="children">
+                <li><a href="../../setup/settings.html">Settings</a></li>
+                <li><a href="../../setup/coordinates.html">Coordinates</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> ML Models</span>
+              <ul class="children">
+                <li><a href="../../setup/models.html">Overview</a></li>
+                <li><a href="../../setup/model_uma.html">UMA</a></li>
+                <li><a href="../../setup/model_ani.html">ANI</a></li>
+                <li><a href="../../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../../setup/model_fennol.html">FeNNol</a></li>
+                <li><a href="../../setup/model_mace.html">MACE</a></li>
+                <li><a href="../../setup/model_custom.html">Custom Model</a></li>
+              </ul>
+            </li>
+            <li class="open">
+              <span class="tree-section"><span class="chevron"></span> Tasks</span>
+              <ul class="children">
+                <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
+                <li><a href="../../tasks/frequency.html">Frequency</a></li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../opt/optimization.html">Optimization</a></span>
+                  <ul class="children">
+                    <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../opt/opt_rfo.html">RFO</a></li>
+                    <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../ts/ts.html">Transition State</a></span>
+                  <ul class="children">
+                    <li><a href="../ts/ts_prfo.html">P-RFO</a></li>
+                    <li><a href="../ts/ts_neb.html">NEB</a></li>
+                    <li><a href="../ts/ts_dimmer.html">Dimer</a></li>
+                    <li><a href="../ts/ts_string.html">String/GSM</a></li>
+                    <li><a href="../ts/ts_dmf.html">DMF</a></li>
+                    <li><a href="../ts/ts_autoneb.html">AutoNEB</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
+                  <ul class="children">
+                    <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../scan/scan_sd.html">SD</a></li>
+                    <li><a href="../scan/scan_cg.html">CG</a></li>
+                    <li><a href="../scan/scan_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../irc/irc.html">IRC</a></span>
+                  <ul class="children">
+                    <li><a href="../irc/irc_gs.html">GS</a></li>
+                    <li><a href="../irc/irc_lqa.html">LQA</a></li>
+                    <li><a href="../irc/irc_hpc.html">HPC</a></li>
+                    <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li class="open">
+                  <span class="tree-label"><span class="chevron"></span> <a href="parmfit.html" class="active">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="parmfit.html">Overview</a></li>
+                    <li><a href="parmfit_correction.html" class="active">Correction</a></li>
+                    <li><a href="parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="parmfit_metalaa.html">MetalAA</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Functions</span>
+              <ul class="children">
+                <li><a href="../../functions/solvent.html">Solvation</a></li>
+                <li><a href="../../functions/constrain.html">Constraints</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <nav class="breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="separator">/</span>
+        <a href="../../tasks/singlepoint.html">Tasks</a>
+        <span class="separator">/</span>
+        <a href="parmfit.html">Parmfit</a>
+        <span class="separator">/</span>
+        <span class="current">Correction</span>
+      </nav>
+
+      <article>
+        <h1>Parmfit Correction</h1>
+
+        <h2 id="overview">Overview</h2>
+        <p>Correction refines parameters for a molecule that already has a <code>mol2</code> topology. All atomic charges are taken directly from the user-provided <code>mol2</code>; no RESP fitting is performed. MAPLE starts from GAFF2 parameters, optimizes the structure with the selected calculator, updates bonded terms from a Cartesian Hessian, optionally refits proper torsions, and exports Amber and GROMACS files.</p>
+
+        <div class="admonition tip">
+          <p class="admonition-title">Initial Prepare</p>
+          <p>The input <code>mol2</code> must already carry GAFF2 atom types. Users should pre-generate it with a tool such as <code>antechamber -at gaff2 -fi &lt;fmt&gt; -fo mol2 -i &lt;input&gt; -o &lt;output&gt;</code> before running Correction.</p>
+        </div>
+
+        <h2 id="workflow">Workflow</h2>
+        <ol>
+          <li><strong>Initial parameters.</strong> Run <code>parmchk2 -s gaff2 -a Y</code> from the input <code>mol2</code> to build <code>*_original.frcmod</code>.</li>
+          <li><strong>Geometry and Hessian.</strong> Optimize the structure, then compute a Cartesian Hessian from MLIP or optional QM reference settings.</li>
+          <li><strong>Bonded correction.</strong> Use Seminario or modified Seminario to update bond and angle force constants/equilibria.</li>
+          <li><strong>TorsionFit.</strong> Scan selected proper torsions and fit the relative profile without changing nonbonded, improper, or topology terms.</li>
+          <li><strong>Export.</strong> Write refined Amber mol2/frcmod and GROMACS top/gro files.</li>
+        </ol>
+
+        <div class="admonition note">
+          <p class="admonition-title">When refinement is skipped</p>
+          <p>If <code>bonded=none</code> and <code>torsionfit=false</code>, MAPLE skips geometry optimization, Hessian evaluation, and all parameter refinement. The original <code>mol2</code> and parmchk2-generated frcmod are exported directly.</p>
+        </div>
+
+        <h2 id="parameters">Core Parameters</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>mol2</code></td><td>Required</td><td>Input topology and atom typing for <code>method=correction</code>.</td></tr>
+              <tr><td><code>bonded</code></td><td><code>mseminario</code></td><td>Bond/angle update method: <code>mseminario</code>, <code>seminario</code>, or <code>none</code>.</td></tr>
+              <tr><td><code>vib_scale</code></td><td><code>1.0</code></td><td>Force constant scaling factor for Seminario/mSeminario Hessian-based fitting</td></tr>
+              <tr><td><code>iqm</code></td><td><code>false</code></td><td>Use external QM reference optimization/Hessian and torsion references when enabled. See the <a href="parmfit.html#iqm">main Parmfit page</a> for details.</td></tr>
+              <tr><td><code>torsion_bonds</code></td><td>Auto</td><td>Optional explicit center bonds. Otherwise MAPLE selects rotatable single bonds from the mol2 topology.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>For TorsionFit parameters, QM job resources, MLIP optimization controls, and levels of theory, see the <a href="parmfit.html#torsionfit">TorsionFit</a>, <a href="parmfit.html#general-settings">General Settings</a>, and <a href="parmfit.html#iqm">QM Reference</a> sections of the main Parmfit page.</p>
+
+        <div class="admonition tip">
+          <p class="admonition-title">Preserving original GAFF2 parameters</p>
+          <p>Modifications to BOND, ANGLE, and DIHE terms are not mandatory. Setting <code>bonded=none</code> or <code>torsionfit=false</code> preserves the original GAFF2 parameters. Once any modification is enabled, atom types are automatically reassigned (MAPLE Z0/Z1, etc.).</p>
+        </div>
+
+        <h2 id="torsionfit">TorsionFit</h2>
+
+        <p>Correction auto-selects center bonds from the mol2 topology: proper-torsion central bonds that are single bonds and not in a ring. Use <code>torsion_bonds</code> to provide explicit overrides (e.g. <code>6-8 12-14</code>). See the <a href="parmfit.html#torsionfit">main Parmfit page</a> for the two-stage fitting architecture and parameter details.</p>
+
+        <h2 id="parmfit-input">Full Parmfit Input</h2>
+        <p>Checked-in Parmfit config: <code>examples/parmfit/Correction.parmfit</code>. Use it from a MAPLE input with <code>#parmfit(method=correction,input=Correction.parmfit)</code>.</p>
+        <div class="parmfit-inputs">
+          <details class="parmfit-input-item">
+            <summary>Correction.parmfit</summary>
+            <div class="parmfit-input-body">
+              <pre><code>method=correction
+mol2=toluene_ff.mol2
+
+# QM reference for correction and TorsionFit
+iqm=false
+qm_engine=g16
+opt_level=B3LYP/def2-SVP
+sp_level=B3LYP/def2-SVP
+opt_route=
+sp_route=
+qm_mode=1
+qm_compare=false
+qm_nproc=8
+qm_mem=24
+
+# Bond/angle correction
+bonded=mseminario
+vib_scale=1.0
+
+# Geometry optimization LBFGS
+memory=5
+curvature=70.0
+max_step=0.2
+max_iter=256
+write_traj=false
+traj_every=1
+verbose=1
+use_projection=false
+use_line_search=false
+bond_constraints=
+angle_constraints=
+torsion_constraints=
+
+# TorsionFit
+torsionfit=true
+torsion_bonds=
+torsion_steps=36
+backend=cgbs
+constraint_mode=projected
+stage1_weights=true
+torsion_refine_rounds=2
+torsion_refine_max_iter=10
+torsion_refine_tol=1.0e-6
+torsion_ensemble=false
+torsion_ensemble_ratio=0.3
+torsion_ensemble_weight=0.5
+report_debug=false</code></pre>
+            </div>
+          </details>
+        </div>
+
+        <h2 id="output-files">Output Files</h2>
+        <ul>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_original.frcmod</code>: Initial AmberTools/GAFF2 frcmod from <code>parmchk2</code>.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_maple.mol2</code>: Refined mol2 with MAPLE atom type naming.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_maple.frcmod</code>: Refined Amber parameter file.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_maple.top</code> and <code>&lt;base&gt;_work/&lt;base&gt;_maple.gro</code>: GROMACS export for inspection and deployment.</li>
+          <li><code>&lt;base&gt;_work/torsionfit/</code>: Torsion scan outputs and fit diagnostics.</li>
+        </ul>
+
+        <h2 id="requirements">Requirements and Limits</h2>
+        <ul>
+          <li>mSeminario and Seminario update BOND and ANGLE terms only.</li>
+          <li>TorsionFit changes selected proper torsions only; it does not rewrite topology, nonbonded terms, or impropers.</li>
+          <li>Automatic center-bond selection follows the input mol2 bond typing. Fix incorrect aromatic, amide, or double-bond labels in the mol2 before fitting.</li>
+        </ul>
+
+        <nav class="page-nav">
+          <a href="parmfit.html">&larr; Previous: Parmfit</a>
+          <a class="next" href="parmfit_ncaa.html">Next: NCAA &rarr;</a>
+        </nav>
+      </article>
+    </main>
+
+    <aside class="toc"><div class="toc-sticky"><h3>On this page</h3><ul></ul></div></aside>
+  </div>
+  <div class="sidebar-overlay"></div>
+  <footer><p>&copy; 2026, MAPLE development team.</p></footer>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

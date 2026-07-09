@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct MaxFlux (DMF) - MAPLE</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
+</head>
+<body>
+  <header class="top-nav">
+    <div class="container">
+      <div class="brand">
+        <a href="../../index.html"><img src="../../assets/images/logo.jpg" alt="MAPLE Logo"></a>
+        <a href="../../index.html">MAPLE</a>
+      </div>
+      <button class="mobile-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../general.html">About</a></li>
+          <li><a href="../../tutorials/installation.html">Documentation</a></li>
+          <li><a href="../../articles.html">Articles &amp; News</a></li>
+          <li><a href="../../downloads.html">Downloads</a></li>
+          <li><a href="../../development.html">Development</a></li>
+          <li><a href="../../issues.html">Report Issue</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-brand">
+          <img src="../../assets/images/logo.jpg" alt="MAPLE">
+          <span>MAPLE Docs</span>
+        </div>
+        <div class="sidebar-tree">
+          <ul>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Getting Started</span>
+              <ul class="children">
+                <li><a href="../../tutorials/installation.html">Installation</a></li>
+                <li><a href="../../tutorials/quickstart.html">Quick Start</a></li>
+                <li><a href="../../tutorials/input_output.html">Input &amp; Output</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Input Setup</span>
+              <ul class="children">
+                <li><a href="../../setup/settings.html">Settings</a></li>
+                <li><a href="../../setup/coordinates.html">Coordinates</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> ML Models</span>
+              <ul class="children">
+                <li><a href="../../setup/models.html">Overview</a></li>
+                <li><a href="../../setup/model_uma.html">UMA</a></li>
+                <li><a href="../../setup/model_ani.html">ANI</a></li>
+                <li><a href="../../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../../setup/model_fennol.html">FeNNol</a></li>
+                <li><a href="../../setup/model_mace.html">MACE</a></li>
+                <li><a href="../../setup/model_custom.html">Custom Model</a></li>
+              </ul>
+            </li>
+            <li class="open">
+              <span class="tree-section"><span class="chevron"></span> Tasks</span>
+              <ul class="children">
+                <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
+                <li><a href="../../tasks/frequency.html">Frequency</a></li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../opt/optimization.html">Optimization</a></span>
+                  <ul class="children">
+                    <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../opt/opt_rfo.html">RFO</a></li>
+                    <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li class="open">
+                  <span class="tree-label"><span class="chevron"></span> <a href="ts.html">Transition State</a></span>
+                  <ul class="children">
+                    <li><a href="ts_prfo.html">P-RFO</a></li>
+                    <li><a href="ts_neb.html">NEB</a></li>
+                    <li><a href="ts_dimmer.html">Dimer</a></li>
+                    <li><a href="ts_string.html">String/GSM</a></li>
+                    <li><a href="ts_dmf.html" class="active">DMF</a></li>
+                    <li><a href="ts_autoneb.html">AutoNEB</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
+                  <ul class="children">
+                    <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../scan/scan_sd.html">SD</a></li>
+                    <li><a href="../scan/scan_cg.html">CG</a></li>
+                    <li><a href="../scan/scan_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../irc/irc.html">IRC</a></span>
+                  <ul class="children">
+                    <li><a href="../irc/irc_gs.html">GS</a></li>
+                    <li><a href="../irc/irc_lqa.html">LQA</a></li>
+                    <li><a href="../irc/irc_hpc.html">HPC</a></li>
+                    <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../parmfit/parmfit.html">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="../parmfit/parmfit_correction.html">Correction</a></li>
+                    <li><a href="../parmfit/parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="../parmfit/parmfit_metalaa.html">MetalAA</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Functions</span>
+              <ul class="children">
+                <li><a href="../../functions/solvent.html">Solvation</a></li>
+                <li><a href="../../functions/constrain.html">Constraints</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <nav class="breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="separator">/</span>
+        <a href="../../tasks/singlepoint.html">Tasks</a>
+        <span class="separator">/</span>
+        <a href="ts.html">Transition State</a>
+        <span class="separator">/</span>
+        <span class="current">DMF</span>
+      </nav>
+
+      <article>
+        <h1>Direct MaxFlux (DMF)</h1>
+
+        <h2 id="overview">Overview</h2>
+        <p>Direct MaxFlux (DMF) is a double-ended transition-state search method for reactions with known reactant and product structures. It is based on the variational MaxFlux formulation of Koda and Saito, where the reaction path is optimized by minimizing a finite-temperature line integral of <code>exp(beta E)</code>. In the large-<code>beta</code> limit this objective approaches a smooth minimax search for the lowest possible path maximum, so the optimized path approaches the MEP and its highest-energy point approaches the TS.</p>
+        <p>MAPLE represents the DMF path as a B-spline curve, builds an initial path with FB-ENM by default, evaluates energies and forces through the selected MAPLE calculator, and can optionally hand the <code>t_max</code> structure to P-RFO or Dimer refinement.</p>
+        <div class="admonition note">
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Note
+          </div>
+          <div class="admonition-body">
+            <p>DMF depends on <code>cyipopt</code> for nonlinear constrained optimization. Install it before running <code>#ts(method=dmf)</code>, for example with <code>conda install -c conda-forge cyipopt</code>.</p>
+          </div>
+        </div>
+
+        <h2 id="how-it-works">How It Works</h2>
+        <ol>
+          <li><strong>Endpoint preparation.</strong> DMF starts from reactant and product structures, and can also accept an explicit multi-frame path.</li>
+          <li><strong>Initial path generation.</strong> If <code>coefs</code> is not provided, <code>init_path=fbenm</code> builds FB-ENM/CFB-ENM B-spline control points. Use <code>init_path=linear</code> for a lighter linear B-spline initialization.</li>
+          <li><strong>MaxFlux path optimization.</strong> IPOPT optimizes the B-spline path variables subject to endpoint constraints. The objective favors high reactive flux across the barrier region rather than spring-balanced image spacing.</li>
+          <li><strong>TS guess selection.</strong> MAPLE evaluates the optimized path and writes the highest-energy point as <code>t_max</code>.</li>
+          <li><strong>Optional refinement.</strong> With <code>refine=prfo</code> or <code>refine=dimer</code>, MAPLE starts the chosen single-ended TS optimizer from the DMF <code>t_max</code> structure.</li>
+        </ol>
+
+        <h2 id="parameters">Parameters</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>backend</code></td>
+                <td>str</td>
+                <td><code>numpy</code></td>
+                <td>Tensor backend for DMF path algebra: <code>numpy</code> or <code>torch</code>. The torch backend inherits the calculator device when available.</td>
+              </tr>
+              <tr>
+                <td><code>beta</code></td>
+                <td>float</td>
+                <td>10.0</td>
+                <td>Reciprocal temperature used by the MaxFlux objective, in <code>1/eV</code>.</td>
+              </tr>
+              <tr>
+                <td><code>nmove</code></td>
+                <td>int</td>
+                <td>10</td>
+                <td>Number of movable energy-evaluation points along the B-spline path.</td>
+              </tr>
+              <tr>
+                <td><code>nsegs</code></td>
+                <td>int</td>
+                <td>6</td>
+                <td>Number of B-spline path segments. Increase together with <code>nmove</code> when the reaction path needs more flexibility.</td>
+              </tr>
+              <tr>
+                <td><code>dspl</code></td>
+                <td>int</td>
+                <td>3</td>
+                <td>B-spline polynomial degree.</td>
+              </tr>
+              <tr>
+                <td><code>update_teval</code></td>
+                <td>bool</td>
+                <td>False</td>
+                <td>Adaptively update evaluation points toward the barrier. Keep false for more uniform output spacing.</td>
+              </tr>
+              <tr>
+                <td><code>coefs</code></td>
+                <td>object</td>
+                <td>None</td>
+                <td>Explicit initial B-spline control points, or a <code>.npy</code> file containing them. When set, DMF skips FB-ENM and linear path generation.</td>
+              </tr>
+              <tr>
+                <td><code>t_eval</code></td>
+                <td>object</td>
+                <td>None</td>
+                <td>Energy-evaluation grid as a sequence, CSV string, <code>.npy</code>, or <code>.txt</code> file. Custom grids must include 0 and 1.</td>
+              </tr>
+              <tr>
+                <td><code>w_eval</code></td>
+                <td>object</td>
+                <td>None</td>
+                <td>Quadrature weights matching <code>t_eval</code>. Custom weights require <code>update_teval=false</code>.</td>
+              </tr>
+              <tr>
+                <td><code>init_path</code></td>
+                <td>str</td>
+                <td><code>fbenm</code></td>
+                <td>Initial path builder: <code>fbenm</code> or <code>linear</code>.</td>
+              </tr>
+              <tr>
+                <td><code>fbenm_correlated</code></td>
+                <td>bool</td>
+                <td>True</td>
+                <td>Use correlated FB-ENM geometry processing when generating the initial path.</td>
+              </tr>
+              <tr>
+                <td><code>mass_weighted</code></td>
+                <td>bool</td>
+                <td>False</td>
+                <td>Use a mass-weighted velocity norm in the path objective.</td>
+              </tr>
+              <tr>
+                <td><code>remove_rotation_and_translation</code></td>
+                <td>bool</td>
+                <td>True</td>
+                <td>Project global translation and rotation out of the path velocity norm.</td>
+              </tr>
+              <tr>
+                <td><code>tol</code></td>
+                <td>str or float</td>
+                <td><code>tight</code></td>
+                <td>IPOPT convergence preset: <code>tight</code>, <code>middle</code>, <code>loose</code>, or an explicit numeric tolerance.</td>
+              </tr>
+              <tr>
+                <td><code>max_iter</code></td>
+                <td>int</td>
+                <td>200</td>
+                <td>Maximum IPOPT iterations for the Direct MaxFlux optimization.</td>
+              </tr>
+              <tr>
+                <td><code>ipopt_out</code></td>
+                <td>bool</td>
+                <td>False</td>
+                <td>Write native IPOPT output files for the FB-ENM and final DMF nonlinear optimizations.</td>
+              </tr>
+              <tr>
+                <td><code>refine</code></td>
+                <td>str</td>
+                <td>None</td>
+                <td>Optional local TS refinement from <code>t_max</code>: <code>prfo</code> or <code>dimer</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="input-example">Input Example</h2>
+        <p>Checked-in MAPLE example: <code>examples/ts/dmf/inp3.inp</code>. The portable form below is for an input file saved in <code>examples/ts/dmf</code>; if you save it elsewhere, adjust the <code>XYZ</code> paths because relative paths are resolved from the input file location.</p>
+        <pre><code>#model=fennix-bio1m
+#ts(method=dmf,refine=prfo)
+#device=gpu0
+
+XYZ react.xyz
+XYZ prod.xyz</code></pre>
+        <p>For larger systems, the tensor backend can be switched while keeping the calculator/device selection in the usual MAPLE input layer:</p>
+        <pre><code>#ts(method=dmf,backend=torch,refine=prfo,nmove=14,nsegs=8)</code></pre>
+
+        <h2 id="output-files">Output Files</h2>
+        <ul>
+          <li><code>*_dmf_mep.xyz</code> or <code>*_dmf_mep.pdb</code>: Optimized DMF path written as the MEP/MaxFlux path estimate.</li>
+          <li><code>*_dmf_tmax.xyz</code> or <code>*_dmf_tmax.pdb</code>: Highest-energy point on the optimized DMF path, used as the TS guess.</li>
+          <li><code>*_dmf_tmax_traj.xyz</code> or <code>*_dmf_tmax_traj.pdb</code>: History of the <code>t_max</code> structure during DMF optimization.</li>
+          <li><code>*_dmf_refine_prfo_ts.xyz</code> and <code>*_dmf_refine_prfo_traj.xyz</code>: P-RFO refinement outputs when <code>refine=prfo</code>.</li>
+          <li><code>*_dmf_refine_dimer_ts.xyz</code> and <code>*_dmf_refine_dimer_traj.xyz</code>: Dimer refinement outputs when <code>refine=dimer</code>.</li>
+          <li><code>*_dmf_ipopt.out</code> and <code>*_dmf_fbenm_ipopt.out</code>: Native IPOPT logs when <code>ipopt_out=true</code>.</li>
+        </ul>
+
+        <h2 id="refinement">Refinement</h2>
+        <p>DMF itself does not use Hessians. It produces a path-based <code>t_max</code> TS guess, then delegates optional local refinement to the requested single-ended TS method. Use <code>refine=prfo</code> when a local Hessian-based saddle optimizer is appropriate, or <code>refine=dimer</code> when you prefer minimum-mode following from the DMF guess.</p>
+
+        <h2 id="comparison-with-neb-and-string">Comparison with NEB and String/GSM</h2>
+        <p>NEB, String/GSM, and DMF are all double-ended path methods, but they pose the path problem differently. NEB and String/GSM are direct MEP construction methods based on projected forces or string reparameterization. DMF is a variational MaxFlux optimization: it minimizes a scalar path functional that becomes a smooth approximation to the path minimax problem as <code>beta</code> increases.</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Aspect</th>
+                <th>NEB</th>
+                <th>String/GSM</th>
+                <th>DMF</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Core formulation</td>
+                <td>Projected force balance on a chain of images with spring forces along the tangent.</td>
+                <td>String evolution with node redistribution or growth between fixed endpoints.</td>
+                <td>Variational minimization of a MaxFlux line integral, <code>log integral exp(beta E) ds</code>.</td>
+              </tr>
+              <tr>
+                <td>Path representation</td>
+                <td>Discrete images connected by springs.</td>
+                <td>Discrete string nodes grown or reparameterized along the path.</td>
+                <td>Continuous B-spline path with optimized control points and separate energy-evaluation points.</td>
+              </tr>
+              <tr>
+                <td>MEP and TS relation</td>
+                <td>Converges toward the MEP; the HEI or CI image gives the TS estimate.</td>
+                <td>Converges toward a reparameterized MEP; the HEI is used for String-TS finalization.</td>
+                <td>Approaches the MEP/TS in the <code>beta -> infinity</code> limit; finite <code>beta</code> gives a practical <code>t_max</code> TS guess.</td>
+              </tr>
+              <tr>
+                <td>Energy derivatives</td>
+                <td>Uses forces at images; CI-NEB still does not require Hessians.</td>
+                <td>Uses forces at string nodes and local relaxation steps.</td>
+                <td>The objective contains energies only; its analytic gradient uses forces, not Hessians.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="practical-guidance">Practical Guidance</h2>
+        <ul>
+          <li>Optimize reactant and product endpoints before running DMF, just as with NEB and String/GSM.</li>
+          <li>Increase <code>nmove</code> for more energy-evaluation points, and increase <code>nsegs</code> when the B-spline path itself needs more geometric flexibility.</li>
+          <li>Keep <code>update_teval=false</code> when you want the written path frames to remain visually smooth and evenly distributed.</li>
+          <li>Use <code>backend=torch</code> when the torch backend is available and path/geometry tensor operations dominate the overhead; energy and force calls still go through the selected MAPLE calculator.</li>
+          <li>Use <code>ipopt_out=true</code> only when you need native IPOPT diagnostics.</li>
+        </ul>
+
+        <nav class="page-nav">
+          <a href="ts_string.html">&larr; Previous: String/GSM</a>
+          <a class="next" href="ts_autoneb.html">Next: AutoNEB &rarr;</a>
+        </nav>
+      </article>
+    </main>
+
+    <aside class="toc"><div class="toc-sticky"><h3>On this page</h3><ul></ul></div></aside>
+  </div>
+  <div class="sidebar-overlay"></div>
+  <footer><p>&copy; 2026, MAPLE development team.</p></footer>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

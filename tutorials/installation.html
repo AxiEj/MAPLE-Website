@@ -63,6 +63,7 @@
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../setup/model_fennol.html">FeNNol</a></li>
                 <li><a href="../setup/model_mace.html">MACE</a></li>
                 <li><a href="../setup/model_custom.html">Custom Model</a></li>
               </ul>
@@ -108,13 +109,21 @@
                                         <li><a href="../tasks/irc/irc_gs.html">GS</a></li>
                                         <li><a href="../tasks/irc/irc_lqa.html">LQA</a></li>
                                         <li><a href="../tasks/irc/irc_hpc.html">HPC</a></li>
-                                        <li><a href="../tasks/irc/irc_eulerpc.html">EulerPC</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <span class="tree-section"><span class="chevron"></span> Functions</span>
+                    <li><a href="../tasks/irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/parmfit/parmfit.html">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/parmfit/parmfit_correction.html">Correction</a></li>
+                    <li><a href="../tasks/parmfit/parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="../tasks/parmfit/parmfit_metalaa.html">MetalAA</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Functions</span>
                             <ul class="children">
                                 <li><a href="../functions/solvent.html">Solvation</a></li>
                                 <li><a href="../functions/constrain.html">Constraints</a></li>
@@ -250,9 +259,17 @@ pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
 
                 <h3>ML Potentials</h3>
 
-                <p>ANI, AIMNet2, MACE, MACE-Polar, and UMA are torch-backed calculators, so install PyTorch separately for your hardware before using them. Install <code>fairchem-core</code> only when you need UMA or FAIR-Chem-backed/PBC workflows:</p>
+                <p>ANI, AIMNet2, MACE, MACE-Polar, and UMA use torch-backed runtimes, so install PyTorch separately for your hardware before using them. Install <code>fairchem-core</code> only when you need UMA or FAIR-Chem-backed/PBC workflows:</p>
 
                 <pre><code>pip install fairchem-core</code></pre>
+
+                <p>Install JAX/Flax only when you use FeNNol <code>.fnx</code> models:</p>
+
+                <pre><code># CPU
+pip install -U jax flax
+
+# NVIDIA GPU (CUDA 12)
+pip install -U "jax[cuda12]" flax</code></pre>
 
                 <p>Checkpoint and runtime boundaries:</p>
 
@@ -260,6 +277,7 @@ pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
                     <li><strong>Core install:</strong> <code>pip install -e .</code> installs MAPLE plus <code>ase</code>, <code>numpy</code>, and <code>scipy</code>; it does not select a PyTorch/CUDA stack for you.</li>
                     <li><strong>MAPLE-hosted checkpoints:</strong> ANI, AIMNet2, <code>maceoff23m</code>, and <code>egret</code> can be auto-downloaded from <a href="https://huggingface.co/Wayne7815/MAPLE_models" target="_blank">MAPLE_models</a>.</li>
                     <li><strong>Local checkpoints:</strong> backend-specific files such as <code>maceoff23s</code>, <code>maceoff23l</code>, <code>maceomol</code>, and MACE-Polar checkpoints must be placed in <code>maple/function/calculator/model/</code> or supplied through <code>model_path</code>.</li>
+                    <li><strong>FeNNol :</strong> built-in <code>fennix-bio1s</code> and <code>fennix-bio1m</code> resolve shipped <code>.fnx</code> files; generic <code>fennol</code> requires <code>model_path=/path/to/model.fnx</code>.</li>
                     <li><strong>UMA:</strong> UMA checkpoints resolve through <code>checkpoint_path</code>, a local <code>maple/function/calculator/model/uma-*.pt</code> file, or FAIR-Chem's official loading path.</li>
                 </ul>
 
