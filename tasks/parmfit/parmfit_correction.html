@@ -254,7 +254,7 @@
 
         <div class="admonition tip">
           <p class="admonition-title">Preserving original GAFF2 parameters</p>
-          <p>Modifications to BOND, ANGLE, and DIHE terms are not mandatory. Setting <code>bonded=none</code> or <code>torsionfit=false</code> preserves the original GAFF2 parameters. Once any modification is enabled, atom types are automatically reassigned (MAPLE Z0/Z1, etc.).</p>
+          <p>Bond/angle and torsion refinement are controlled separately. Setting <code>bonded=none</code> preserves the original BOND/ANGLE terms; setting <code>torsionfit=false</code> preserves the original DIHE terms. With both disabled, Correction exports the parmchk2/GAFF2 parameters without refinement. When either refinement is enabled, atom types are automatically reassigned (MAPLE Z0/Z1, etc.).</p>
         </div>
 
         <h2 id="torsionfit">TorsionFit</h2>
@@ -307,8 +307,8 @@ torsion_steps=36
 backend=cgbs
 constraint_mode=projected
 stage1_weights=true
-torsion_refine_rounds=2
-torsion_refine_max_iter=10
+torsion_refine_rounds=3
+torsion_refine_max_iter=256
 torsion_refine_tol=1.0e-6
 torsion_ensemble=false
 torsion_ensemble_ratio=0.3

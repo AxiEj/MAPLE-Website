@@ -272,7 +272,7 @@
               <tr><td><code>fixchg_resids</code></td><td>None</td><td>Residues whose charges should be fixed to standard Amber references during RESP.</td></tr>
               <tr><td><code>iqm</code></td><td><code>false</code></td><td>QM reference for geometry optimization and Hessian work. See the <a href="parmfit.html#iqm">main Parmfit page</a> for details.</td></tr>
               <tr><td><code>chg_level</code></td><td><code>PBE1PBE/def2SVP</code></td><td>Gaussian level for RESP ESP generation. Always active regardless of <code>iqm</code>.</td></tr>
-              <tr><td><code>prom</code>, <code>watm</code>, <code>ionm</code></td><td><code>ff14SB</code>, <code>tip3p</code>, <code>12_6</code></td><td>Protein, water, and ion parameter models for tleap deployment.</td></tr>
+              <tr><td><code>prom</code>, <code>watm</code>, <code>ionm</code></td><td><code>ff14SB</code>, <code>tip3p</code>, <code>12_6</code></td><td>Protein, water, and ion parameter models for tleap deployment. MetalAA validates <code>ionm</code> against <code>hfe</code>, <code>cm</code>, <code>iod</code>, <code>12_6</code>, and <code>12_6_4</code>.</td></tr>
               <tr><td><code>bonded</code></td><td><code>mseminario</code></td><td>Metal-related bond/angle fitting: <code>mseminario</code> or <code>seminario</code>.</td></tr>
               <tr><td><code>vib_scale</code></td><td><code>1.0</code></td><td>Force constant scaling factor for Seminario/mSeminario Hessian-based fitting</td></tr>
             </tbody>
@@ -351,11 +351,11 @@ donor_cutoff=2.7</code></pre>
 
         <h2 id="output-files">Output Files</h2>
         <ul>
-          <li><code>&lt;base&gt;_metal_large_raw.pdb</code> and <code>&lt;base&gt;_metal_large_opt.pdb</code>: Large model before and after optimization.</li>
-          <li><code>&lt;base&gt;_metal_site_opt.pdb</code> and <code>&lt;base&gt;_metal_site.mol2</code>: Deployable metal-site model.</li>
-          <li><code>&lt;base&gt;_metal.frcmod</code>: Final metal/cofactor frcmod file.</li>
-          <li><code>&lt;base&gt;_metal_tleap.pdb</code>, <code>&lt;base&gt;_metal_tleap.in</code>, and <code>&lt;base&gt;_metal_tleap.out</code>: tleap deployment and validation files.</li>
-          <li><code>&lt;base&gt;_metal_tleap_dry.*</code> and <code>&lt;base&gt;_metal_tleap_solvated.*</code>: dry and solvated topology/coordinate outputs.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_metal_large_raw.pdb</code> and <code>&lt;base&gt;_work/&lt;base&gt;_metal_large_opt.pdb</code>: Large model before and after optimization.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_metal_site_opt.pdb</code> and <code>&lt;base&gt;_work/&lt;base&gt;_metal_site.mol2</code>: Deployable metal-site model.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_metal.frcmod</code>: Final metal/cofactor frcmod file.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_metal_tleap.pdb</code>, <code>&lt;base&gt;_work/&lt;base&gt;_metal_tleap.in</code>, and <code>&lt;base&gt;_work/&lt;base&gt;_metal_tleap.out</code>: tleap deployment and validation files.</li>
+          <li><code>&lt;base&gt;_work/&lt;base&gt;_metal_tleap_dry.*</code> and <code>&lt;base&gt;_work/&lt;base&gt;_metal_tleap_solvated.*</code>: dry and solvated topology/coordinate outputs.</li>
           <li><code>&lt;base&gt;_work/metalaa/</code>: Gaussian ESP, RESP, and intermediate charge-fitting files.</li>
         </ul>
 

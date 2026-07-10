@@ -205,7 +205,7 @@ quit</code></pre>
             <tbody>
               <tr><td><code>qm_engine</code></td><td><code>g16</code></td><td>External QM engine: <code>g16</code>, <code>g09</code>, or <code>orca</code></td></tr>
               <tr><td><code>qm_nproc</code></td><td><code>8</code></td><td>Number of processors for QM jobs</td></tr>
-              <tr><td><code>qm_mem</code></td><td><code>24</code></td><td>Memory in GB for QM jobs</td></tr>
+              <tr><td><code>qm_mem</code></td><td><code>24</code></td><td>Memory in GB for QM jobs; adjust this according to the available memory and the size of the selected QM reference model.</td></tr>
               <tr><td><code>opt_max_iter</code></td><td><code>256</code></td><td>Maximum LBFGS iterations for MLIP geometry optimization. In Correction, use <code>max_iter</code></td></tr>
               <tr><td><code>opt_max_step</code></td><td><code>0.2</code></td><td>Maximum LBFGS step size in &Aring; for MLIP geometry optimization. In Correction, use <code>max_step</code></td></tr>
             </tbody>
@@ -218,7 +218,7 @@ quit</code></pre>
 
         <p><code>torsion_refine_rounds</code> controls how many Stage&nbsp;1&rarr;Stage&nbsp;2 fast-MM cycles are attempted. Each cycle uses the accepted parameters from the previous round to refresh the MM reference profiles, then re-runs Stage&nbsp;1 and Stage&nbsp;2. A cycle is accepted only if total loss improves; otherwise the workflow rolls back and stops. Setting <code>torsion_refine_rounds=0</code> runs Stage&nbsp;1 only.</p>
 
-        <p>TorsionFit applies to Correction and NCAA routes only. Center-bond selection is route-specific: Correction auto-selects rotatable single bonds from the mol2 topology; NCAA uses a center-bond filter that restricts fitting to sidechain torsions.</p>
+        <p>TorsionFit applies to Correction and NCAA routes. Center-bond selection is route-specific: Correction auto-selects rotatable single bonds from the mol2 topology; NCAA restricts fitting to sidechain torsions and disables torsion ensemble terms internally.</p>
 
         <div class="table-wrapper">
           <table>
@@ -227,14 +227,14 @@ quit</code></pre>
               <tr><td><code>torsionfit</code></td><td><code>true</code></td><td>Enable proper torsion fitting after the bond/angle stage</td></tr>
               <tr><td><code>torsion_bonds</code></td><td>Auto</td><td>Explicit center bond atom pairs (e.g. <code>6-8 12-14</code>); otherwise auto-selected from mol2 topology</td></tr>
               <tr><td><code>torsion_steps</code></td><td><code>36</code></td><td>Number of scan increments per torsion</td></tr>
-              <tr><td><code>torsion_refine_rounds</code></td><td><code>2</code></td><td>Maximum Stage&nbsp;1&rarr;Stage&nbsp;2 fast-MM cycles</td></tr>
-              <tr><td><code>torsion_refine_max_iter</code></td><td><code>10</code></td><td>Maximum iterations for the Stage&nbsp;2 global optimizer</td></tr>
+              <tr><td><code>torsion_refine_rounds</code></td><td><code>3</code></td><td>Maximum Stage&nbsp;1&rarr;Stage&nbsp;2 fast-MM cycles</td></tr>
+              <tr><td><code>torsion_refine_max_iter</code></td><td><code>256</code></td><td>Maximum iterations for the Stage&nbsp;2 global optimizer</td></tr>
               <tr><td><code>torsion_refine_tol</code></td><td><code>1.0e-6</code></td><td>Convergence tolerance for Stage&nbsp;2</td></tr>
-              <tr><td><code>torsion_ensemble</code></td><td><code>false</code></td><td>Add rigid rotor ensemble frames as extra Stage&nbsp;2 constraints</td></tr>
-              <tr><td><code>torsion_ensemble_ratio</code></td><td><code>0.3</code></td><td>Target ensemble frame ratio relative to center bonds &times; steps</td></tr>
-              <tr><td><code>torsion_ensemble_weight</code></td><td><code>0.5</code></td><td>Weight of ensemble loss relative to scan loss in Stage&nbsp;2</td></tr>
+              <tr><td><code>torsion_ensemble</code></td><td><code>false</code></td><td>Add rigid rotor ensemble frames as extra Stage&nbsp;2 constraints in Correction; NCAA disables this internally</td></tr>
+              <tr><td><code>torsion_ensemble_ratio</code></td><td><code>0.3</code></td><td>Target ensemble frame ratio relative to center bonds &times; steps in Correction</td></tr>
+              <tr><td><code>torsion_ensemble_weight</code></td><td><code>0.5</code></td><td>Weight of ensemble loss relative to scan loss in Correction Stage&nbsp;2</td></tr>
               <tr><td><code>backend</code></td><td><code>cgbs</code></td><td>TorsionFit scan optimizer backend</td></tr>
-              <tr><td><code>constraint_mode</code></td><td><code>projected</code></td><td>Scan constraint mode: <code>projected</code> or <code>unconstrained</code></td></tr>
+              <tr><td><code>constraint_mode</code></td><td><code>projected</code></td><td>Scan constraint mode: <code>projected</code> or <code>fixinternals</code></td></tr>
             </tbody>
           </table>
         </div>

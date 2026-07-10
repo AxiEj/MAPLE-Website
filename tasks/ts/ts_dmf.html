@@ -222,13 +222,13 @@
                 <td><code>coefs</code></td>
                 <td>object</td>
                 <td>None</td>
-                <td>Explicit initial B-spline control points, or a <code>.npy</code> file containing them. When set, DMF skips FB-ENM and linear path generation.</td>
+                <td>Explicit initial B-spline control points, or a <code>.npy</code> file containing them. Shape must be <code>(nsegs + dspl, natoms, 3)</code>. When set, DMF skips FB-ENM and linear path generation.</td>
               </tr>
               <tr>
                 <td><code>t_eval</code></td>
                 <td>object</td>
                 <td>None</td>
-                <td>Energy-evaluation grid as a sequence, CSV string, <code>.npy</code>, or <code>.txt</code> file. Custom grids must include 0 and 1.</td>
+                <td>Energy-evaluation grid as a sequence, CSV string, <code>.npy</code>, or <code>.txt</code> file. Custom grids must be one-dimensional, strictly increasing, start at 0, end at 1, and have length <code>nmove + 2</code>.</td>
               </tr>
               <tr>
                 <td><code>w_eval</code></td>
