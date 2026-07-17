@@ -63,6 +63,7 @@
                 <li><a href="../setup/model_uma.html">UMA</a></li>
                 <li><a href="../setup/model_ani.html">ANI</a></li>
                 <li><a href="../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../setup/model_fennol.html">FeNNol</a></li>
                 <li><a href="../setup/model_mace.html">MACE</a></li>
                 <li><a href="../setup/model_custom.html">Custom Model</a></li>
               </ul>
@@ -109,6 +110,14 @@
                     <li><a href="../tasks/irc/irc_lqa.html">LQA</a></li>
                     <li><a href="../tasks/irc/irc_hpc.html">HPC</a></li>
                     <li><a href="../tasks/irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../tasks/parmfit/parmfit.html">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="../tasks/parmfit/parmfit_correction.html">Correction</a></li>
+                    <li><a href="../tasks/parmfit/parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="../tasks/parmfit/parmfit_metalaa.html">MetalAA</a></li>
                   </ul>
                 </li>
               </ul>
@@ -187,6 +196,24 @@
               <td><code>aimnet2nse</code></td>
               <td>H, B, C, N, O, F, Si, P, S, Cl, As, Se, Br, I</td>
               <td>AIMNet2 variant with nuclear spin-orbit effects; useful for heavy-element systems</td>
+            </tr>
+            <tr>
+              <td><a href="../setup/model_fennol.html">FeNNix-Bio1S</a></td>
+              <td><code>fennix-bio1s</code></td>
+              <td>H, Li, B, C, N, O, F, Na, Mg, Si, P, S, Cl, K, Ca, Br, I, Zn</td>
+              <td>Small FeNNix-Bio <code>.fnx</code> model for fast biomolecular and molecular-cluster calculations.</td>
+            </tr>
+            <tr>
+              <td><a href="../setup/model_fennol.html">FeNNix-Bio1M</a></td>
+              <td><code>fennix-bio1m</code></td>
+              <td>H, Li, B, C, N, O, F, Na, Mg, Si, P, S, Cl, K, Ca, Br, I, Zn</td>
+              <td>Medium FeNNix-Bio <code>.fnx</code> model for higher-capacity biomolecular calculations.</td>
+            </tr>
+            <tr>
+              <td><a href="../setup/model_fennol.html">External .fnx</a></td>
+              <td><code>fennol(model_path=...)</code></td>
+              <td>Whatever the supplied <code>.fnx</code> model supports</td>
+              <td>Load another FeNNix <code>.fnx</code> model through MAPLE's JAX/Flax runtime.</td>
             </tr>
             <tr>
               <td><a href="../setup/model_mace.html">MACE-OFF23 (Small)</a></td>
@@ -279,7 +306,6 @@
         <h3>General-purpose optimization with UMA (default: small v1.1 checkpoint, omol task)</h3>
         <pre><code><span class="comment"># Uses uma-s-1p1 checkpoint and default inference interface</span>
 <span class="keyword">#model</span>=<span class="value">uma</span>
-<span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>, <span class="param">level</span>=<span class="value">tight</span>)
 
 0 1
@@ -290,7 +316,6 @@ H   -0.540000   -0.940000    0.000000</code></pre>
 
         <h3>UMA for inorganic materials (omat task)</h3>
         <pre><code><span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">task</span>=<span class="value">omat</span>)
-<span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
 
 XYZ /path/to/material.xyz</code></pre>
@@ -298,7 +323,6 @@ XYZ /path/to/material.xyz</code></pre>
         <h3>UMA with CUDA turbo inference</h3>
         <pre><code><span class="comment"># Opt in to the FAIR Chemistry turbo inference interface for repeated GPU evaluations</span>
 <span class="keyword">#model</span>=<span class="value">uma</span>(<span class="param">inference</span>=<span class="value">turbo</span>)
-<span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#ts</span>(<span class="param">method</span>=<span class="value">neb</span>)
 
 XYZ /path/to/reactant.xyz
@@ -307,7 +331,6 @@ XYZ /path/to/product.xyz</code></pre>
 
         <h3>Charged-molecule calculation with AIMNet2</h3>
         <pre><code>#model = aimnet2
-#device = gpu0
 #opt(method=lbfgs, level=extratight)
 
 -1 1
@@ -315,9 +338,9 @@ C    0.000000    0.000000    0.000000
 O    1.250000    0.000000    0.000000
 O   -1.250000    0.000000    0.000000</code></pre>
 
+
         <h3>Frequency calculation with MACE-OFF23</h3>
         <pre><code>#model = maceoff23m
-#device = gpu0
 #freq
 
 XYZ /path/to/optimized_geometry.xyz</code></pre>

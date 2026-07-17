@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parmfit - MAPLE</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="icon" href="../../favicon.ico">
+</head>
+<body>
+  <header class="top-nav">
+    <div class="container">
+      <div class="brand">
+        <a href="../../index.html"><img src="../../assets/images/logo.jpg" alt="MAPLE Logo"></a>
+        <a href="../../index.html">MAPLE</a>
+      </div>
+      <button class="mobile-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../general.html">About</a></li>
+          <li><a href="../../tutorials/installation.html">Documentation</a></li>
+          <li><a href="../../articles.html">Articles &amp; News</a></li>
+          <li><a href="../../downloads.html">Downloads</a></li>
+          <li><a href="../../development.html">Development</a></li>
+          <li><a href="../../issues.html">Report Issue</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-brand">
+          <img src="../../assets/images/logo.jpg" alt="MAPLE">
+          <span>MAPLE Docs</span>
+        </div>
+        <div class="sidebar-tree">
+          <ul>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Getting Started</span>
+              <ul class="children">
+                <li><a href="../../tutorials/installation.html">Installation</a></li>
+                <li><a href="../../tutorials/quickstart.html">Quick Start</a></li>
+                <li><a href="../../tutorials/input_output.html">Input &amp; Output</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Input Setup</span>
+              <ul class="children">
+                <li><a href="../../setup/settings.html">Settings</a></li>
+                <li><a href="../../setup/coordinates.html">Coordinates</a></li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> ML Models</span>
+              <ul class="children">
+                <li><a href="../../setup/models.html">Overview</a></li>
+                <li><a href="../../setup/model_uma.html">UMA</a></li>
+                <li><a href="../../setup/model_ani.html">ANI</a></li>
+                <li><a href="../../setup/model_aimnet.html">AIMNet2</a></li>
+                <li><a href="../../setup/model_fennol.html">FeNNol</a></li>
+                <li><a href="../../setup/model_mace.html">MACE</a></li>
+                <li><a href="../../setup/model_custom.html">Custom Model</a></li>
+              </ul>
+            </li>
+            <li class="open">
+              <span class="tree-section"><span class="chevron"></span> Tasks</span>
+              <ul class="children">
+                <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
+                <li><a href="../../tasks/frequency.html">Frequency</a></li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../opt/optimization.html">Optimization</a></span>
+                  <ul class="children">
+                    <li><a href="../opt/opt_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../opt/opt_rfo.html">RFO</a></li>
+                    <li><a href="../opt/opt_sd.html">SD</a></li>
+                    <li><a href="../opt/opt_cg.html">CG</a></li>
+                    <li><a href="../opt/opt_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../ts/ts.html">Transition State</a></span>
+                  <ul class="children">
+                    <li><a href="../ts/ts_prfo.html">P-RFO</a></li>
+                    <li><a href="../ts/ts_neb.html">NEB</a></li>
+                    <li><a href="../ts/ts_dimmer.html">Dimer</a></li>
+                    <li><a href="../ts/ts_string.html">String/GSM</a></li>
+                    <li><a href="../ts/ts_dmf.html">DMF</a></li>
+                    <li><a href="../ts/ts_autoneb.html">AutoNEB</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
+                  <ul class="children">
+                    <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
+                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
+                    <li><a href="../scan/scan_sd.html">SD</a></li>
+                    <li><a href="../scan/scan_cg.html">CG</a></li>
+                    <li><a href="../scan/scan_sdcg.html">SD/CG</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../irc/irc.html">IRC</a></span>
+                  <ul class="children">
+                    <li><a href="../irc/irc_gs.html">GS</a></li>
+                    <li><a href="../irc/irc_lqa.html">LQA</a></li>
+                    <li><a href="../irc/irc_hpc.html">HPC</a></li>
+                    <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li class="open">
+                  <span class="tree-label"><span class="chevron"></span> <a href="parmfit.html" class="active">Parmfit</a></span>
+                  <ul class="children">
+                    <li><a href="parmfit.html" class="active">Overview</a></li>
+                    <li><a href="parmfit_correction.html">Correction</a></li>
+                    <li><a href="parmfit_ncaa.html">NCAA</a></li>
+                    <li><a href="parmfit_metalaa.html">MetalAA</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="tree-section"><span class="chevron"></span> Functions</span>
+              <ul class="children">
+                <li><a href="../../functions/solvent.html">Solvation</a></li>
+                <li><a href="../../functions/constrain.html">Constraints</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <nav class="breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="separator">/</span>
+        <a href="../../tasks/singlepoint.html">Tasks</a>
+        <span class="separator">/</span>
+        <span class="current">Parmfit</span>
+      </nav>
+
+      <article>
+        <h1>Parmfit</h1>
+
+        <h2 id="overview">Overview</h2>
+        <p>Parmfit is the MAPLE force-field parameterization task. It turns MAPLE calculator results, existing topology files, and optional external QM references into Amber-style parameters for ligand/cofactor correction, noncanonical amino-acid templates, and metal-site parameterization.</p>
+        <p>Parmfit has two public method keywords. <code>method=correction</code> refines parameters for an existing <code>mol2</code> topology. <code>method=abinitio</code> reads a PDB target and automatically routes to NCAA or MetalAA according to the target residue kind.</p>
+        <p>Parmfit calls AmberTools utilities such as <code>parmchk2</code>, <code>antechamber</code>, <code>prepgen</code>, <code>resp</code>, <code>espgen</code>, and <code>tleap</code> to handle parameter assignment and template generation.</p>
+
+        <div class="admonition important">
+          <p class="admonition-title">Rebuild topology with parmed</p>
+          <p>Parmfit reassigns atom types (MAPLE Z0/Z1, M1/Y1, etc.) on deployed residues. After type reassignment, <code>tleap</code> may not correctly populate the <code>%FLAG BONDS_INC_HYDROGEN</code> topology section for H-bond constraints. Use <strong>parmed</strong> to rebuild the topology:</p>
+          <pre><code>parmed &lt;base&gt;.prmtop
+outparm &lt;base&gt;_parmed.prmtop
+quit</code></pre>
+          <p>parmed automatically determines hydrogen-mass constraint groups from atomic masses in the topology.</p>
+        </div>
+
+        <h2 id="routes">Routes</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Route</th>
+                <th>Public Input</th>
+                <th>Target</th>
+                <th>Main Products</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="parmfit_correction.html">Correction</a></td>
+                <td><code>#parmfit(method=correction,mol2=...)</code></td>
+                <td>Ligand, cofactor, or small molecule with existing mol2 topology</td>
+                <td>Refined Amber mol2/frcmod and GROMACS top/gro</td>
+              </tr>
+              <tr>
+                <td><a href="parmfit_ncaa.html">NCAA</a></td>
+                <td><code>#parmfit(method=abinitio,target=...)</code></td>
+                <td>Protein residue target in a PDB file</td>
+                <td>Residue prepin/frcmod, processed PDB, tleap validation files</td>
+              </tr>
+              <tr>
+                <td><a href="parmfit_metalaa.html">MetalAA</a></td>
+                <td><code>#parmfit(method=abinitio,target=...)</code></td>
+                <td>Ion target in a PDB metal site</td>
+                <td>Metal-site mol2, metal frcmod, tleap deployment files</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="general-settings">General Settings</h2>
+
+        <p>These parameters apply across all Parmfit routes. For <code>iqm</code> behavior, <code>qm_mode</code>, and levels of theory (<code>opt_level</code> / <code>sp_level</code> / <code>chg_level</code>), see the <a href="#iqm">QM Reference section</a> below.</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>qm_engine</code></td><td><code>g16</code></td><td>External QM engine: <code>g16</code>, <code>g09</code>, or <code>orca</code></td></tr>
+              <tr><td><code>qm_nproc</code></td><td><code>8</code></td><td>Number of processors for QM jobs</td></tr>
+              <tr><td><code>qm_mem</code></td><td><code>24</code></td><td>Memory in GB for QM jobs; adjust this according to the available memory and the size of the selected QM reference model.</td></tr>
+              <tr><td><code>opt_max_iter</code></td><td><code>256</code></td><td>Maximum LBFGS iterations for MLIP geometry optimization. In Correction, use <code>max_iter</code></td></tr>
+              <tr><td><code>opt_max_step</code></td><td><code>0.2</code></td><td>Maximum LBFGS step size in &Aring; for MLIP geometry optimization. In Correction, use <code>max_step</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="torsionfit">TorsionFit</h2>
+
+        <p>TorsionFit refines proper torsion parameters in two stages. <strong>Stage&nbsp;1</strong> uses a spectral shared-group restrained linear least-squares solver: torsion instances that share the same chemical environment (atom types plus one-hop neighbors) are grouped and fitted together, with a spectral helper providing phase seeds. <strong>Stage&nbsp;2</strong> takes the Stage&nbsp;1 parameters and performs direct global <code>kPhi</code>/<code>phase</code> optimization against the scan reference profile.</p>
+
+        <p><code>torsion_refine_rounds</code> controls how many Stage&nbsp;1&rarr;Stage&nbsp;2 fast-MM cycles are attempted. Each cycle uses the accepted parameters from the previous round to refresh the MM reference profiles, then re-runs Stage&nbsp;1 and Stage&nbsp;2. A cycle is accepted only if total loss improves; otherwise the workflow rolls back and stops. Setting <code>torsion_refine_rounds=0</code> runs Stage&nbsp;1 only.</p>
+
+        <p>TorsionFit applies to Correction and NCAA routes. Center-bond selection is route-specific: Correction auto-selects rotatable single bonds from the mol2 topology; NCAA restricts fitting to sidechain torsions and disables torsion ensemble terms internally.</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>torsionfit</code></td><td><code>true</code></td><td>Enable proper torsion fitting after the bond/angle stage</td></tr>
+              <tr><td><code>torsion_bonds</code></td><td>Auto</td><td>Explicit center bond atom pairs (e.g. <code>6-8 12-14</code>); otherwise auto-selected from mol2 topology</td></tr>
+              <tr><td><code>torsion_steps</code></td><td><code>36</code></td><td>Number of scan increments per torsion</td></tr>
+              <tr><td><code>torsion_refine_rounds</code></td><td><code>3</code></td><td>Maximum Stage&nbsp;1&rarr;Stage&nbsp;2 fast-MM cycles</td></tr>
+              <tr><td><code>torsion_refine_max_iter</code></td><td><code>256</code></td><td>Maximum iterations for the Stage&nbsp;2 global optimizer</td></tr>
+              <tr><td><code>torsion_refine_tol</code></td><td><code>1.0e-6</code></td><td>Convergence tolerance for Stage&nbsp;2</td></tr>
+              <tr><td><code>torsion_ensemble</code></td><td><code>false</code></td><td>Add rigid rotor ensemble frames as extra Stage&nbsp;2 constraints in Correction; NCAA disables this internally</td></tr>
+              <tr><td><code>torsion_ensemble_ratio</code></td><td><code>0.3</code></td><td>Target ensemble frame ratio relative to center bonds &times; steps in Correction</td></tr>
+              <tr><td><code>torsion_ensemble_weight</code></td><td><code>0.5</code></td><td>Weight of ensemble loss relative to scan loss in Correction Stage&nbsp;2</td></tr>
+              <tr><td><code>backend</code></td><td><code>cgbs</code></td><td>TorsionFit scan optimizer backend</td></tr>
+              <tr><td><code>constraint_mode</code></td><td><code>projected</code></td><td>Scan constraint mode: <code>projected</code> or <code>fixinternals</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="iqm">QM Reference (iqm)</h2>
+
+        <p><code>iqm</code> controls whether external QM jobs provide reference-quality geometry and Hessian data. When <code>iqm=false</code>, all optimization, Hessian evaluation, and torsion reference work use the MAPLE MLIP calculator exclusively. When <code>iqm=true</code>, MAPLE runs QM reference jobs whose scope depends on the route.</p>
+
+        <div class="admonition note">
+          <p class="admonition-title">iqm does not affect RESP</p>
+          <p>Abinitio routes always run Gaussian ESP jobs for RESP charge fitting regardless of the <code>iqm</code> setting. <code>iqm</code> controls only the reference geometry, Hessian, and torsion-scan data, not the RESP charge pipeline.</p>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Route</th><th><code>iqm=false</code></th><th><code>iqm=true</code></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Correction</strong></td>
+                <td>MLIP opt + MLIP Hessian (+ MLIP TorsionFit if enabled)</td>
+                <td>QM opt_frequency &rarr; QM geometry + QM Hessian (+ QM-referenced TorsionFit via <code>qm_mode</code>). If <code>bonded=none</code> but <code>torsionfit=true</code>, only a QM geometry optimization is run&mdash;no Hessian is computed.</td>
+              </tr>
+              <tr>
+                <td><strong>NCAA</strong></td>
+                <td>MLIP capped-model opt + MLIP Hessian</td>
+                <td>QM opt_frequency on the capped model &rarr; QM geometry + QM Hessian, but <strong>only when</strong> <code>bonded&ne;none</code> or <code>torsionfit=true</code>. If both are disabled, <code>iqm=true</code> has no effect.</td>
+              </tr>
+              <tr>
+                <td><strong>MetalAA</strong></td>
+                <td>MLIP large-model opt + MLIP Hessian</td>
+                <td>QM opt_frequency after MLIP opt &rarr; QM geometry + QM Hessian for bonded fitting. No TorsionFit, no <code>qm_mode</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="levels-of-theory">Levels of Theory</h3>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Parameter</th><th>Correction</th><th>NCAA</th><th>MetalAA</th></tr></thead>
+            <tbody>
+              <tr><td><code>chg_level</code></td><td>&mdash;</td><td>RESP ESP (always active)</td><td>RESP ESP (always active)</td></tr>
+              <tr><td><code>opt_level</code></td><td>QM opt/opt_freq/constrained_opt when <code>iqm=true</code></td><td>QM opt/opt_freq when <code>iqm=true</code></td><td>QM opt_freq when <code>iqm=true</code></td></tr>
+              <tr><td><code>sp_level</code></td><td>QM single-point via <code>qm_mode</code> when <code>iqm=true</code>; defaults to <code>opt_level</code></td><td>QM single-point via <code>qm_mode</code> when <code>iqm=true</code>; defaults to <code>opt_level</code></td><td>Unused (no TorsionFit)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="qm-mode">TorsionFit qm_mode</h3>
+
+        <p><code>qm_mode</code> controls how QM reference data is used inside TorsionFit (Correction and NCAA). It has no effect on MetalAA.</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Mode</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>MLIP drives the torsion scan, then QM single-point energy and forces are calculated at each frame</td></tr>
+              <tr><td>2</td><td>MLIP pre-optimization, then QM constrained torsion optimization at each frame</td></tr>
+              <tr><td>3</td><td>QM engine evaluates energy and forces at each scan step; the built-in optimizer of MAPLE drives the scan</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="qm-compare">qm_compare (Correction only)</h3>
+
+        <p>When <code>iqm=true</code>, <code>qm_compare=true</code>, and refinement is enabled, Correction runs an additional MLIP-only comparison branch alongside the QM path. This produces <code>_mlip</code>-suffixed output files that let users compare MLIP-driven parameters against QM-referenced ones without re-running the workflow.</p>
+
+        <h2 id="input-patterns">Input Patterns</h2>
+        <h3>Correction</h3>
+        <p>Correction uses the inline coordinate block as the structure to optimize and fit. The <code>mol2</code> file supplies the starting atom types, charges, and parameterization context.</p>
+        <pre><code>#model=uma(size=uma-s-1p1,task=omol)
+#parmfit(method=correction,mol2=toluene_ff.mol2)
+#device=gpu0
+
+C   0.000000  1.520000  0.000000
+...</code></pre>
+
+        <h3>Abinitio</h3>
+        <p>Abinitio routes require exactly one PDB block. The <code>target</code> selects a residue in that PDB; MAPLE classifies it as a protein residue or ion and dispatches to NCAA or MetalAA.</p>
+        <pre><code>#model=uma(size=uma-s-1p1)
+#parmfit(method=abinitio,target=HIF89,rn=HF1,cmo=0 1)
+#device=gpu0
+
+PDB MaDA-1.pdb</code></pre>
+
+        <h2 id="external-config">External Parmfit Config</h2>
+        <p>For longer jobs, use a separate key-value text file and reference it from the input header. Any plain text file with <code>key=value</code> lines and optional <code>#</code> or <code>;</code> comments is accepted. The config file accepts parmfit parameters only; do not place global MAPLE keys in it.</p>
+        <pre><code>#parmfit(method=abinitio,input=NCAA.parmfit)
+
+PDB MaDA-1.pdb</code></pre>
+        <div class="admonition note">
+          <div class="admonition-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Note
+          </div>
+          <div class="admonition-body">
+            <p>An external config must not set <code>pdb=</code>, <code>input=</code>, or <code>frcmod=</code>. Provide PDB structures through the <code>PDB &lt;path&gt;</code> block of the input file; correction frcmod files are generated automatically.</p>
+          </div>
+        </div>
+
+        <h2 id="output-layout">Output Layout</h2>
+
+        <p>Parmfit writes a main <code>.out</code> file and a <code>&lt;base&gt;_work/</code> directory. The excerpts below illustrate key sections of the <code>.out</code> file for each route.</p>
+
+        <h3>Correction</h3>
+
+        <p>The setup header confirms the input mol2, topology size, bonded refinement method, and TorsionFit configuration:</p>
+        <pre><code>======================================================================
+                       Parmfit Correction Setup
+======================================================================
+Input mol2:        toluene_ff.mol2
+Initial frcmod:    Toluene_work/Toluene_original.frcmod
+Topology atoms:    15
+Topology bonds:    15
+Bonded refinement: mSeminario
+QM reference:     disabled
+TorsionFit:        enabled
+Torsion backend:   cgbs
+Center bonds:      auto-select non-ring center bonds with proper torsions</code></pre>
+
+        <p>The mSeminario bond/angle changes table lists each modified BOND and ANGLE term with its atom-pair type code and old &rarr; new force constants:</p>
+        <pre><code>------------------------------------------------------------------------------------------------------------
+                                                   BONDS
+------------------------------------------------------------------------------------------------------------
+(1,2)            c3-ca             k=243.910000  r=1.515000           |  k=259.042910  r=1.501978
+(1,8)            c3-hc             k=345.250000  r=1.096000           |  k=357.895134  r=1.088538
+(2,3)            ca-ca             k=354.250000  r=1.399000           |  k=386.871870  r=1.388923
+
+------------------------------------------------------------------------------------------------------------
+                                                   ANGLES
+------------------------------------------------------------------------------------------------------------
+(2,1,8)          ca-c3-hc                k=43.610000  theta=110.6300  |  k=53.192800  theta=110.8773
+(2,1,9)          ca-c3-hc                k=43.610000  theta=110.6300  |  k=55.257488  theta=110.9240
+(1,2,3)          c3-ca-ca                k=60.740000  theta=120.8300  |  k=97.095122  theta=120.8023</code></pre>
+
+        <p>The TorsionFit dihedral changes table shows per-torsion <code>kPhi</code>/<code>n</code>/<code>phase</code> changes across multiple term slots; <code>NA</code> entries indicate newly added terms:</p>
+        <pre><code>------------------------------------------------------------------------------------------------------------
+                                                 DIHEDRALS
+------------------------------------------------------------------------------------------------------------
+(3,2,1,8)         ca-ca-c3-hc       term=1 k=0.000000  n=1  phase=0.0000   |  k=0.326863  n=1  phase=0.0094
+(3,2,1,8)         ca-ca-c3-hc       term=2 k=NA  n=NA  phase=NA            |  k=0.339285  n=2  phase=-179.9939
+(3,2,1,8)         ca-ca-c3-hc       term=3 k=NA  n=NA  phase=NA            |  k=0.292462  n=3  phase=107.5106
+(3,2,1,8)         ca-ca-c3-hc       term=4 k=NA  n=NA  phase=NA            |  k=0.223706  n=4  phase=-0.1078</code></pre>
+
+        <p>The torsion energy trace gives per-center-bond angle-vs-energy profiles, ending with MAE/RMSE. The columns <code>orig_ref</code> (original GAFF2) and <code>stage2_ref</code> (final fitted) should be compared against <code>MLIP_ref</code> to confirm fitting improvement:</p>
+        <pre><code>center bond (1, 2):
+  angle_deg   MLIP_ref   orig_ref   stage0_ref   stage1_ref   stage2_ref
+     0.0035   0.014655   0.082197    0.021962    0.019633    0.019663
+    10.0035   0.015672   0.066117    0.012318    0.011285    0.010432
+     ...</code></pre>
+
+        <p>The final <code>PARMFIT CORRECTION RESULT</code> block lists all output files, stage timing, and a summary of how many bonds, angles, and dihedrals were changed.</p>
+
+        <h3>NCAA</h3>
+
+        <p>The abinitio header identifies the target residue, chirality, and charge, and reports progress through each stage:</p>
+        <pre><code>Target: _89:HIF (protein)
+  [NCAA] MLIP model preparation + reference optimization ...
+  NCAA target selector: HIF89
+  residue name: HF1
+  chirality: L
+  charge/mult: 0 1
+  protein model: ff14SB
+  bonded refinement: mseminario
+  QM ESP method: HF/6-31G(d)
+  [NCAA] multiconformer RESP ...
+  [NCAA] AmberTools template build ...
+  [NCAA] MLIP Hessian + mSeminario ...
+  [NCAA] TorsionFit skipped ...
+  [NCAA] writing refined templates + tleap input ...
+  [NCAA] tleap validation ...</code></pre>
+
+        <p>The <code>PARMFIT ABINITIO RESULT</code> block confirms the output files, stage timing, tleap status, and the exact tleap command to run:</p>
+        <pre><code>Status: completed
+Route: NCAA
+Target: _89:HIF
+Residue name: HF1
+Chirality: L
+Representative conformer: ref
+RESP conformers: alpha, beta
+
+Main products:
+  refined prepin: MaDA_work/HF1_maple.prepin
+  refined frcmod: MaDA_work/HF1_maple.frcmod
+  tleap PDB:      MaDA_work/MaDA_ncaa_tleap.pdb
+  tleap input:    MaDA_work/MaDA_ncaa_tleap.in
+
+Stage timing:
+  multiconformer RESP              9m 21s   slowest
+  model preparation + reference    1m 29s
+  Hessian + mSeminario             1m 12s
+  tleap validation                     3s
+
+Next step:
+  cd MaDA_work
+  tleap -s -f MaDA_ncaa_tleap.in |tee MaDA_ncaa_tleap.out
+
+Tleap status:
+  Errors: 0
+  Warnings: 3
+  Notes: 0</code></pre>
+
+        <h3>MetalAA</h3>
+
+        <p>The abinitio header prints the metal target, site parameters, large-model charge, and per-stage logs:</p>
+        <pre><code>Target: A462:FE (ion)
+  cluster_cutoff: 3.00 A
+  donor_cutoff: 2.70 A
+  metal site charge/mult: -1 6
+  metal oxidation: 3
+  large model charge/mult: -2 6
+  chgmod: 1
+  [MetalAA] large-model input written.
+  [MetalAA] MLIP large-model optimization ...
+  [MetalAA] large-model RESP ...
+  [MetalAA] site files written.
+  [MetalAA] MLIP Hessian + Seminario + final frcmod ...
+  [MetalAA] running tleap validation ...</code></pre>
+
+        <p>The renamed atom types table shows how MAPLE reassigns types locally: the metal receives <code>M1</code>, direct donors receive <code>Y1</code>/<code>Y2</code>/..., and other atoms keep their original Amber/GAFF types. Verify that the donor list matches the intended coordination environment:</p>
+        <pre><code>Renamed atom types:
+  residue      atom  old   new   charge
+  _400:CYM     SG    SH    Y1    -0.307250
+  A461:HEM     NA    nd    Y2    -0.065018
+  A461:HEM     NB    nc    Y3    -0.127778
+  A461:HEM     ND    nd    Y4    -0.092271
+  A461:HEM     NC    nc    Y5    -0.056100
+  A462:FE      FE    FE    M1     0.293950</code></pre>
+
+        <p>The <code>PARMFIT ABINITIO RESULT</code> block lists core residues, output files, stage timing, tleap status, any environment warnings, and the tleap command:</p>
+        <pre><code>Core residues: _400:CYM, A461:HEM, A462:FE
+
+Main products:
+  final frcmod: P450_work/P450_metal.frcmod
+  tleap input:  P450_work/P450_metal_tleap.in
+  tleap PDB:    P450_work/P450_metal_tleap.pdb
+  mol2 files:   P450_work/CM1.mol2, P450_work/HM1.mol2, P450_work/FE1.mol2
+
+Stage timing:
+  large RESP/Gaussian ESP       30m 35s   slowest
+  Hessian + Seminario               55s
+  large optimization                25s
+  tleap validation                   4s
+
+Next step:
+  cd P450_work
+  tleap -s -f P450_metal_tleap.in |tee P450_metal_tleap.out
+
+Tleap status:
+  Errors: 0
+  Warnings: 8
+  Notes: 1
+
+Warnings:
+  Environment contains potentially charged standard residues
+  outside the site core: _3:LYS, _4:GLU, ...</code></pre>
+
+        <nav class="page-nav">
+          <a href="../irc/irc_eulerpc.html">&larr; Previous: EulerPC</a>
+          <a class="next" href="parmfit_correction.html">Next: Correction &rarr;</a>
+        </nav>
+      </article>
+    </main>
+
+    <aside class="toc"><div class="toc-sticky"><h3>On this page</h3><ul></ul></div></aside>
+  </div>
+  <div class="sidebar-overlay"></div>
+  <footer><p>&copy; 2026, MAPLE development team.</p></footer>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>
