@@ -169,7 +169,7 @@
               <td>AIMNet2-NSE</td>
               <td><code>aimnet2nse</code></td>
               <td>H, B, C, N, O, F, Si, P, S, Cl, As, Se, Br, I</td>
-              <td>Variant including nuclear spin-orbit effects for heavy elements</td>
+              <td>Open-shell variant using neural spin-charge equilibration for systems with arbitrary charge and spin multiplicity, including radicals.</td>
             </tr>
           </tbody>
         </table>
@@ -223,7 +223,7 @@ H   -0.390000    0.000000    1.028000
 H   -0.390000    0.890000   -0.514000
 H   -0.390000   -0.890000   -0.514000</code></pre>
 
-        <h3>NSE variant for systems with heavy-element spin-orbit effects</h3>
+        <h3>NSE variant using neural spin-charge equilibration</h3>
         <pre><code><span class="keyword">#model</span>=<span class="value">aimnet2nse</span>
 <span class="keyword">#device</span>=<span class="value">gpu0</span>
 <span class="keyword">#opt</span>(<span class="param">method</span>=<span class="value">lbfgs</span>)
