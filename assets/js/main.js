@@ -5,35 +5,63 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   // ----- 1. Sidebar Tree Toggle -----
-  document.querySelectorAll('.sidebar-tree .tree-section').forEach(function (el) {
-    el.addEventListener('click', function () {
-      var li = el.closest('li');
-      if (li) li.classList.toggle('open');
+  var treeControlIndex = 0;
+
+  function setupTreeControl(control, li, children, label) {
+    if (!control || !li || !children) return;
+
+    if (!children.id) {
+      treeControlIndex += 1;
+      children.id = 'sidebar-group-' + treeControlIndex;
+    }
+    control.type = 'button';
+    control.setAttribute('aria-controls', children.id);
+    if (label) control.setAttribute('aria-label', label);
+
+    function setTreeOpen(open) {
+      li.classList.toggle('open', open);
+      control.setAttribute('aria-expanded', String(open));
+      children.setAttribute('aria-hidden', String(!open));
+      children.inert = !open;
+    }
+
+    setTreeOpen(li.classList.contains('open'));
+    control.addEventListener('click', function () {
+      setTreeOpen(!li.classList.contains('open'));
     });
+  }
+
+  document.querySelectorAll('.sidebar-tree .tree-section').forEach(function (section) {
+    var li = section.closest('li');
+    var children = li ? li.querySelector(':scope > .children') : null;
+    var control = section;
+
+    if (section.tagName !== 'BUTTON') {
+      control = document.createElement('button');
+      control.className = section.className;
+      control.innerHTML = section.innerHTML;
+      section.replaceWith(control);
+    }
+    setupTreeControl(control, li, children);
   });
 
-  document.querySelectorAll('.sidebar-tree .tree-label').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-      var li = el.closest('li');
-      var link = el.querySelector('a');
-      var clickedLink = e.target.closest('a');
-      var clickedChevron = e.target.closest('.chevron');
+  document.querySelectorAll('.sidebar-tree .tree-label').forEach(function (label) {
+    var li = label.closest('li');
+    var children = li ? li.querySelector(':scope > .children') : null;
+    var chevron = label.querySelector('.chevron');
+    var link = label.querySelector('a');
+    if (!chevron || !children) return;
 
-      if (clickedLink) return;
-
-      if (clickedChevron) {
-        e.preventDefault();
-        if (li) li.classList.toggle('open');
-        return;
-      }
-
-      if (link && link.getAttribute('href')) {
-        window.location.href = link.getAttribute('href');
-        return;
-      }
-
-      if (li) li.classList.toggle('open');
-    });
+    var control = chevron;
+    if (chevron.tagName !== 'BUTTON') {
+      control = document.createElement('button');
+      control.className = chevron.className + ' tree-toggle';
+      chevron.replaceWith(control);
+    } else {
+      control.classList.add('tree-toggle');
+    }
+    var name = link ? link.textContent.trim() : 'section';
+    setupTreeControl(control, li, children, 'Toggle ' + name + ' section');
   });
 
   // ----- 2. MAPLE Input Syntax Highlighting -----
@@ -135,10 +163,63 @@ document.addEventListener('DOMContentLoaded', function () {
     code.innerHTML = text.split('\n').map(highlightMapleLine).join('\n');
   });
 
-  // ----- 3. Copy Code Button -----
+  // ----- 3. Copy Code Buttons -----
+  var copyIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+  var copiedIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  function copyStatusFor(button) {
+    var parent = button.parentElement;
+    var status = parent ? parent.querySelector(':scope > .copy-status') : null;
+    if (!status && parent) {
+      status = document.createElement('span');
+      status.className = 'copy-status';
+      status.setAttribute('role', 'status');
+      status.setAttribute('aria-live', 'polite');
+      parent.appendChild(status);
+    }
+    return status;
+  }
+
+  async function writeClipboard(text, button, defaultLabel, useCopiedIcon) {
+    var status = copyStatusFor(button);
+    window.clearTimeout(button._copyResetTimer);
+    button.classList.remove('copied', 'copy-failed');
+
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        throw new Error('Clipboard API is unavailable');
+      }
+      await navigator.clipboard.writeText(text);
+      button.classList.add('copied');
+      button.setAttribute('aria-label', 'Copied to clipboard');
+      if (useCopiedIcon) button.innerHTML = copiedIcon;
+      if (status) {
+        status.textContent = 'Copied';
+        status.classList.remove('error');
+        status.classList.add('visible');
+      }
+      button._copyResetTimer = window.setTimeout(function () {
+        button.classList.remove('copied');
+        button.setAttribute('aria-label', defaultLabel);
+        if (useCopiedIcon) button.innerHTML = copyIcon;
+        if (status) {
+          status.textContent = '';
+          status.classList.remove('visible');
+        }
+      }, 2000);
+    } catch (error) {
+      button.classList.add('copy-failed');
+      button.setAttribute('aria-label', 'Copy failed');
+      if (status) {
+        status.textContent = 'Copy failed. Select the code and copy it manually.';
+        status.classList.add('visible', 'error');
+      }
+    }
+  }
+
   document.querySelectorAll('pre').forEach(function (pre) {
-    // Skip if already wrapped
-    if (pre.parentElement.classList.contains('code-wrapper')) return;
+    // Dedicated structure buttons are initialized below.
+    if (pre.parentElement.classList.contains('code-wrapper') || pre.querySelector('[data-copy-target]')) return;
 
     var wrapper = document.createElement('div');
     wrapper.className = 'code-wrapper';
@@ -146,27 +227,64 @@ document.addEventListener('DOMContentLoaded', function () {
     wrapper.appendChild(pre);
 
     var btn = document.createElement('button');
+    btn.type = 'button';
     btn.className = 'copy-btn';
     btn.setAttribute('aria-label', 'Copy code');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+    btn.innerHTML = copyIcon;
 
     btn.addEventListener('click', function () {
       var code = pre.querySelector('code');
       var text = code ? code.textContent : pre.textContent;
-      navigator.clipboard.writeText(text).then(function () {
-        btn.classList.add('copied');
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-        setTimeout(function () {
-          btn.classList.remove('copied');
-          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
-        }, 2000);
-      });
+      writeClipboard(text, btn, 'Copy code', true);
     });
 
     wrapper.appendChild(btn);
   });
 
-  // ----- 4. TOC Scroll Spy -----
+  document.querySelectorAll('[data-copy-target]').forEach(function (button) {
+    var defaultLabel = button.getAttribute('aria-label') || 'Copy code';
+    button.addEventListener('click', function () {
+      var targetId = button.getAttribute('data-copy-target');
+      var target = targetId ? document.getElementById(targetId) : null;
+      if (!target) return;
+      writeClipboard(target.textContent, button, defaultLabel, false);
+    });
+  });
+
+  // ----- 4. Generate TOC, then initialize scroll spy -----
+  var tocContainer = document.querySelector('.toc ul');
+  if (tocContainer && tocContainer.children.length === 0) {
+    var article = document.querySelector('article');
+    if (article) {
+      var usedHeadingIds = new Set();
+      document.querySelectorAll('[id]').forEach(function (element) {
+        usedHeadingIds.add(element.id);
+      });
+      article.querySelectorAll('h2, h3').forEach(function (heading) {
+        if (!heading.id) {
+          var baseId = heading.textContent.trim().toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '') || 'section';
+          var uniqueId = baseId;
+          var suffix = 2;
+          while (usedHeadingIds.has(uniqueId)) {
+            uniqueId = baseId + '-' + suffix;
+            suffix += 1;
+          }
+          heading.id = uniqueId;
+          usedHeadingIds.add(uniqueId);
+        }
+        var item = document.createElement('li');
+        if (heading.tagName === 'H3') item.className = 'toc-h3';
+        var anchor = document.createElement('a');
+        anchor.href = '#' + heading.id;
+        anchor.textContent = heading.textContent;
+        item.appendChild(anchor);
+        tocContainer.appendChild(item);
+      });
+    }
+  }
+
   var tocLinks = document.querySelectorAll('.toc a');
   if (tocLinks.length > 0) {
     var headings = [];
@@ -180,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateTocActive() {
       var scrollY = window.scrollY + 100;
-      var current = null;
+      var current = headings.length > 0 ? headings[0] : null;
       for (var i = 0; i < headings.length; i++) {
         if (headings[i].el.offsetTop <= scrollY) {
           current = headings[i];
@@ -199,21 +317,39 @@ document.addEventListener('DOMContentLoaded', function () {
   var sidebar = document.querySelector('.sidebar');
   var overlay = document.querySelector('.sidebar-overlay');
   var topNavUl = document.querySelector('.top-nav ul');
-  var narrowNavQuery = window.matchMedia('(max-width: 52em)');
+  var compactNavQuery = window.matchMedia('(max-width: 78em)');
+  var sidebarDrawerQuery = window.matchMedia('(max-width: 67em)');
   var sidebarFab = null;
+  var lastSidebarTrigger = null;
 
-  function setTopNavOpen(open) {
+  if (topNavUl && !topNavUl.id) topNavUl.id = 'primary-navigation';
+  if (mobileToggle) {
+    mobileToggle.type = 'button';
+    if (topNavUl) mobileToggle.setAttribute('aria-controls', topNavUl.id);
+  }
+  if (sidebar && !sidebar.id) sidebar.id = 'documentation-sidebar';
+
+  function setTopNavOpen(open, returnFocus) {
     if (topNavUl) topNavUl.classList.toggle('open', open);
     if (mobileToggle) mobileToggle.setAttribute('aria-expanded', String(open));
+    if (!open && returnFocus && mobileToggle) mobileToggle.focus();
   }
 
-  function setSidebarOpen(open) {
+  function setSidebarOpen(open, trigger, returnFocus) {
+    var drawer = sidebarDrawerQuery.matches;
+    if (open && trigger) lastSidebarTrigger = trigger;
     if (sidebar) sidebar.classList.toggle('open', open);
     if (overlay) overlay.classList.toggle('active', open);
     if (sidebarFab) {
       sidebarFab.classList.toggle('active', open);
       sidebarFab.setAttribute('aria-expanded', String(open));
     }
+    if (sidebar) {
+      sidebar.inert = drawer && !open;
+      if (drawer) sidebar.setAttribute('aria-hidden', String(!open));
+      else sidebar.removeAttribute('aria-hidden');
+    }
+    if (!open && returnFocus && lastSidebarTrigger) lastSidebarTrigger.focus();
   }
 
   if (sidebar) {
@@ -222,24 +358,20 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebarFab.className = 'sidebar-fab';
     sidebarFab.setAttribute('aria-label', 'Toggle documentation sidebar');
     sidebarFab.setAttribute('aria-expanded', 'false');
+    sidebarFab.setAttribute('aria-controls', sidebar.id);
     sidebarFab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h14"/><path d="M4 12h10"/><path d="M4 18h14"/><path d="M20 8l-3 4 3 4"/></svg>';
     document.body.appendChild(sidebarFab);
     sidebarFab.addEventListener('click', function () {
       setTopNavOpen(false);
-      setSidebarOpen(!sidebar.classList.contains('open'));
+      setSidebarOpen(!sidebar.classList.contains('open'), sidebarFab);
     });
   }
 
   if (mobileToggle) {
     mobileToggle.setAttribute('aria-expanded', 'false');
     mobileToggle.addEventListener('click', function () {
-      if (narrowNavQuery.matches && topNavUl) {
-        setSidebarOpen(false);
-        setTopNavOpen(!topNavUl.classList.contains('open'));
-        return;
-      }
-
-      if (sidebar) setSidebarOpen(!sidebar.classList.contains('open'));
+      setSidebarOpen(false);
+      if (topNavUl) setTopNavOpen(!topNavUl.classList.contains('open'));
     });
   }
 
@@ -251,54 +383,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (overlay) {
     overlay.addEventListener('click', function () {
-      setSidebarOpen(false);
+      setSidebarOpen(false, null, true);
     });
   }
 
-  if (narrowNavQuery.addEventListener) {
-    narrowNavQuery.addEventListener('change', function () {
-      setTopNavOpen(false);
-      setSidebarOpen(false);
-    });
-  }
-
-  // ----- 6. Auto-generate TOC -----
-  var tocContainer = document.querySelector('.toc ul');
-  if (tocContainer && tocContainer.children.length === 0) {
-    var article = document.querySelector('article');
-    if (article) {
-      var tocHeadings = article.querySelectorAll('h2, h3');
-      tocHeadings.forEach(function (h) {
-        if (!h.id) {
-          h.id = h.textContent.trim().toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-|-$/g, '');
-        }
-        var li = document.createElement('li');
-        if (h.tagName === 'H3') li.className = 'toc-h3';
-        var a = document.createElement('a');
-        a.href = '#' + h.id;
-        a.textContent = h.textContent;
-        li.appendChild(a);
-        tocContainer.appendChild(li);
-      });
-
-      // Re-init scroll spy with new links
-      tocLinks = document.querySelectorAll('.toc a');
-      if (tocLinks.length > 0) {
-        headings = [];
-        tocLinks.forEach(function (link) {
-          var id = link.getAttribute('href');
-          if (id && id.startsWith('#')) {
-            var heading = document.querySelector(id);
-            if (heading) headings.push({ el: heading, link: link });
-          }
-        });
-      }
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    if (topNavUl && topNavUl.classList.contains('open')) {
+      setTopNavOpen(false, true);
+      return;
     }
-  }
+    if (sidebar && sidebar.classList.contains('open')) {
+      setSidebarOpen(false, null, true);
+    }
+  });
 
-  // ----- 7. Smooth Scroll for Anchor Links -----
+  if (compactNavQuery.addEventListener) {
+    compactNavQuery.addEventListener('change', function () {
+      setTopNavOpen(false);
+    });
+  }
+  if (sidebarDrawerQuery.addEventListener) {
+    sidebarDrawerQuery.addEventListener('change', function () {
+      setSidebarOpen(false);
+    });
+  }
+  setSidebarOpen(false);
+
+  // ----- 6. Smooth Scroll for Anchor Links -----
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       var href = a.getAttribute('href');
@@ -306,7 +418,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var target = document.querySelector(href);
         if (target) {
           e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+          target.scrollIntoView({ behavior: behavior, block: 'start' });
           history.pushState(null, '', href);
         }
       }

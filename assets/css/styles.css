@@ -3,8 +3,6 @@
    Inspired by ORCA / Furo / GROMACS documentation themes
    ============================================================ */
 
-@import url("home-fonts.css");
-
 /* ----- 1. Design Tokens (CSS Variables) ----- */
 :root {
   color-scheme: light;
@@ -93,6 +91,11 @@ a {
 }
 a:hover {
   text-decoration: underline;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--color-brand-primary);
+  outline-offset: 3px;
 }
 a:visited {
   color: var(--color-brand-visited);
@@ -301,10 +304,15 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-tree .tree-section {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 0.25rem;
   padding: 0.35rem 0.75rem;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
   font-size: var(--font-size-sm);
   font-weight: 600;
+  text-align: left;
   color: var(--color-text-primary);
   cursor: pointer;
   border-radius: 4px;
@@ -328,6 +336,12 @@ img { max-width: 100%; height: auto; display: block; }
   transition: transform var(--transition-fast);
   font-size: 0.7rem;
   color: var(--color-text-muted);
+}
+.sidebar-tree button.chevron {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 .sidebar-tree .chevron::after { content: "▸"; }
 .sidebar-tree li.open > .tree-section .chevron::after,
@@ -571,6 +585,12 @@ code {
   font-size: 0.85em;
 }
 
+/* Long paths and option values may wrap; block code keeps its own scroller. */
+article :not(pre) > code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 /* Block code */
 pre {
   position: relative;
@@ -631,7 +651,37 @@ pre code {
   color: var(--color-tip);
   border-color: var(--color-tip);
 }
+.copy-btn.copy-failed,
+.irc-structure-copy.copy-failed {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
 .copy-btn svg { width: 14px; height: 14px; }
+
+.copy-status {
+  position: absolute;
+  top: 0.55rem;
+  right: 3rem;
+  z-index: 3;
+  max-width: min(24rem, calc(100% - 4rem));
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-bg-border);
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-size-xs);
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+.copy-status.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.copy-status.error { color: var(--color-danger); }
 
 /* MAPLE input syntax highlighting */
 pre .comment { color: #6a9955; font-style: italic; }
@@ -1388,6 +1438,7 @@ a.news-item:hover p {
 
   .features { grid-template-columns: 1fr; }
   .card-grid { grid-template-columns: 1fr; }
+  .capability-grid { grid-template-columns: minmax(0, 1fr); }
   .tutorial-categories { grid-template-columns: 1fr; }
 
   .page-nav { flex-direction: column; }
@@ -1686,7 +1737,7 @@ footer {
   color: var(--color-brand-primary);
 }
 
-@media (max-width: 68.75em) {
+@media (max-width: 78em) {
   :root { --nav-height: 70px; }
 
   .top-nav {
@@ -1835,3 +1886,13 @@ figure.doc-figure figcaption {
 .mb-1 { margin-bottom: 0.5rem; }
 .mb-2 { margin-bottom: 1rem; }
 .mb-3 { margin-bottom: 1.5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
