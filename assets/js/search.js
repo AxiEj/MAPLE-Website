@@ -92,6 +92,8 @@
   });
   var RESULT_LIMIT = 8;
   var PER_PAGE_LIMIT = 4;
+  var MIN_PREFIX_LENGTH = 3;
+  var MIN_STEM_LENGTH = 4;
 
   function queryTerms(query) {
     return normalize(query).match(/[a-z0-9]+(?:[._/+:-][a-z0-9]+)*/g) || [];
@@ -124,8 +126,8 @@
 
   function termMatches(term, candidate) {
     if (term === candidate) return true;
-    if (term.length >= 4 && candidate.startsWith(term)) return true;
-    return term.length >= 4 && stemToken(term) === stemToken(candidate);
+    if (term.length >= MIN_PREFIX_LENGTH && candidate.startsWith(term)) return true;
+    return term.length >= MIN_STEM_LENGTH && stemToken(term) === stemToken(candidate);
   }
 
   function hasExactTerm(tokens, term) {
@@ -156,7 +158,12 @@
     };
     var position = boundaryPosition(normalizedQuery);
     if (position >= 0) return position;
-    var positions = terms.map(boundaryPosition).filter(function (item) { return item >= 0; });
+    var positions = terms.map(function (term) {
+      var exactPosition = boundaryPosition(term);
+      if (exactPosition >= 0 || term.length < MIN_PREFIX_LENGTH) return exactPosition;
+      var prefixMatch = new RegExp('(^|[^a-z0-9])' + escapePattern(term) + '[a-z0-9]*').exec(text);
+      return prefixMatch ? prefixMatch.index + prefixMatch[1].length : -1;
+    }).filter(function (item) { return item >= 0; });
     return positions.length ? Math.min.apply(Math, positions) : Number.POSITIVE_INFINITY;
   }
 
@@ -233,7 +240,10 @@
       var pageTier = Math.max.apply(null, items.map(function (item) { return item.pageTier; }));
       var pageEntryDocument = pageEntries.get(bestSection.document.page || bestSection.document.url.split('#')[0]);
       var matchedPageEntry = items.find(function (item) { return item.document.url === (pageEntryDocument && pageEntryDocument.url); });
-      var usePageEntry = Boolean(pageEntryDocument) && (pageTier >= bestSection.sectionTier || items.length >= 2);
+      var multiSectionBodyIntent = items.length >= 2 &&
+        (bestSection.sectionTier <= MATCH_TIER.BODY || pageTier >= MATCH_TIER.STEM);
+      var usePageEntry = Boolean(pageEntryDocument) &&
+        (pageTier >= bestSection.sectionTier || multiSectionBodyIntent);
       var representative = usePageEntry
         ? (matchedPageEntry || {
           document: pageEntryDocument,
