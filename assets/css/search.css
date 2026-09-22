@@ -5,6 +5,7 @@
   --search-surface: var(--color-bg-primary, #fff);
   --search-soft: var(--color-bg-secondary, var(--paper-2, #fafaf8));
   --search-brand: var(--color-brand-primary, var(--red, #d32021));
+  --search-mark: var(--color-brand-soft, var(--red-soft, #fde8e6));
   position: relative;
   flex: 0 1 230px;
   min-width: 180px;
@@ -172,6 +173,19 @@
   line-height: 1.45;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+/* Matched words, so a result can be judged without reading the whole line. */
+.site-search-result mark {
+  border-radius: 2px;
+  background: var(--search-mark);
+  color: inherit;
+  font-weight: 600;
+}
+
+.site-search-result.active mark,
+.site-search-result:hover mark {
+  background: var(--search-surface);
 }
 
 main h1,

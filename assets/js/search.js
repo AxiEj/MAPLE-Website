@@ -8,18 +8,156 @@
   var scriptIndexUrl = new URL('assets/search-index.js', siteRoot);
   var indexPromise = null;
   var scriptIndexPromise = null;
+  var indexReady = false;
 
-  function documentsFromPayload(payload) {
+  var MATCH_TIER = Object.freeze({
+    NONE: 0,
+    CROSS_FIELD: 1,
+    BODY: 2,
+    TRAIL: 3,
+    STEM: 4,
+    TITLE: 5,
+    HEADING: 6,
+    PHRASE: 7,
+    EXACT: 8,
+  });
+  var RESULT_LIMIT = 8;
+  var PER_PAGE_LIMIT = 4;
+  var MIN_PREFIX_LENGTH = 3;
+  var MIN_STEM_LENGTH = 4;
+  var QUERY_DEBOUNCE_MS = 120;
+  var MIN_QUERY_LENGTH = 2;
+
+  /* ----- Text analysis ----- */
+
+  function normalize(value) {
+    return String(value || '').normalize('NFKD').toLowerCase();
+  }
+
+  function splitTerms(normalizedValue) {
+    return normalizedValue.match(/[a-z0-9]+(?:[._/+:-][a-z0-9]+)*/g) || [];
+  }
+
+  // Compound tokens stay searchable both whole and in parts: `model.uma` also
+  // matches `model` and `uma`.
+  function expandTokens(compounds) {
+    var tokens = new Set();
+    compounds.forEach(function (compound) {
+      tokens.add(compound);
+      compound.split(/[._/+:-]+/).forEach(function (part) {
+        if (part) tokens.add(part);
+      });
+    });
+    return Array.from(tokens);
+  }
+
+  function stemToken(token) {
+    var suffixes = ['ation', 'ment', 'ing', 'ent', 'ers', 'er', 'ed', 'es', 's'];
+    for (var i = 0; i < suffixes.length; i += 1) {
+      var suffix = suffixes[i];
+      if (token.endsWith(suffix) && token.length - suffix.length >= 4) {
+        token = token.slice(0, -suffix.length);
+        break;
+      }
+    }
+    if (token.endsWith('e') && token.length > 5) token = token.slice(0, -1);
+    return token;
+  }
+
+  function escapePattern(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function boundaryPattern(value, trailing) {
+    return new RegExp('(^|[^a-z0-9])' + escapePattern(value) + (trailing || '(?=$|[^a-z0-9])'));
+  }
+
+  // A query term carries everything matching needs, derived once: its stem and
+  // its position patterns. The per-document loop then only compares.
+  function compileTerm(text) {
+    var prefixable = text.length >= MIN_PREFIX_LENGTH;
+    return {
+      text: text,
+      stem: text.length >= MIN_STEM_LENGTH ? stemToken(text) : null,
+      prefixable: prefixable,
+      exactPattern: boundaryPattern(text),
+      prefixPattern: prefixable ? boundaryPattern(text, '[a-z0-9]*') : null,
+    };
+  }
+
+  function fieldMatchesTerm(field, term) {
+    if (field.tokenSet.has(term.text)) return true;
+    if (term.prefixable && field.tokens.some(function (candidate) {
+      return candidate.startsWith(term.text);
+    })) return true;
+    return term.stem !== null && field.stems.has(term.stem);
+  }
+
+  function matchesAnyTerm(terms, candidate) {
+    return terms.some(function (term) {
+      if (term.text === candidate) return true;
+      if (term.prefixable && candidate.startsWith(term.text)) return true;
+      return term.stem !== null && term.stem === stemToken(candidate);
+    });
+  }
+
+  /* ----- Prepared index -----
+     Normalizing and tokenizing is done once per document at load time instead
+     of once per document per keystroke, which keeps ranking allocation-free
+     enough to stay well inside a frame while typing. */
+
+  function analyzeField(rawValue) {
+    var value = normalize(rawValue);
+    var tokens = expandTokens(splitTerms(value));
+    return {
+      value: value,
+      tokens: tokens,
+      tokenSet: new Set(tokens),
+      stems: new Set(tokens.map(stemToken)),
+    };
+  }
+
+  function prepareEntry(record) {
+    var trail = record.trail || [];
+    var displayText = String(record.text || '').replace(/\s+/g, ' ').trim();
+    var entry = {
+      record: record,
+      page: record.page || record.url.split('#')[0],
+      title: analyzeField(record.title),
+      heading: analyzeField(record.heading),
+      text: analyzeField(record.text),
+      trail: analyzeField(trail.join(' ')),
+      pageLabel: analyzeField(trail.length ? trail[trail.length - 1] : record.title),
+      // Snippet offsets are taken in this string's own index space; NFKD would
+      // shift them whenever the text carries composed characters.
+      displayText: displayText,
+      displayLower: displayText.toLowerCase(),
+    };
+    entry.fields = [entry.title, entry.heading, entry.text, entry.trail, entry.pageLabel];
+    return entry;
+  }
+
+  function buildIndex(payload) {
     if (!payload || payload.version !== 2 || !Array.isArray(payload.documents)) {
       throw new Error('Unsupported search index schema');
     }
-    return payload.documents;
+    var entries = payload.documents.map(prepareEntry);
+    var pageEntries = new Map();
+    entries.forEach(function (entry) {
+      if (entry.record.page_entry && !pageEntries.has(entry.page)) {
+        pageEntries.set(entry.page, entry);
+      }
+    });
+    indexReady = true;
+    return { entries: entries, pageEntries: pageEntries };
   }
+
+  /* ----- Index loading ----- */
 
   function loadScriptIndex() {
     if (window.MAPLE_SEARCH_INDEX) {
       return Promise.resolve().then(function () {
-        return documentsFromPayload(window.MAPLE_SEARCH_INDEX);
+        return buildIndex(window.MAPLE_SEARCH_INDEX);
       });
     }
     if (!scriptIndexPromise) {
@@ -33,7 +171,7 @@
             return;
           }
           try {
-            resolve(documentsFromPayload(window.MAPLE_SEARCH_INDEX));
+            resolve(buildIndex(window.MAPLE_SEARCH_INDEX));
           } catch (error) {
             reject(error);
           }
@@ -53,7 +191,7 @@
   function loadIndex() {
     if (window.MAPLE_SEARCH_INDEX) {
       return Promise.resolve().then(function () {
-        return documentsFromPayload(window.MAPLE_SEARCH_INDEX);
+        return buildIndex(window.MAPLE_SEARCH_INDEX);
       });
     }
     if (!indexPromise) {
@@ -62,9 +200,7 @@
         : fetch(indexUrl).then(function (response) {
           if (!response.ok) throw new Error('Search index request failed');
           return response.json();
-        }).then(function (payload) {
-          return documentsFromPayload(payload);
-        }).catch(function () {
+        }).then(buildIndex).catch(function () {
           return loadScriptIndex();
         });
       indexPromise = primary.catch(function (error) {
@@ -75,112 +211,59 @@
     return indexPromise;
   }
 
-  function normalize(value) {
-    return String(value || '').normalize('NFKD').toLowerCase();
+  /* ----- Ranking ----- */
+
+  function parseQuery(rawQuery) {
+    var text = normalize(rawQuery).trim();
+    var terms = splitTerms(text);
+    return {
+      text: text,
+      textPattern: text ? boundaryPattern(text) : null,
+      terms: terms.map(compileTerm),
+      // Highlighting compares whole words, so compounds are pre-split.
+      markTerms: expandTokens(terms).map(compileTerm),
+      // Case-folded only, so positions line up with `entry.displayText`.
+      literal: String(rawQuery || '').toLowerCase().trim(),
+    };
   }
 
-  var MATCH_TIER = Object.freeze({
-    NONE: 0,
-    CROSS_FIELD: 1,
-    BODY: 2,
-    TRAIL: 3,
-    STEM: 4,
-    TITLE: 5,
-    HEADING: 6,
-    PHRASE: 7,
-    EXACT: 8,
-  });
-  var RESULT_LIMIT = 8;
-  var PER_PAGE_LIMIT = 4;
-  var MIN_PREFIX_LENGTH = 3;
-  var MIN_STEM_LENGTH = 4;
-
-  function queryTerms(query) {
-    return normalize(query).match(/[a-z0-9]+(?:[._/+:-][a-z0-9]+)*/g) || [];
-  }
-
-  function stemToken(token) {
-    var suffixes = ['ation', 'ment', 'ing', 'ent', 'ers', 'er', 'ed', 'es', 's'];
-    for (var i = 0; i < suffixes.length; i += 1) {
-      var suffix = suffixes[i];
-      if (token.endsWith(suffix) && token.length - suffix.length >= 4) {
-        token = token.slice(0, -suffix.length);
-        break;
-      }
-    }
-    if (token.endsWith('e') && token.length > 5) token = token.slice(0, -1);
-    return token;
-  }
-
-  function fieldTokens(value) {
-    var compounds = queryTerms(value);
-    var tokens = new Set();
-    compounds.forEach(function (compound) {
-      tokens.add(compound);
-      compound.split(/[._/+:-]+/).forEach(function (part) {
-        if (part) tokens.add(part);
-      });
-    });
-    return Array.from(tokens);
-  }
-
-  function termMatches(term, candidate) {
-    if (term === candidate) return true;
-    if (term.length >= MIN_PREFIX_LENGTH && candidate.startsWith(term)) return true;
-    return term.length >= MIN_STEM_LENGTH && stemToken(term) === stemToken(candidate);
-  }
-
-  function hasExactTerm(tokens, term) {
-    return tokens.some(function (candidate) { return candidate === term; });
-  }
-
-  function coversTerms(tokens, terms) {
-    return terms.every(function (term) {
-      return tokens.some(function (candidate) { return termMatches(term, candidate); });
-    });
-  }
-
-  function matchQuality(value, terms, normalizedQuery) {
-    var normalizedValue = normalize(value);
-    var tokens = fieldTokens(normalizedValue);
-    if (!coversTerms(tokens, terms)) return MATCH_TIER.NONE;
-    if (normalizedValue === normalizedQuery) return MATCH_TIER.EXACT;
-    if (terms.length > 1 && normalizedValue.includes(normalizedQuery)) return MATCH_TIER.PHRASE;
-    if (terms.every(function (term) { return hasExactTerm(tokens, term); })) return MATCH_TIER.PHRASE;
+  function matchQuality(field, query) {
+    var covered = query.terms.every(function (term) { return fieldMatchesTerm(field, term); });
+    if (!covered) return MATCH_TIER.NONE;
+    if (field.value === query.text) return MATCH_TIER.EXACT;
+    if (query.terms.length > 1 && field.value.includes(query.text)) return MATCH_TIER.PHRASE;
+    if (query.terms.every(function (term) { return field.tokenSet.has(term.text); })) return MATCH_TIER.PHRASE;
     return MATCH_TIER.STEM;
   }
 
-  function firstQueryPosition(text, normalizedQuery, terms) {
-    var escapePattern = function (value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
-    var boundaryPosition = function (value) {
-      var match = new RegExp('(^|[^a-z0-9])' + escapePattern(value) + '(?=$|[^a-z0-9])').exec(text);
-      return match ? match.index + match[1].length : -1;
-    };
-    var position = boundaryPosition(normalizedQuery);
-    if (position >= 0) return position;
-    var positions = terms.map(function (term) {
-      var exactPosition = boundaryPosition(term);
-      if (exactPosition >= 0 || term.length < MIN_PREFIX_LENGTH) return exactPosition;
-      var prefixMatch = new RegExp('(^|[^a-z0-9])' + escapePattern(term) + '[a-z0-9]*').exec(text);
-      return prefixMatch ? prefixMatch.index + prefixMatch[1].length : -1;
-    }).filter(function (item) { return item >= 0; });
-    return positions.length ? Math.min.apply(Math, positions) : Number.POSITIVE_INFINITY;
+  function patternPosition(pattern, text) {
+    var match = pattern.exec(text);
+    return match ? match.index + match[1].length : -1;
   }
 
-  function analyzeDocument(document, normalizedQuery, terms) {
-    var title = normalize(document.title);
-    var heading = normalize(document.heading);
-    var text = normalize(document.text);
-    var trail = normalize((document.trail || []).join(' '));
-    var pageLabel = normalize((document.trail || []).slice(-1)[0] || document.title);
-    var allTokens = fieldTokens([title, heading, text, trail, pageLabel].join(' '));
-    if (!coversTerms(allTokens, terms)) return null;
+  function firstQueryPosition(text, query) {
+    var position = query.textPattern ? patternPosition(query.textPattern, text) : -1;
+    if (position >= 0) return position;
+    var earliest = Number.POSITIVE_INFINITY;
+    query.terms.forEach(function (term) {
+      var found = patternPosition(term.exactPattern, text);
+      if (found < 0 && term.prefixPattern) found = patternPosition(term.prefixPattern, text);
+      if (found >= 0 && found < earliest) earliest = found;
+    });
+    return earliest;
+  }
 
-    var pageLabelQuality = matchQuality(pageLabel, terms, normalizedQuery);
-    var titleQuality = matchQuality(title, terms, normalizedQuery);
-    var trailQuality = matchQuality(trail, terms, normalizedQuery);
-    var headingQuality = matchQuality(heading, terms, normalizedQuery);
-    var textQuality = matchQuality(text, terms, normalizedQuery);
+  function analyzeEntry(entry, query) {
+    var covered = query.terms.every(function (term) {
+      return entry.fields.some(function (field) { return fieldMatchesTerm(field, term); });
+    });
+    if (!covered) return null;
+
+    var pageLabelQuality = matchQuality(entry.pageLabel, query);
+    var titleQuality = matchQuality(entry.title, query);
+    var trailQuality = matchQuality(entry.trail, query);
+    var headingQuality = matchQuality(entry.heading, query);
+    var textQuality = matchQuality(entry.text, query);
     var pageTier = Math.max(
       pageLabelQuality,
       titleQuality > MATCH_TIER.NONE ? Math.min(titleQuality, MATCH_TIER.TITLE) : MATCH_TIER.NONE,
@@ -192,11 +275,11 @@
       MATCH_TIER.CROSS_FIELD
     );
     return {
-      document: document,
+      entry: entry,
       pageTier: pageTier,
       sectionTier: sectionTier,
       tier: Math.max(pageTier, sectionTier),
-      position: firstQueryPosition(text, normalizedQuery, terms),
+      position: firstQueryPosition(entry.text.value, query),
     };
   }
 
@@ -208,107 +291,117 @@
       b.sectionTier - a.sectionTier ||
       Number(b.pageEvidence || 0) - Number(a.pageEvidence || 0) ||
       a.position - b.position ||
-      Number(a.document.section_order || 0) - Number(b.document.section_order || 0) ||
-      a.document.title.localeCompare(b.document.title);
+      Number(a.entry.record.section_order || 0) - Number(b.entry.record.section_order || 0) ||
+      a.entry.record.title.localeCompare(b.entry.record.title);
   }
 
-  function rankDocuments(documents, query) {
-    var normalizedQuery = normalize(query).trim();
-    var terms = queryTerms(normalizedQuery);
-    if (!terms.length) return [];
-    var matches = documents.map(function (document) {
-      return analyzeDocument(document, normalizedQuery, terms);
-    }).filter(Boolean);
+  function rankEntries(index, query) {
+    if (!query.terms.length) return [];
+    var matches = [];
+    index.entries.forEach(function (entry) {
+      var match = analyzeEntry(entry, query);
+      if (match) matches.push(match);
+    });
     if (!matches.length) return [];
 
     var itemsByPage = new Map();
-    var pageEntries = new Map();
-    documents.forEach(function (document) {
-      var page = document.page || document.url.split('#')[0];
-      if (document.page_entry && !pageEntries.has(page)) pageEntries.set(page, document);
-    });
     matches.forEach(function (item) {
-      var page = item.document.page || item.document.url.split('#')[0];
-      if (!itemsByPage.has(page)) itemsByPage.set(page, []);
-      itemsByPage.get(page).push(item);
+      var bucket = itemsByPage.get(item.entry.page);
+      if (bucket) bucket.push(item);
+      else itemsByPage.set(item.entry.page, [item]);
     });
 
     var candidates = [];
-    itemsByPage.forEach(function (items) {
+    itemsByPage.forEach(function (items, page) {
       items.sort(compareRanked);
       var bestSection = items[0];
-      var pageTier = Math.max.apply(null, items.map(function (item) { return item.pageTier; }));
-      var pageEntryDocument = pageEntries.get(bestSection.document.page || bestSection.document.url.split('#')[0]);
-      var matchedPageEntry = items.find(function (item) { return item.document.url === (pageEntryDocument && pageEntryDocument.url); });
+      var pageTier = items.reduce(function (max, item) { return Math.max(max, item.pageTier); }, MATCH_TIER.NONE);
+      var pageEntry = index.pageEntries.get(page);
+      var matchedPageEntry = pageEntry && items.find(function (item) { return item.entry === pageEntry; });
       var multiSectionBodyIntent = items.length >= 2 &&
         (bestSection.sectionTier <= MATCH_TIER.BODY || pageTier >= MATCH_TIER.STEM);
-      var usePageEntry = Boolean(pageEntryDocument) &&
+      var usePageEntry = Boolean(pageEntry) &&
         (pageTier >= bestSection.sectionTier || multiSectionBodyIntent);
-      var representative = usePageEntry
-        ? (matchedPageEntry || {
-          document: pageEntryDocument,
-          pageTier: pageTier,
-          sectionTier: MATCH_TIER.NONE,
-          position: bestSection.position,
-        })
-        : bestSection;
-      var candidateTier = Math.max(pageTier, bestSection.sectionTier);
-      if (pageEntryDocument && pageEntryDocument.page_role === 'landing' && pageTier > MATCH_TIER.NONE) {
-        candidateTier = Math.min(MATCH_TIER.EXACT, candidateTier + 1);
-      }
-      var pageCandidate = {
-        document: representative.document,
+      var representative = usePageEntry ? (matchedPageEntry || { entry: pageEntry }) : bestSection;
+      var isLanding = Boolean(pageEntry) && pageEntry.record.page_role === 'landing' && pageTier > MATCH_TIER.NONE;
+      var pageEvidence = Math.min(items.length, 3);
+
+      candidates.push({
+        entry: representative.entry,
         pageTier: pageTier,
         sectionTier: bestSection.sectionTier,
-        tier: candidateTier,
+        tier: isLanding
+          ? Math.min(MATCH_TIER.EXACT, Math.max(pageTier, bestSection.sectionTier) + 1)
+          : Math.max(pageTier, bestSection.sectionTier),
         position: bestSection.position,
-        pageEvidence: Math.min(items.length, 3),
+        pageEvidence: pageEvidence,
         isPageCandidate: true,
-        roleMatch: pageEntryDocument && pageEntryDocument.page_role === 'landing' && pageTier > MATCH_TIER.NONE,
-      };
-      candidates.push(pageCandidate);
+        roleMatch: isLanding,
+      });
       items.forEach(function (item) {
-        if (item.document.url === representative.document.url) return;
+        if (item.entry === representative.entry) return;
         candidates.push({
-          document: item.document,
+          entry: item.entry,
           pageTier: item.pageTier,
           sectionTier: item.sectionTier,
           tier: Math.max(item.sectionTier, item.pageTier > MATCH_TIER.NONE ? item.pageTier - 1 : MATCH_TIER.NONE),
           position: item.position,
-          pageEvidence: Math.min(items.length, 3),
+          pageEvidence: pageEvidence,
           isPageCandidate: false,
           roleMatch: false,
         });
       });
     });
+
     candidates.sort(compareRanked);
     var selectedUrls = new Set();
     var pageCounts = new Map();
-    return candidates.filter(function (item) {
-      if (selectedUrls.has(item.document.url)) return false;
-      var page = item.document.page || item.document.url.split('#')[0];
-      if ((pageCounts.get(page) || 0) >= PER_PAGE_LIMIT) return false;
-      selectedUrls.add(item.document.url);
-      pageCounts.set(page, (pageCounts.get(page) || 0) + 1);
-      return true;
-    }).slice(0, RESULT_LIMIT);
+    var selected = [];
+    for (var i = 0; i < candidates.length && selected.length < RESULT_LIMIT; i += 1) {
+      var item = candidates[i];
+      var url = item.entry.record.url;
+      if (selectedUrls.has(url)) continue;
+      var taken = pageCounts.get(item.entry.page) || 0;
+      if (taken >= PER_PAGE_LIMIT) continue;
+      selectedUrls.add(url);
+      pageCounts.set(item.entry.page, taken + 1);
+      selected.push(item);
+    }
+    return selected;
   }
 
-  function snippetFor(document, query) {
-    var text = String(document.text || '').replace(/\s+/g, ' ').trim();
+  /* ----- Presentation ----- */
+
+  function snippetFor(entry, query) {
+    var text = entry.displayText;
     if (!text) return '';
-    var lower = normalize(text);
-    var terms = query.split(/\s+/).filter(Boolean);
-    var position = lower.indexOf(query);
-    if (position < 0) {
-      for (var i = 0; i < terms.length && position < 0; i += 1) {
-        position = lower.indexOf(terms[i]);
-      }
+    var lower = entry.displayLower;
+    var position = query.literal ? lower.indexOf(query.literal) : -1;
+    for (var i = 0; i < query.terms.length && position < 0; i += 1) {
+      position = lower.indexOf(query.terms[i].text);
     }
     if (position < 0) position = 0;
     var start = Math.max(0, position - 70);
     var end = Math.min(text.length, start + 210);
     return (start > 0 ? '…' : '') + text.slice(start, end).trim() + (end < text.length ? '…' : '');
+  }
+
+  // Appends `text` to `target`, wrapping matched words in <mark>. Word-by-word
+  // so highlighting agrees with the matcher that produced the result.
+  function appendMarked(target, text, query) {
+    if (!text) return;
+    var parts = query.markTerms.length ? text.split(/([A-Za-z0-9]+)/) : [text];
+    for (var i = 0; i < parts.length; i += 1) {
+      var part = parts[i];
+      if (!part) continue;
+      if (i % 2 === 1 && matchesAnyTerm(query.markTerms, normalize(part))) {
+        var mark = document.createElement('mark');
+        mark.textContent = part;
+        target.appendChild(mark);
+      } else {
+        target.appendChild(document.createTextNode(part));
+      }
+    }
   }
 
   function isTypingTarget(target) {
@@ -392,6 +485,7 @@
     var panel = wrapper.querySelector('.site-search-results');
     var requestId = 0;
     var activeIndex = -1;
+    var debounceTimer = 0;
 
     function resultLinks() {
       return Array.from(panel.querySelectorAll('.site-search-result'));
@@ -419,19 +513,22 @@
       links[activeIndex].scrollIntoView({ block: 'nearest' });
     }
 
-    function renderResults(documents, rawQuery) {
-      var query = normalize(rawQuery).trim();
-      var ranked = rankDocuments(documents, query);
+    function showMessage(message, isError) {
+      panel.replaceChildren();
+      var note = document.createElement('p');
+      note.className = 'site-search-empty' + (isError ? ' error' : '');
+      note.textContent = message;
+      panel.appendChild(note);
+      setOpen(true);
+    }
 
+    function renderResults(index, query) {
+      var ranked = rankEntries(index, query);
       panel.replaceChildren();
       activeIndex = -1;
       input.removeAttribute('aria-activedescendant');
       if (!ranked.length) {
-        var empty = document.createElement('p');
-        empty.className = 'site-search-empty';
-        empty.textContent = 'No matching documentation found.';
-        panel.appendChild(empty);
-        setOpen(true);
+        showMessage('No matching documentation found.');
         return;
       }
 
@@ -440,11 +537,12 @@
       summary.textContent = ranked.length + (ranked.length === 1 ? ' result' : ' results');
       panel.appendChild(summary);
 
-      ranked.forEach(function (item, index) {
-        var record = item.document;
+      var fragment = document.createDocumentFragment();
+      ranked.forEach(function (item, position) {
+        var record = item.entry.record;
         var link = document.createElement('a');
         link.className = 'site-search-result';
-        link.id = 'site-search-option-' + index;
+        link.id = 'site-search-option-' + position;
         link.setAttribute('role', 'option');
         link.setAttribute('aria-selected', 'false');
         link.tabIndex = -1;
@@ -456,49 +554,54 @@
           ? record.trail.join(' › ')
           : record.type + ' · ' + record.title;
         var heading = document.createElement('strong');
-        heading.textContent = record.heading;
+        appendMarked(heading, record.heading, query);
         var snippet = document.createElement('span');
         snippet.className = 'site-search-result-snippet';
-        snippet.textContent = snippetFor(record, query);
+        appendMarked(snippet, snippetFor(item.entry, query), query);
         link.append(meta, heading, snippet);
-        panel.appendChild(link);
+        fragment.appendChild(link);
       });
+      panel.appendChild(fragment);
       setOpen(true);
     }
 
-    function search() {
-      var query = input.value.trim();
+    function runSearch() {
+      window.clearTimeout(debounceTimer);
+      var raw = input.value.trim();
       requestId += 1;
       var currentRequest = requestId;
-      if (query.length < 2) {
+      if (raw.length < MIN_QUERY_LENGTH) {
         panel.replaceChildren();
         setOpen(false);
         return;
       }
-      panel.replaceChildren();
-      var loading = document.createElement('p');
-      loading.className = 'site-search-empty';
-      loading.textContent = 'Searching…';
-      panel.appendChild(loading);
-      setOpen(true);
-
-      loadIndex().then(function (documents) {
-        if (currentRequest === requestId) renderResults(documents, query);
+      // The placeholder only earns its keep while the index is still in flight.
+      if (!indexReady) showMessage('Searching…');
+      var query = parseQuery(raw);
+      loadIndex().then(function (index) {
+        if (currentRequest === requestId) renderResults(index, query);
       }).catch(function () {
-        if (currentRequest !== requestId) return;
-        panel.replaceChildren();
-        var error = document.createElement('p');
-        error.className = 'site-search-empty error';
-        error.textContent = 'Search is temporarily unavailable.';
-        panel.appendChild(error);
-        setOpen(true);
+        if (currentRequest === requestId) showMessage('Search is temporarily unavailable.', true);
       });
     }
 
-    input.addEventListener('input', search);
-    input.addEventListener('focus', function () {
-      if (input.value.trim().length >= 2) search();
+    function warmIndex() {
+      loadIndex().catch(function () { /* surfaced on the next query */ });
+    }
+
+    input.addEventListener('input', function () {
+      window.clearTimeout(debounceTimer);
+      if (input.value.trim().length < MIN_QUERY_LENGTH) {
+        runSearch();
+        return;
+      }
+      debounceTimer = window.setTimeout(runSearch, QUERY_DEBOUNCE_MS);
     });
+    input.addEventListener('focus', function () {
+      warmIndex();
+      if (input.value.trim().length >= MIN_QUERY_LENGTH) runSearch();
+    });
+    wrapper.addEventListener('pointerenter', warmIndex, { once: true });
     input.addEventListener('keydown', function (event) {
       var links = resultLinks();
       if (event.key === 'ArrowDown' && links.length) {

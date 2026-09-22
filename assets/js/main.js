@@ -296,20 +296,48 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    function updateTocActive() {
-      var scrollY = window.scrollY + 100;
-      var current = headings.length > 0 ? headings[0] : null;
-      for (var i = 0; i < headings.length; i++) {
-        if (headings[i].el.offsetTop <= scrollY) {
-          current = headings[i];
-        }
+    // Heading offsets are measured once per layout change rather than once per
+    // scroll event, all reads happen inside one animation frame, and the active
+    // class is only rewritten when it actually moves.
+    var headingOffsets = [];
+    var activeTocLink = null;
+    var needsMeasure = true;
+    var tocFrame = 0;
+
+    function paintTocActive() {
+      tocFrame = 0;
+      if (needsMeasure) {
+        var scrollY = window.scrollY;
+        headingOffsets = headings.map(function (item) {
+          return item.el.getBoundingClientRect().top + scrollY;
+        });
+        needsMeasure = false;
       }
-      tocLinks.forEach(function (l) { l.classList.remove('active'); });
-      if (current) current.link.classList.add('active');
+      var edge = window.scrollY + 100;
+      var current = headings.length ? headings[0].link : null;
+      for (var i = 0; i < headingOffsets.length; i += 1) {
+        if (headingOffsets[i] <= edge) current = headings[i].link;
+      }
+      if (current === activeTocLink) return;
+      if (activeTocLink) activeTocLink.classList.remove('active');
+      if (current) current.classList.add('active');
+      activeTocLink = current;
     }
 
-    window.addEventListener('scroll', updateTocActive, { passive: true });
-    updateTocActive();
+    function scheduleTocUpdate() {
+      if (!tocFrame) tocFrame = window.requestAnimationFrame(paintTocActive);
+    }
+
+    function invalidateTocOffsets() {
+      needsMeasure = true;
+      scheduleTocUpdate();
+    }
+
+    paintTocActive();
+    window.addEventListener('scroll', scheduleTocUpdate, { passive: true });
+    window.addEventListener('resize', invalidateTocOffsets, { passive: true });
+    // Images and late-loading fonts change where headings sit.
+    window.addEventListener('load', invalidateTocOffsets);
   }
 
   // ----- 5. Mobile Hamburger Menu -----
@@ -409,6 +437,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
   setSidebarOpen(false);
+
+  // ----- 5b. Skip Link -----
+  // Docs pages put a few dozen sidebar links between the header and the
+  // article; keyboard and screen-reader users need a way past them.
+  var contentRoot = document.querySelector('main, .page-body');
+  if (sidebar && contentRoot) {
+    if (!contentRoot.id) contentRoot.id = 'main-content';
+    contentRoot.tabIndex = -1;
+    contentRoot.classList.add('skip-target');
+
+    var skipLink = document.createElement('a');
+    skipLink.className = 'skip-link';
+    skipLink.href = '#' + contentRoot.id;
+    skipLink.textContent = 'Skip to content';
+    // Scrolling is left to the shared anchor handler below; this only needs to
+    // move the caret so the next Tab continues inside the article.
+    skipLink.addEventListener('click', function () {
+      contentRoot.focus({ preventScroll: true });
+    });
+    document.body.insertBefore(skipLink, document.body.firstChild);
+  }
 
   // ----- 6. Smooth Scroll for Anchor Links -----
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
