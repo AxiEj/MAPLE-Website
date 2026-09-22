@@ -101,6 +101,20 @@ a:visited {
   color: var(--color-brand-visited);
 }
 
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 250;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  color: var(--color-brand-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: translateY(0); }
+
 img { max-width: 100%; height: auto; display: block; }
 
 /* ----- 3. Top Navigation Bar ----- */
@@ -467,6 +481,23 @@ img { max-width: 100%; height: auto; display: block; }
 
 .toc li.toc-h3 a { padding-left: 1.5rem; }
 
+/* Compact TOC uses the same links without another floating control. */
+.mobile-toc { display: none; }
+.mobile-toc summary {
+  padding: 0.65rem 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.mobile-toc summary:focus-visible {
+  outline: 3px solid var(--color-brand-primary);
+  outline-offset: 3px;
+}
+.mobile-toc ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+.mobile-toc li a { display: block; padding: 0.25rem 0; font-size: var(--font-size-sm); }
+.mobile-toc .toc-h3 a { padding-left: 1rem; }
+
 /* ----- 5. Breadcrumbs ----- */
 .breadcrumb {
   display: flex;
@@ -642,7 +673,11 @@ pre code {
   color: var(--color-text-muted);
   z-index: 2;
 }
-.code-wrapper:hover .copy-btn { opacity: 1; }
+.code-wrapper:hover .copy-btn,
+.code-wrapper:focus-within .copy-btn { opacity: 1; }
+@media (hover: none) {
+  .copy-btn { opacity: 1; }
+}
 .copy-btn:hover {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
@@ -1320,10 +1355,31 @@ a.news-item:hover p {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.3);
-  z-index: 9;
+  z-index: 110;
 }
 .sidebar-overlay.active { display: block; }
-.sidebar-fab { display: none; }
+.sidebar-fab,
+.sidebar-close { display: none; }
+
+.sidebar-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-brand-primary);
+  cursor: pointer;
+}
+.sidebar-close svg { width: 20px; height: 20px; }
+.sidebar-close:hover { background: var(--color-bg-hover); }
+.sidebar[aria-modal="true"] .sidebar-close { display: flex; }
+.sidebar[aria-modal="true"] .sidebar-brand { padding-right: 3.5rem; }
 
 @media (max-width: 67em) {
   .sidebar-fab {
@@ -1348,13 +1404,13 @@ a.news-item:hover p {
     transition: opacity var(--transition-fast), background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
   }
   .sidebar-fab:hover,
-  .sidebar-fab.active {
+  .sidebar-fab:focus-visible {
     opacity: 1;
     background: var(--color-bg-primary);
     color: var(--color-brand-primary);
     border-color: rgba(37,99,235,.35);
   }
-  .sidebar-fab.active { transform: translate(calc(var(--sidebar-width) - 1px), -50%); }
+  .sidebar-fab.active { visibility: hidden; }
   .sidebar-fab svg { width: 15px; height: 15px; }
 }
 
@@ -1369,6 +1425,7 @@ a.news-item:hover p {
 /* Medium screens: hide TOC, adjust content */
 @media (max-width: 82em) {
   .toc { display: none; }
+  .mobile-toc { display: block; }
   .content { max-width: none; padding: 2rem 2rem; }
 }
 
@@ -1379,9 +1436,11 @@ a.news-item:hover p {
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh;
+    overscroll-behavior: contain;
     transform: translateX(-100%);
     transition: transform var(--transition-normal);
-    z-index: 50;
+    z-index: 120;
     box-shadow: var(--shadow-lg);
   }
   .sidebar.open {
@@ -1821,7 +1880,7 @@ footer {
 
 /* ----- 21. Print Styles ----- */
 @media print {
-  .top-nav, .sidebar, .toc, .page-nav, .copy-btn, .mobile-toggle { display: none !important; }
+  .top-nav, .sidebar, .toc, .mobile-toc, .skip-link, .sidebar-fab, .page-nav, .copy-btn, .mobile-toggle { display: none !important; }
   .content { max-width: 100%; padding: 0; }
   .page-layout { display: block; }
   body { font-size: 12pt; }
