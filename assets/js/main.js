@@ -4,6 +4,25 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  var mainContent = document.querySelector('main');
+  if (mainContent && !document.querySelector('.skip-link')) {
+    if (!mainContent.id) {
+      var contentId = 'main-content';
+      var contentSuffix = 2;
+      while (document.getElementById(contentId)) contentId = 'main-content-' + contentSuffix++;
+      mainContent.id = contentId;
+    }
+    var skipLink = document.createElement('a');
+    skipLink.className = 'skip-link';
+    skipLink.href = '#' + mainContent.id;
+    skipLink.textContent = 'Skip to main content';
+    skipLink.addEventListener('click', function () {
+      if (!mainContent.hasAttribute('tabindex')) mainContent.tabIndex = -1;
+      mainContent.focus({ preventScroll: true });
+    });
+    document.body.prepend(skipLink);
+  }
+
   // ----- 1. Sidebar Tree Toggle -----
   var treeControlIndex = 0;
 
@@ -291,25 +310,88 @@ document.addEventListener('DOMContentLoaded', function () {
     tocLinks.forEach(function (link) {
       var id = link.getAttribute('href');
       if (id && id.startsWith('#')) {
-        var heading = document.querySelector(id);
+        var heading;
+        try {
+          heading = document.getElementById(decodeURIComponent(id.slice(1)));
+        } catch (error) {
+          return;
+        }
         if (heading) headings.push({ el: heading, link: link });
       }
     });
 
+    var activeHeading = null;
+    var tocFrame = null;
+    var geometryDirty = true;
+    var headingOffset = 100;
+    var pageHeader = document.querySelector('.top-nav');
+
     function updateTocActive() {
-      var scrollY = window.scrollY + 100;
-      var current = headings.length > 0 ? headings[0] : null;
-      for (var i = 0; i < headings.length; i++) {
-        if (headings[i].el.offsetTop <= scrollY) {
-          current = headings[i];
-        }
+      tocFrame = null;
+      if (geometryDirty) {
+        var scrollTop = window.scrollY;
+        headings.forEach(function (heading) {
+          heading.top = heading.el.getBoundingClientRect().top + scrollTop;
+        });
+        headingOffset = (pageHeader ? pageHeader.getBoundingClientRect().height : 84) + 16;
+        geometryDirty = false;
       }
-      tocLinks.forEach(function (l) { l.classList.remove('active'); });
-      if (current) current.link.classList.add('active');
+      var current = headings.length > 0 ? headings[0] : null;
+      var position = window.scrollY + headingOffset;
+      for (var i = 0; i < headings.length; i += 1) {
+        if (headings[i].top <= position) current = headings[i];
+      }
+      if (current === activeHeading) return;
+      if (activeHeading) {
+        activeHeading.link.classList.remove('active');
+        activeHeading.link.removeAttribute('aria-current');
+      }
+      if (current) {
+        current.link.classList.add('active');
+        current.link.setAttribute('aria-current', 'location');
+      }
+      activeHeading = current;
     }
 
-    window.addEventListener('scroll', updateTocActive, { passive: true });
-    updateTocActive();
+    function scheduleTocUpdate() {
+      if (tocFrame === null) tocFrame = window.requestAnimationFrame(updateTocActive);
+    }
+
+    function invalidateTocGeometry() {
+      geometryDirty = true;
+      scheduleTocUpdate();
+    }
+
+    // Reuse the existing TOC for a small, native disclosure on narrow screens.
+    var contentArticle = document.querySelector('article');
+    if (contentArticle && tocContainer && tocContainer.children.length) {
+      var mobileToc = document.createElement('details');
+      mobileToc.className = 'mobile-toc';
+      var summary = document.createElement('summary');
+      summary.textContent = 'On this page';
+      var mobileLinks = tocContainer.cloneNode(true);
+      mobileLinks.removeAttribute('id');
+      mobileLinks.querySelectorAll('[id]').forEach(function (element) { element.removeAttribute('id'); });
+      mobileToc.append(summary, mobileLinks);
+      var pageTitle = contentArticle.querySelector('h1');
+      if (pageTitle) pageTitle.after(mobileToc);
+      else contentArticle.prepend(mobileToc);
+      mobileToc.addEventListener('toggle', invalidateTocGeometry);
+    }
+
+    window.addEventListener('scroll', scheduleTocUpdate, { passive: true });
+    window.addEventListener('resize', invalidateTocGeometry);
+    window.addEventListener('load', invalidateTocGeometry);
+    if (document.fonts) {
+      document.fonts.ready.then(invalidateTocGeometry);
+      document.fonts.addEventListener('loadingdone', invalidateTocGeometry);
+    }
+    if (window.ResizeObserver) {
+      var tocObserver = new ResizeObserver(invalidateTocGeometry);
+      if (mainContent) tocObserver.observe(mainContent);
+      if (pageHeader) tocObserver.observe(pageHeader);
+    }
+    scheduleTocUpdate();
   }
 
   // ----- 5. Mobile Hamburger Menu -----
@@ -321,6 +403,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var sidebarDrawerQuery = window.matchMedia('(max-width: 67em)');
   var sidebarFab = null;
   var lastSidebarTrigger = null;
+  var sidebarClose = null;
+  var modalState = null;
 
   if (topNavUl && !topNavUl.id) topNavUl.id = 'primary-navigation';
   if (mobileToggle) {
@@ -335,8 +419,53 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!open && returnFocus && mobileToggle) mobileToggle.focus();
   }
 
+  function sidebarFocusables() {
+    return Array.from(sidebar.querySelectorAll('a[href], button, input, select, textarea, [tabindex]'))
+      .filter(function (element) {
+        return element.tabIndex >= 0 && !element.disabled && !element.closest('[inert]') &&
+          element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden';
+      });
+  }
+
+  function setSidebarModal(open) {
+    if (open && !modalState) {
+      modalState = {
+        inert: new Map(),
+        role: sidebar.getAttribute('role'),
+        label: sidebar.getAttribute('aria-label'),
+        htmlOverflow: document.documentElement.style.overflow,
+        bodyOverflow: document.body.style.overflow,
+      };
+      // Disable siblings along the ancestor path, never an ancestor of the drawer.
+      for (var node = sidebar; node && node !== document.body; node = node.parentElement) {
+        Array.from(node.parentElement.children).forEach(function (sibling) {
+          if (sibling === node || sibling === overlay || /^(SCRIPT|STYLE|LINK)$/.test(sibling.tagName)) return;
+          modalState.inert.set(sibling, sibling.inert);
+          sibling.inert = true;
+        });
+      }
+      sidebar.setAttribute('role', 'dialog');
+      sidebar.setAttribute('aria-modal', 'true');
+      if (!modalState.label) sidebar.setAttribute('aria-label', 'Documentation navigation');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    } else if (!open && modalState) {
+      modalState.inert.forEach(function (inert, element) { element.inert = inert; });
+      if (modalState.role === null) sidebar.removeAttribute('role');
+      else sidebar.setAttribute('role', modalState.role);
+      if (modalState.label === null) sidebar.removeAttribute('aria-label');
+      else sidebar.setAttribute('aria-label', modalState.label);
+      sidebar.removeAttribute('aria-modal');
+      document.documentElement.style.overflow = modalState.htmlOverflow;
+      document.body.style.overflow = modalState.bodyOverflow;
+      modalState = null;
+    }
+  }
+
   function setSidebarOpen(open, trigger, returnFocus) {
     var drawer = sidebarDrawerQuery.matches;
+    open = Boolean(open && drawer && sidebar);
+    var wasOpen = Boolean(modalState);
     if (open && trigger) lastSidebarTrigger = trigger;
     if (sidebar) sidebar.classList.toggle('open', open);
     if (overlay) overlay.classList.toggle('active', open);
@@ -348,11 +477,29 @@ document.addEventListener('DOMContentLoaded', function () {
       sidebar.inert = drawer && !open;
       if (drawer) sidebar.setAttribute('aria-hidden', String(!open));
       else sidebar.removeAttribute('aria-hidden');
+      setSidebarModal(open);
     }
-    if (!open && returnFocus && lastSidebarTrigger) lastSidebarTrigger.focus();
+    if (open && !wasOpen) {
+      var focusables = sidebarFocusables();
+      var current = focusables.find(function (element) { return element.matches('a.active'); });
+      (current || sidebarClose).focus({ preventScroll: true });
+    } else if (!open && returnFocus && lastSidebarTrigger && drawer) {
+      lastSidebarTrigger.focus({ preventScroll: true });
+    }
   }
 
   if (sidebar) {
+    sidebarClose = document.createElement('button');
+    sidebarClose.type = 'button';
+    sidebarClose.className = 'sidebar-close';
+    sidebarClose.setAttribute('aria-label', 'Close documentation navigation');
+    sidebarClose.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    sidebar.prepend(sidebarClose);
+    sidebarClose.addEventListener('click', function () { setSidebarOpen(false, null, true); });
+    sidebar.addEventListener('click', function (event) {
+      if (event.target.closest('a[href]') && modalState) setSidebarOpen(false, null, true);
+    });
+
     sidebarFab = document.createElement('button');
     sidebarFab.type = 'button';
     sidebarFab.className = 'sidebar-fab';
@@ -388,15 +535,43 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   document.addEventListener('keydown', function (event) {
+    if (event.isComposing || event.defaultPrevented) return;
+    if (event.key === 'Tab' && modalState) {
+      var focusables = sidebarFocusables();
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+      return;
+    }
     if (event.key !== 'Escape') return;
     if (topNavUl && topNavUl.classList.contains('open')) {
       setTopNavOpen(false, true);
       return;
     }
     if (sidebar && sidebar.classList.contains('open')) {
+      event.preventDefault();
       setSidebarOpen(false, null, true);
     }
   });
+
+  document.addEventListener('pointerdown', function (event) {
+    if (topNavUl && mobileToggle && !topNavUl.contains(event.target) && !mobileToggle.contains(event.target)) {
+      setTopNavOpen(false);
+    }
+  });
+  if (topNavUl) {
+    topNavUl.addEventListener('focusout', function (event) {
+      if (event.relatedTarget && !topNavUl.contains(event.relatedTarget) && event.relatedTarget !== mobileToggle) {
+        setTopNavOpen(false);
+      }
+    });
+  }
 
   if (compactNavQuery.addEventListener) {
     compactNavQuery.addEventListener('change', function () {
@@ -405,7 +580,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   if (sidebarDrawerQuery.addEventListener) {
     sidebarDrawerQuery.addEventListener('change', function () {
+      var focusedInSidebar = sidebar && sidebar.contains(document.activeElement);
       setSidebarOpen(false);
+      if (focusedInSidebar) {
+        if (sidebarDrawerQuery.matches) sidebarFab.focus({ preventScroll: true });
+        else {
+          var first = sidebarFocusables()[0];
+          if (first) first.focus({ preventScroll: true });
+        }
+      }
     });
   }
   setSidebarOpen(false);
@@ -415,11 +598,22 @@ document.addEventListener('DOMContentLoaded', function () {
     a.addEventListener('click', function (e) {
       var href = a.getAttribute('href');
       if (href && href.length > 1) {
-        var target = document.querySelector(href);
+        var target;
+        try {
+          target = document.getElementById(decodeURIComponent(href.slice(1)));
+        } catch (error) {
+          return;
+        }
         if (target) {
           e.preventDefault();
           var behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+          var disclosure = a.closest('.mobile-toc');
+          if (disclosure) disclosure.open = false;
           target.scrollIntoView({ behavior: behavior, block: 'start' });
+          if (disclosure) {
+            if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+            target.focus({ preventScroll: true });
+          }
           history.pushState(null, '', href);
         }
       }

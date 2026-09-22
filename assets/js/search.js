@@ -7,7 +7,6 @@
   var indexUrl = new URL('assets/search-index.json', siteRoot);
   var scriptIndexUrl = new URL('assets/search-index.js', siteRoot);
   var indexPromise = null;
-  var scriptIndexPromise = null;
 
   function documentsFromPayload(payload) {
     if (!payload || payload.version !== 2 || !Array.isArray(payload.documents)) {
@@ -17,57 +16,43 @@
   }
 
   function loadScriptIndex() {
-    if (window.MAPLE_SEARCH_INDEX) {
-      return Promise.resolve().then(function () {
-        return documentsFromPayload(window.MAPLE_SEARCH_INDEX);
-      });
-    }
-    if (!scriptIndexPromise) {
-      scriptIndexPromise = new Promise(function (resolve, reject) {
-        var indexScript = document.createElement('script');
-        indexScript.src = scriptIndexUrl.href;
-        indexScript.async = true;
-        indexScript.onload = function () {
-          if (!window.MAPLE_SEARCH_INDEX) {
-            reject(new Error('Script search index did not initialize'));
-            return;
-          }
-          try {
-            resolve(documentsFromPayload(window.MAPLE_SEARCH_INDEX));
-          } catch (error) {
-            reject(error);
-          }
-        };
-        indexScript.onerror = function () {
-          reject(new Error('Script search index request failed'));
-        };
-        document.head.appendChild(indexScript);
-      }).catch(function (error) {
-        scriptIndexPromise = null;
-        throw error;
-      });
-    }
-    return scriptIndexPromise;
+    return new Promise(function (resolve, reject) {
+      var indexScript = document.createElement('script');
+      indexScript.src = scriptIndexUrl.href;
+      indexScript.async = true;
+      indexScript.onload = function () {
+        indexScript.remove();
+        try {
+          resolve(documentsFromPayload(window.MAPLE_SEARCH_INDEX));
+        } catch (error) {
+          reject(error);
+        }
+      };
+      indexScript.onerror = function () {
+        indexScript.remove();
+        reject(new Error('Script search index request failed'));
+      };
+      document.head.appendChild(indexScript);
+    });
   }
 
   function loadIndex() {
-    if (window.MAPLE_SEARCH_INDEX) {
-      return Promise.resolve().then(function () {
-        return documentsFromPayload(window.MAPLE_SEARCH_INDEX);
-      });
-    }
+    // One promise owns loading AND preparation, including file:// and retries.
     if (!indexPromise) {
-      var primary = window.location.protocol === 'file:'
-        ? loadScriptIndex()
-        : fetch(indexUrl).then(function (response) {
+      var primary;
+      if (window.MAPLE_SEARCH_INDEX) {
+        primary = Promise.resolve().then(function () {
+          return documentsFromPayload(window.MAPLE_SEARCH_INDEX);
+        });
+      } else if (window.location.protocol === 'file:') {
+        primary = loadScriptIndex();
+      } else {
+        primary = fetch(indexUrl).then(function (response) {
           if (!response.ok) throw new Error('Search index request failed');
           return response.json();
-        }).then(function (payload) {
-          return documentsFromPayload(payload);
-        }).catch(function () {
-          return loadScriptIndex();
-        });
-      indexPromise = primary.catch(function (error) {
+        }).then(documentsFromPayload).catch(loadScriptIndex);
+      }
+      indexPromise = primary.then(prepareIndex).catch(function (error) {
         indexPromise = null;
         throw error;
       });
@@ -124,63 +109,131 @@
     return Array.from(tokens);
   }
 
-  function termMatches(term, candidate) {
-    if (term === candidate) return true;
-    if (term.length >= MIN_PREFIX_LENGTH && candidate.startsWith(term)) return true;
-    return term.length >= MIN_STEM_LENGTH && stemToken(term) === stemToken(candidate);
+  function prepareField(value) {
+    var text = normalize(value);
+    var tokens = fieldTokens(text);
+    return {
+      text: text,
+      tokens: tokens,
+      exact: new Set(tokens),
+      stems: new Set(tokens.map(stemToken)),
+    };
   }
 
-  function hasExactTerm(tokens, term) {
-    return tokens.some(function (candidate) { return candidate === term; });
-  }
+  function prepareIndex(documents) {
+    var pageEntries = new Map();
+    var fields = new Map();
+    var prepared = [];
+    var next = 0;
 
-  function coversTerms(tokens, terms) {
-    return terms.every(function (term) {
-      return tokens.some(function (candidate) { return termMatches(term, candidate); });
+    function cachedField(value) {
+      var text = String(value || '');
+      if (!fields.has(text)) fields.set(text, prepareField(text));
+      return fields.get(text);
+    }
+
+    function prepareDocument(document) {
+      var page = document.page || document.url.split('#')[0];
+      if (document.page_entry && !pageEntries.has(page)) pageEntries.set(page, document);
+      var title = cachedField(document.title);
+      var heading = cachedField(document.heading);
+      var text = cachedField(document.text);
+      var trail = cachedField((document.trail || []).join(' '));
+      var pageLabel = cachedField((document.trail || []).slice(-1)[0] || document.title);
+      var tokens = new Set();
+      var stems = new Set();
+      [title, heading, text, trail, pageLabel].forEach(function (field) {
+        field.tokens.forEach(function (token) { tokens.add(token); });
+        field.stems.forEach(function (stem) { stems.add(stem); });
+      });
+      return {
+        document: document, title: title, heading: heading, text: text,
+        trail: trail, pageLabel: pageLabel,
+        all: { tokens: Array.from(tokens), exact: tokens, stems: stems },
+      };
+    }
+
+    // Cold preparation yields too: do not move a typing stall onto first focus.
+    return new Promise(function (resolve, reject) {
+      function prepareBatch() {
+        var started = performance.now();
+        try {
+          while (next < documents.length) {
+            prepared.push(prepareDocument(documents[next++]));
+            if (performance.now() - started >= 8) break;
+          }
+          if (next < documents.length) window.setTimeout(prepareBatch, 0);
+          else resolve({ documents: prepared, pageEntries: pageEntries });
+        } catch (error) {
+          reject(error);
+        }
+      }
+      prepareBatch();
     });
   }
 
-  function matchQuality(value, terms, normalizedQuery) {
-    var normalizedValue = normalize(value);
-    var tokens = fieldTokens(normalizedValue);
-    if (!coversTerms(tokens, terms)) return MATCH_TIER.NONE;
-    if (normalizedValue === normalizedQuery) return MATCH_TIER.EXACT;
-    if (terms.length > 1 && normalizedValue.includes(normalizedQuery)) return MATCH_TIER.PHRASE;
-    if (terms.every(function (term) { return hasExactTerm(tokens, term); })) return MATCH_TIER.PHRASE;
-    return MATCH_TIER.STEM;
-  }
-
-  function firstQueryPosition(text, normalizedQuery, terms) {
+  function prepareQuery(value) {
+    var text = normalize(value).trim();
+    var terms = queryTerms(text);
     var escapePattern = function (value) { return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
-    var boundaryPosition = function (value) {
-      var match = new RegExp('(^|[^a-z0-9])' + escapePattern(value) + '(?=$|[^a-z0-9])').exec(text);
-      return match ? match.index + match[1].length : -1;
+    var boundaryPattern = function (term) {
+      return new RegExp('(^|[^a-z0-9])' + escapePattern(term) + '(?=$|[^a-z0-9])');
     };
-    var position = boundaryPosition(normalizedQuery);
-    if (position >= 0) return position;
-    var positions = terms.map(function (term) {
-      var exactPosition = boundaryPosition(term);
-      if (exactPosition >= 0 || term.length < MIN_PREFIX_LENGTH) return exactPosition;
-      var prefixMatch = new RegExp('(^|[^a-z0-9])' + escapePattern(term) + '[a-z0-9]*').exec(text);
-      return prefixMatch ? prefixMatch.index + prefixMatch[1].length : -1;
-    }).filter(function (item) { return item >= 0; });
-    return positions.length ? Math.min.apply(Math, positions) : Number.POSITIVE_INFINITY;
+    return {
+      text: text, terms: terms, stems: terms.map(stemToken), quality: new Map(),
+      phrasePattern: boundaryPattern(text),
+      termPatterns: terms.map(function (term) {
+        return {
+          exact: boundaryPattern(term),
+          prefix: term.length >= MIN_PREFIX_LENGTH
+            ? new RegExp('(^|[^a-z0-9])' + escapePattern(term) + '[a-z0-9]*') : null,
+        };
+      }),
+    };
   }
 
-  function analyzeDocument(document, normalizedQuery, terms) {
-    var title = normalize(document.title);
-    var heading = normalize(document.heading);
-    var text = normalize(document.text);
-    var trail = normalize((document.trail || []).join(' '));
-    var pageLabel = normalize((document.trail || []).slice(-1)[0] || document.title);
-    var allTokens = fieldTokens([title, heading, text, trail, pageLabel].join(' '));
-    if (!coversTerms(allTokens, terms)) return null;
+  function coversTerms(field, query) {
+    return query.terms.every(function (term, index) {
+      return field.exact.has(term) ||
+        (term.length >= MIN_STEM_LENGTH && field.stems.has(query.stems[index])) ||
+        (term.length >= MIN_PREFIX_LENGTH && field.tokens.some(function (candidate) {
+          return candidate.startsWith(term);
+        }));
+    });
+  }
 
-    var pageLabelQuality = matchQuality(pageLabel, terms, normalizedQuery);
-    var titleQuality = matchQuality(title, terms, normalizedQuery);
-    var trailQuality = matchQuality(trail, terms, normalizedQuery);
-    var headingQuality = matchQuality(heading, terms, normalizedQuery);
-    var textQuality = matchQuality(text, terms, normalizedQuery);
+  function matchQuality(field, query) {
+    if (query.quality.has(field)) return query.quality.get(field);
+    var quality = MATCH_TIER.NONE;
+    if (coversTerms(field, query)) {
+      if (field.text === query.text) quality = MATCH_TIER.EXACT;
+      else if ((query.terms.length > 1 && field.text.includes(query.text)) ||
+          query.terms.every(function (term) { return field.exact.has(term); })) quality = MATCH_TIER.PHRASE;
+      else quality = MATCH_TIER.STEM;
+    }
+    query.quality.set(field, quality);
+    return quality;
+  }
+
+  function firstQueryPosition(text, query) {
+    var match = query.phrasePattern.exec(text);
+    if (match) return match.index + match[1].length;
+    var position = Number.POSITIVE_INFINITY;
+    query.termPatterns.forEach(function (patterns) {
+      var hit = patterns.exact.exec(text) || (patterns.prefix && patterns.prefix.exec(text));
+      if (hit) position = Math.min(position, hit.index + hit[1].length);
+    });
+    return position;
+  }
+
+  function analyzeDocument(prepared, query) {
+    if (!coversTerms(prepared.all, query)) return null;
+
+    var pageLabelQuality = matchQuality(prepared.pageLabel, query);
+    var titleQuality = matchQuality(prepared.title, query);
+    var trailQuality = matchQuality(prepared.trail, query);
+    var headingQuality = matchQuality(prepared.heading, query);
+    var textQuality = matchQuality(prepared.text, query);
     var pageTier = Math.max(
       pageLabelQuality,
       titleQuality > MATCH_TIER.NONE ? Math.min(titleQuality, MATCH_TIER.TITLE) : MATCH_TIER.NONE,
@@ -192,11 +245,11 @@
       MATCH_TIER.CROSS_FIELD
     );
     return {
-      document: document,
+      document: prepared.document,
       pageTier: pageTier,
       sectionTier: sectionTier,
       tier: Math.max(pageTier, sectionTier),
-      position: firstQueryPosition(text, normalizedQuery, terms),
+      position: firstQueryPosition(prepared.text.text, query),
     };
   }
 
@@ -212,21 +265,16 @@
       a.document.title.localeCompare(b.document.title);
   }
 
-  function rankDocuments(documents, query) {
-    var normalizedQuery = normalize(query).trim();
-    var terms = queryTerms(normalizedQuery);
-    if (!terms.length) return [];
-    var matches = documents.map(function (document) {
-      return analyzeDocument(document, normalizedQuery, terms);
+  function rankDocuments(index, rawQuery) {
+    var query = prepareQuery(rawQuery);
+    if (!query.terms.length) return [];
+    var matches = index.documents.map(function (prepared) {
+      return analyzeDocument(prepared, query);
     }).filter(Boolean);
     if (!matches.length) return [];
 
     var itemsByPage = new Map();
-    var pageEntries = new Map();
-    documents.forEach(function (document) {
-      var page = document.page || document.url.split('#')[0];
-      if (document.page_entry && !pageEntries.has(page)) pageEntries.set(page, document);
-    });
+    var pageEntries = index.pageEntries;
     matches.forEach(function (item) {
       var page = item.document.page || item.document.url.split('#')[0];
       if (!itemsByPage.has(page)) itemsByPage.set(page, []);
@@ -311,6 +359,26 @@
     return (start > 0 ? '…' : '') + text.slice(start, end).trim() + (end < text.length ? '…' : '');
   }
 
+  function appendHighlighted(element, text, query) {
+    // Match normalized tokens, but keep the original Unicode and markup as text.
+    var pattern = /[\p{L}\p{N}]+(?:[._/+:-][\p{L}\p{N}]+)*/gu;
+    var end = 0;
+    var match;
+    while ((match = pattern.exec(text)) !== null) {
+      var field = prepareField(match[0]);
+      var hit = query.terms.some(function (term, index) {
+        return coversTerms(field, { terms: [term], stems: [query.stems[index]] });
+      });
+      if (!hit) continue;
+      element.appendChild(document.createTextNode(text.slice(end, match.index)));
+      var mark = document.createElement('mark');
+      mark.textContent = match[0];
+      element.appendChild(mark);
+      end = match.index + match[0].length;
+    }
+    element.appendChild(document.createTextNode(text.slice(end)));
+  }
+
   function isTypingTarget(target) {
     if (!target) return false;
     var tag = target.tagName;
@@ -382,7 +450,10 @@
         '<input class="site-search-input" id="site-search-input" type="search" placeholder="Search docs" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="site-search-results" aria-expanded="false">' +
         '<kbd class="site-search-shortcut" aria-hidden="true">/</kbd>' +
       '</div>' +
-      '<div class="site-search-results" id="site-search-results" role="listbox" aria-label="Search results" hidden></div>';
+      '<div class="site-search-results" hidden>' +
+        '<p class="site-search-summary" role="status" aria-live="polite" aria-atomic="true"></p>' +
+        '<div id="site-search-results" role="listbox" aria-label="Search results"></div>' +
+      '</div>';
 
     var navTools = header.querySelector('.nav-tools');
     if (navTools) header.insertBefore(wrapper, navTools);
@@ -390,8 +461,13 @@
 
     var input = wrapper.querySelector('.site-search-input');
     var panel = wrapper.querySelector('.site-search-results');
+    var list = panel.querySelector('[role="listbox"]');
+    var status = panel.querySelector('[role="status"]');
     var requestId = 0;
     var activeIndex = -1;
+    var searchTimer = null;
+    var composing = false;
+    var INPUT_DELAY = 120;
 
     function resultLinks() {
       return Array.from(panel.querySelectorAll('.site-search-result'));
@@ -403,6 +479,10 @@
       if (!open) {
         activeIndex = -1;
         input.removeAttribute('aria-activedescendant');
+        resultLinks().forEach(function (link) {
+          link.classList.remove('active');
+          link.setAttribute('aria-selected', 'false');
+        });
       }
     }
 
@@ -419,26 +499,33 @@
       links[activeIndex].scrollIntoView({ block: 'nearest' });
     }
 
-    function renderResults(documents, rawQuery) {
-      var query = normalize(rawQuery).trim();
-      var ranked = rankDocuments(documents, query);
+    function dismissSearch() {
+      // Invalidate at the user action, not when a debounced search eventually runs.
+      requestId += 1;
+      window.clearTimeout(searchTimer);
+      searchTimer = null;
+      setOpen(false);
+      list.replaceChildren();
+      status.textContent = '';
+      list.removeAttribute('aria-busy');
+    }
 
-      panel.replaceChildren();
+    function showStatus(message, error) {
+      status.textContent = message;
+      status.className = 'site-search-summary' + (error ? ' error' : '');
+      setOpen(true);
+    }
+
+    function renderResults(index, rawQuery) {
+      var query = prepareQuery(rawQuery);
+      var ranked = rankDocuments(index, rawQuery);
+      list.replaceChildren();
+      list.removeAttribute('aria-busy');
       activeIndex = -1;
       input.removeAttribute('aria-activedescendant');
-      if (!ranked.length) {
-        var empty = document.createElement('p');
-        empty.className = 'site-search-empty';
-        empty.textContent = 'No matching documentation found.';
-        panel.appendChild(empty);
-        setOpen(true);
-        return;
-      }
-
-      var summary = document.createElement('p');
-      summary.className = 'site-search-summary';
-      summary.textContent = ranked.length + (ranked.length === 1 ? ' result' : ' results');
-      panel.appendChild(summary);
+      showStatus(ranked.length
+        ? ranked.length + (ranked.length === 1 ? ' result' : ' results')
+        : 'No matching documentation found.');
 
       ranked.forEach(function (item, index) {
         var record = item.document;
@@ -456,75 +543,91 @@
           ? record.trail.join(' › ')
           : record.type + ' · ' + record.title;
         var heading = document.createElement('strong');
-        heading.textContent = record.heading;
+        appendHighlighted(heading, String(record.heading || ''), query);
         var snippet = document.createElement('span');
         snippet.className = 'site-search-result-snippet';
-        snippet.textContent = snippetFor(record, query);
+        appendHighlighted(snippet, snippetFor(record, query.text), query);
         link.append(meta, heading, snippet);
-        panel.appendChild(link);
+        list.appendChild(link);
       });
-      setOpen(true);
     }
 
-    function search() {
-      var query = input.value.trim();
-      requestId += 1;
-      var currentRequest = requestId;
-      if (query.length < 2) {
-        panel.replaceChildren();
-        setOpen(false);
-        return;
-      }
-      panel.replaceChildren();
-      var loading = document.createElement('p');
-      loading.className = 'site-search-empty';
-      loading.textContent = 'Searching…';
-      panel.appendChild(loading);
-      setOpen(true);
-
-      loadIndex().then(function (documents) {
-        if (currentRequest === requestId) renderResults(documents, query);
+    function search(query, currentRequest) {
+      searchTimer = null;
+      list.setAttribute('aria-busy', 'true');
+      showStatus('Searching…');
+      loadIndex().then(function (index) {
+        if (currentRequest === requestId) renderResults(index, query);
       }).catch(function () {
         if (currentRequest !== requestId) return;
-        panel.replaceChildren();
-        var error = document.createElement('p');
-        error.className = 'site-search-empty error';
-        error.textContent = 'Search is temporarily unavailable.';
-        panel.appendChild(error);
-        setOpen(true);
+        list.removeAttribute('aria-busy');
+        showStatus('Search is temporarily unavailable. Try again.', true);
       });
     }
 
-    input.addEventListener('input', search);
+    function scheduleSearch() {
+      dismissSearch();
+      var query = input.value.trim();
+      if (composing || query.length < 2) return;
+      var currentRequest = requestId;
+      searchTimer = window.setTimeout(function () {
+        search(query, currentRequest);
+      }, INPUT_DELAY);
+    }
+
+    function warmIndex() {
+      // A failed speculative request must not become an unhandled rejection.
+      loadIndex().catch(function () {});
+    }
+
+    input.addEventListener('input', function (event) {
+      if (event.isComposing || composing) dismissSearch();
+      else scheduleSearch();
+    });
+    input.addEventListener('compositionstart', function () {
+      composing = true;
+      dismissSearch();
+    });
+    input.addEventListener('compositionend', function () {
+      composing = false;
+      scheduleSearch();
+    });
+    input.addEventListener('pointerenter', warmIndex, { once: true });
     input.addEventListener('focus', function () {
-      if (input.value.trim().length >= 2) search();
+      warmIndex();
+      if (input.value.trim().length >= 2) scheduleSearch();
     });
     input.addEventListener('keydown', function (event) {
+      if (composing || event.isComposing) return;
       var links = resultLinks();
       if (event.key === 'ArrowDown' && links.length) {
         event.preventDefault();
-        if (panel.hidden) setOpen(true);
         setActive(activeIndex + 1);
       } else if (event.key === 'ArrowUp' && links.length) {
         event.preventDefault();
-        if (panel.hidden) setOpen(true);
         setActive(activeIndex < 0 ? links.length - 1 : activeIndex - 1);
       } else if (event.key === 'Enter' && activeIndex >= 0 && links[activeIndex]) {
         event.preventDefault();
         links[activeIndex].click();
-      } else if (event.key === 'Escape') {
+      } else if (event.key === 'Escape' && (!panel.hidden || searchTimer !== null)) {
         event.preventDefault();
         event.stopPropagation();
-        setOpen(false);
+        dismissSearch();
       }
     });
-    wrapper.addEventListener('focusout', function () {
+    wrapper.addEventListener('focusout', function (event) {
+      if (event.relatedTarget) {
+        if (!wrapper.contains(event.relatedTarget)) dismissSearch();
+        return;
+      }
+      // Let a pointer activation of a result finish before removing its link.
       window.setTimeout(function () {
-        if (!wrapper.contains(document.activeElement)) setOpen(false);
+        if (!wrapper.contains(document.activeElement)) dismissSearch();
       }, 0);
     });
 
     document.addEventListener('keydown', function (event) {
+      if (event.isComposing) return;
       if ((event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey) ||
           ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k')) {
         if (isTypingTarget(event.target)) return;
@@ -534,7 +637,7 @@
       }
     });
     document.addEventListener('pointerdown', function (event) {
-      if (!wrapper.contains(event.target)) setOpen(false);
+      if (!wrapper.contains(event.target)) dismissSearch();
     });
   }
 
