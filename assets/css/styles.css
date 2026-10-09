@@ -805,6 +805,22 @@ pre.maple-code .n-steps   { color: #3d4858; font-weight: 600; }
   -webkit-mask: var(--icon-download) center / contain no-repeat;
           mask: var(--icon-download) center / contain no-repeat;
 }
+/* Narrow screens: long file names wrap instead of widening the page. An
+   inline-block always allows a line break before it, so the icon becomes a
+   plain inline box that stays after the name's last character. The offset
+   and line-height: 0 keep the icon and the line where the inline-block put
+   them. */
+@media (max-width: 52em) {
+  .file-link {
+    white-space: normal;
+  }
+  .file-link::after {
+    display: inline;
+    padding-left: 0.9em;
+    vertical-align: -0.06em;
+    line-height: 0;
+  }
+}
 
 .code-file {
   display: flex;
