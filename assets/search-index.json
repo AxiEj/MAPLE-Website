@@ -5428,7 +5428,7 @@
       "page_entry": true,
       "page_role": "content",
       "section_order": 0,
-      "text": "",
+      "text": "Before you start: AmberTools and Gaussian 16 for every case Every case needs AmberTools and Gaussian 16 ( g16 ) on PATH . MetalAA always derives the site charges by RESP, even with iqm=false , and Gaussian evaluates the ESP. Check before the first run: type tleap antechamber g16 must not report not found . MAPLE does not check for Gaussian at launch; it looks for g16 only when the first Gaussian job starts, so a missing g16 stops a run partway through. Each Gaussian job requests qm_nproc=8 cores and qm_mem=24 GB by default; set lower values in the sidecar config on a smaller machine (see the hub’s General Settings ). The hub’s Requirements and QM Reference sections explain when each program is needed.",
       "title": "MetalAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -5462,7 +5462,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 2,
-      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from MetalAA1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126309 . It has one zip per case — Case1.zip (54 MB), Case2.zip (153 MB), and Case3.zip (156 MB) — and each unpacks to a folder of the same name. The Refinement and NCAA archives use the same zip names, so keep each tutorial in its own folder. Software. Every case needs AmberTools and Gaussian 16 on PATH : MetalAA always derives the site charges by RESP — Gaussian evaluates the ESP — even with iqm=false — see the hub's Requirements and QM Reference sections.",
+      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from MetalAA1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126309 . It has one zip per case — Case1.zip (54 MB), Case2.zip (153 MB), and Case3.zip (156 MB) — and each unpacks to a folder of the same name. The Refinement and NCAA archives use the same zip names, so keep each tutorial in its own folder.",
       "title": "MetalAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -5768,7 +5768,7 @@
       "page_entry": true,
       "page_role": "content",
       "section_order": 0,
-      "text": "",
+      "text": "Before you start: AmberTools and Gaussian 16 for every case Every case needs AmberTools and Gaussian 16 ( g16 ) on PATH . These inputs set iqm=false , but the charges still come from RESP — the default chg_fit=resp — and Gaussian evaluates the ESP. Check before the first run: type tleap antechamber g16 must not report not found . MAPLE does not check for Gaussian at launch; it looks for g16 only when the first Gaussian job starts, so a missing g16 stops a run partway through. Each Gaussian job requests qm_nproc=8 cores and qm_mem=24 GB by default; set lower values in the sidecar config on a smaller machine (see the hub’s General Settings ). The hub’s Requirements and QM Reference sections explain when each program is needed.",
       "title": "NCAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -5802,7 +5802,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 2,
-      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from NCAA1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126301 . It has one zip per case — Case1.zip (138 MB), Case2.zip (139 MB), and Case3.zip (151 MB) — and each unpacks to a folder of the same name. The Refinement and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ). Software. Every case needs AmberTools and Gaussian 16 on PATH : charges are derived from a Gaussian ESP with the default chg_fit=resp , even though these inputs set iqm=false — see the hub's Requirements and QM Reference sections.",
+      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from NCAA1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126301 . It has one zip per case — Case1.zip (138 MB), Case2.zip (139 MB), and Case3.zip (151 MB) — and each unpacks to a folder of the same name. The Refinement and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
       "title": "NCAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -6074,7 +6074,7 @@
       "page_entry": true,
       "page_role": "content",
       "section_order": 0,
-      "text": "",
+      "text": "Before you start: AmberTools for every case, Gaussian 16 for Cases 2 and 3 Every case needs AmberTools on PATH ; Case 1 needs nothing else. Cases 2 and 3 also need Gaussian 16 — g16 and its formchk utility — which evaluates the ESP for the RESP charges and runs the QM reference. Check before the first run: type tleap antechamber g16 formchk must not report not found (Case 1 needs only the first two). MAPLE does not check for Gaussian at launch; it looks for g16 only when the first Gaussian job starts, so a missing g16 stops Case 2 or 3 partway through. Each Gaussian job requests qm_nproc=8 cores and qm_mem=24 GB by default; set lower values in the sidecar config on a smaller machine (see the hub’s General Settings ). The hub’s Requirements and QM Reference sections explain when each program is needed.",
       "title": "Refinement Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -6108,7 +6108,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 2,
-      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from Refine1.inp . Software. Every case needs AmberTools on PATH . Case 1 needs nothing else; Cases 2 and 3 also need Gaussian 16, which evaluates the ESP for the RESP charges and runs the QM reference — see the hub's Requirements and QM Reference sections. The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126271 . It has one zip per case — Case1.zip (30 KB), Case2.zip (62 MB), and Case3.zip (1.7 GB; Refine3 and Refine4) — and each unpacks to a folder of the same name. The NCAA and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
+      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from Refine1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126271 . It has one zip per case — Case1.zip (30 KB), Case2.zip (62 MB), and Case3.zip (1.7 GB; Refine3 and Refine4) — and each unpacks to a folder of the same name. The NCAA and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
       "title": "Refinement Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -6193,7 +6193,7 @@
       "page_entry": true,
       "page_role": "landing",
       "section_order": 0,
-      "text": "Get to know ParmFit’s parameterization workflow by solving a few simple examples.",
+      "text": "Get to know ParmFit’s parameterization workflow by solving a few simple examples. Before you start: install AmberTools and Gaussian 16 Every case needs AmberTools. Every NCAA and MetalAA case, and Refinement Cases 2 and 3, also need Gaussian 16 for their RESP charges — the Refinement cases also for their QM reference; only Refinement Case 1 runs without it. MAPLE looks for Gaussian only when a run reaches its first Gaussian job, so a missing g16 stops the run partway through. Each tutorial lists its requirements and a one-line check at the top.",
       "title": "ParmFit Tutorials - MAPLE",
       "trail": [
         "Tutorials",
@@ -6273,7 +6273,7 @@
       "page_entry": false,
       "page_role": "landing",
       "section_order": 5,
-      "text": "Requirements. Software and input needs are summarized in the ParmFit hub’s Requirements section . Only Refinement Case 1 runs without Gaussian; every other case needs it for its RESP charges — the Refinement cases also for their QM reference. Model. Every run in these tutorials uses the same checkpoint — UMA-S-1.1, selected with #model=uma(size=uma-s-1p1) (the Refinement launchers add task=omol ). Hardware. Every excerpt and timing in these tutorials comes from runs on an RTX 3060 Laptop GPU and an 8-core AMD CPU — sufficient for every run shown here. Every Gaussian job used the defaults qm_nproc=8 and qm_mem=24 (GB); set lower values in the sidecar config on a smaller machine (see General Settings ). Example files. Right after its Overview, each tutorial links every input and output file where it is used, followed by its complete Zenodo run archive.",
+      "text": "Requirements. Software and input needs are summarized in the ParmFit hub’s Requirements section . Model. Every run in these tutorials uses the same checkpoint — UMA-S-1.1, selected with #model=uma(size=uma-s-1p1) (the Refinement launchers add task=omol ). Hardware. Every excerpt and timing in these tutorials comes from runs on an RTX 3060 Laptop GPU and an 8-core AMD CPU — sufficient for every run shown here. Every Gaussian job used the defaults qm_nproc=8 and qm_mem=24 (GB); set lower values in the sidecar config on a smaller machine (see General Settings ). Example files. Right after its Overview, each tutorial links every input and output file where it is used, followed by its complete Zenodo run archive.",
       "title": "ParmFit Tutorials - MAPLE",
       "trail": [
         "Tutorials",

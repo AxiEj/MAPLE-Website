@@ -164,6 +164,12 @@
       <article>
         <h1>MetalAA Tutorial</h1>
 
+        <div class="admonition important" id="software">
+          <p class="admonition-title">Before you start: AmberTools and Gaussian&nbsp;16 for every case</p>
+          <p>Every case needs AmberTools and Gaussian&nbsp;16 (<code>g16</code>) on <code>PATH</code>. MetalAA always derives the site charges by RESP, even with <code>iqm=false</code>, and Gaussian evaluates the ESP. Check before the first run: <code>type tleap antechamber g16</code> must not report <code>not found</code>.</p>
+          <p>MAPLE does not check for Gaussian at launch; it looks for <code>g16</code> only when the first Gaussian job starts, so a missing <code>g16</code> stops a run partway through. Each Gaussian job requests <code>qm_nproc=8</code> cores and <code>qm_mem=24</code>&nbsp;GB by default; set lower values in the sidecar config on a smaller machine (see the hub&rsquo;s <a href="parmfit.html#general-settings">General Settings</a>). The hub&rsquo;s <a href="parmfit.html#requirements">Requirements</a> and <a href="parmfit.html#iqm">QM Reference</a> sections explain when each program is needed.</p>
+        </div>
+
         <h2 id="overview">Overview</h2>
         <p>This tutorial walks through the MetalAA route of <code>parmfit(method=metalaa)</code> in three cases on a cytochrome P450 BM3 pentamutant (Protein Data Bank ID 4ZF6), in which the heme iron is coordinated by four porphyrin nitrogen atoms and the thiolate sulfur of a proximal cysteine. The input structure <a class="file-link" href="https://raw.githubusercontent.com/AmiHaruka/MAPLE-Tutorial/main/parmfit/metalaa/4ZF6.pdb" download><code>4ZF6.pdb</code></a> places the Fe ion at <code>A462</code>, the heme cofactor at <code>A461</code>, and the coordinating cysteine at <code>_400</code>. Case 1 declares the site and builds it with default cutoffs; Case 2 widens the environment around the unchanged site; Case 3 declares a standard amino acid for deliberate rebuilding, builds its template with the residue-build components of the NCAA (noncanonical amino acid) route, and carries the result into the deployment. Every excerpt below is taken from verified runs of the inputs shown here (<code>MetalAA1&ndash;3.inp</code> plus their sidecar configs).</p>
         <figure class="doc-figure" style="max-width:540px;">
@@ -175,7 +181,6 @@
         <h2 id="example-files">Example Files</h2>
         <p>A linked file name on this page opens the original file from the verified runs, hosted in the <a href="https://github.com/AmiHaruka/MAPLE-Tutorial">MAPLE-Tutorial</a> repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case&nbsp;1 starts from <code>MetalAA1.inp</code>.</p>
         <p>The complete run archive, including every <code>_work/</code> directory, is on Zenodo: <a href="https://zenodo.org/records/23126309" target="_blank" rel="noopener noreferrer">10.5281/zenodo.23126309</a>. It has one zip per case &mdash; <code>Case1.zip</code> (54&nbsp;MB), <code>Case2.zip</code> (153&nbsp;MB), and <code>Case3.zip</code> (156&nbsp;MB) &mdash; and each unpacks to a folder of the same name. The Refinement and NCAA archives use the same zip names, so keep each tutorial in its own folder.</p>
-        <p><strong>Software.</strong> Every case needs AmberTools and Gaussian&nbsp;16 on <code>PATH</code>: MetalAA always derives the site charges by RESP &mdash; Gaussian evaluates the ESP &mdash; even with <code>iqm=false</code> &mdash; see the hub's <a href="parmfit.html#requirements">Requirements</a> and <a href="parmfit.html#iqm">QM Reference</a> sections.</p>
         <!-- To be written by the preparer of 4ZF6.pdb: how the file was built from PDB 4ZF6 (programs and versions,
              protonation choices, heme and iron handling, chain and numbering edits) and why the selectors read A461, A462 and _400.
              Facts read from the file on 2026-10-06: no REMARK records; every residue carries hydrogens (3708 H atoms);
