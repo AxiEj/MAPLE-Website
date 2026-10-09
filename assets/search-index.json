@@ -5462,7 +5462,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 2,
-      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from MetalAA1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126309 . It has one zip per case — Case1.zip (54 MB), Case2.zip (153 MB), and Case3.zip (156 MB) — and each unpacks to a folder of the same name. The Refinement and NCAA archives use the same zip names, so keep each tutorial in its own folder.",
+      "text": "Follow the cases below and save the files you need from their links, or download the complete run archive, including every _work/ directory, from Zenodo: 10.5281/zenodo.23126309 . It has one zip per case — Case1.zip (54 MB), Case2.zip (153 MB), and Case3.zip (156 MB) — and each unpacks to a folder of the same name. The Refinement and NCAA archives use the same zip names, so keep each tutorial in its own folder.",
       "title": "MetalAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -5530,7 +5530,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 6,
-      "text": "The deployment is validated for you: the route ran tleap itself and reported Errors: 0 , and the charge ledger above closes to −2. Take the solvated topology into your simulation after reading its warnings; the manual has the charge-convention details. MetalAA manual — parameter reference, charge convention, chgmod table, and limits. ChargeFit and the QM (quantum-mechanical) reference on the ParmFit hub — the stages these routes share, documented once on the hub. NCAA tutorial — the standalone NCAA route; this tutorial’s Case 3 rebuilds ILE401 into ILM with the NCAA route’s residue-build components, a lighter build than the standalone route. Refinement tutorial — the small-molecule route. Example files and run archive. See Example Files for the hosted files and the complete Zenodo archive.",
+      "text": "The deployment is validated for you: the route ran tleap itself and reported Errors: 0 , and the charge ledger above closes to −2. Take the solvated topology into your simulation after reading its warnings; the manual has the charge-convention details. MetalAA manual — parameter reference, charge convention, chgmod table, and limits. ChargeFit and the QM (quantum-mechanical) reference on the ParmFit hub — the stages these routes share, documented once on the hub. NCAA tutorial — the standalone NCAA route; this tutorial’s Case 3 rebuilds ILE401 into ILM with the NCAA route’s residue-build components, a lighter build than the standalone route. Refinement tutorial — the small-molecule route.",
       "title": "MetalAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -5802,7 +5802,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 2,
-      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from NCAA1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126301 . It has one zip per case — Case1.zip (138 MB), Case2.zip (139 MB), and Case3.zip (151 MB) — and each unpacks to a folder of the same name. The Refinement and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
+      "text": "Follow the cases below and save the files you need from their links, or download the complete run archive, including every _work/ directory, from Zenodo: 10.5281/zenodo.23126301 . It has one zip per case — Case1.zip (138 MB), Case2.zip (139 MB), and Case3.zip (151 MB) — and each unpacks to a folder of the same name. The Refinement and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
       "title": "NCAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -5870,7 +5870,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 6,
-      "text": "The deployment is validated for you: the route ran tleap itself and reported Errors: 0 , with the charge closure visible as Target charge versus Actual charge in each result block. Take the processed PDB NCAA1_ncaa_tleap.pdb and tleap input NCAA1_ncaa_tleap.in , build the solvated topology from them, and pass it through ParmEd before SHAKE, because the templates carry MAPLE’s reassigned atom types. The manual’s ParmEd note has the reason, and the ChargeFit section has the charge details. NCAA manual — parameter reference, charge-fitting details, peptide boundary terms, and limits. ChargeFit , QM reference , and TorsionFit on the ParmFit hub — the stages these routes share, documented once on the hub. Refinement tutorial and MetalAA tutorial — simple worked examples for the other routes. Example files and run archive. See Example Files for the hosted files and the complete Zenodo archive.",
+      "text": "The deployment is validated for you: the route ran tleap itself and reported Errors: 0 , with the charge closure visible as Target charge versus Actual charge in each result block. Take the processed PDB NCAA1_ncaa_tleap.pdb and tleap input NCAA1_ncaa_tleap.in , build the solvated topology from them, and pass it through ParmEd before SHAKE, because the templates carry MAPLE’s reassigned atom types. The manual’s ParmEd note has the reason, and the ChargeFit section has the charge details. NCAA manual — parameter reference, charge-fitting details, peptide boundary terms, and limits. ChargeFit , QM reference , and TorsionFit on the ParmFit hub — the stages these routes share, documented once on the hub. Refinement tutorial and MetalAA tutorial — simple worked examples for the other routes.",
       "title": "NCAA Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -6108,7 +6108,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 2,
-      "text": "A linked file name on this page opens the original file from the verified runs, hosted in the MAPLE-Tutorial repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case 1 starts from Refine1.inp . The complete run archive, including every _work/ directory, is on Zenodo: 10.5281/zenodo.23126271 . It has one zip per case — Case1.zip (30 KB), Case2.zip (62 MB), and Case3.zip (1.7 GB; Refine3 and Refine4) — and each unpacks to a folder of the same name. The NCAA and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
+      "text": "Follow the cases below and save the files you need from their links, or download the complete run archive, including every _work/ directory, from Zenodo: 10.5281/zenodo.23126271 . It has one zip per case — Case1.zip (30 KB), Case2.zip (62 MB), and Case3.zip (1.7 GB; Refine3 and Refine4) — and each unpacks to a folder of the same name. The NCAA and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub’s Scan Reuse ).",
       "title": "Refinement Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -6176,7 +6176,7 @@
       "page_entry": false,
       "page_role": "content",
       "section_order": 6,
-      "text": "Everything you need for MD is now in Refine n _work/ : the Amber mol2 and frcmod (plus GROMACS files) carry the refined parameters. One deployment step remains, and Case 1 demonstrated it: run the exported tleap input, then pass the topology through ParmEd — MAPLE atom types leave tleap’s hydrogen-bond section empty, and SHAKE needs it rebuilt — before you take Refine1_maple_gas_parmed.prmtop into your simulation. The manual’s ParmEd note has the reference wording. Refinement manual — parameter reference, output files, and limits. ChargeFit , QM reference , and TorsionFit on the ParmFit hub — the stages these routes share, documented once on the hub. NCAA (noncanonical amino acid) tutorial and MetalAA tutorial — simple worked examples for the PDB (Protein Data Bank) routes. Example files and run archive. See Example Files for the hosted files and the complete Zenodo archive.",
+      "text": "Everything you need for MD is now in Refine n _work/ : the Amber mol2 and frcmod (plus GROMACS files) carry the refined parameters. One deployment step remains, and Case 1 demonstrated it: run the exported tleap input, then pass the topology through ParmEd — MAPLE atom types leave tleap’s hydrogen-bond section empty, and SHAKE needs it rebuilt — before you take Refine1_maple_gas_parmed.prmtop into your simulation. The manual’s ParmEd note has the reference wording. Refinement manual — parameter reference, output files, and limits. ChargeFit , QM reference , and TorsionFit on the ParmFit hub — the stages these routes share, documented once on the hub. NCAA (noncanonical amino acid) tutorial and MetalAA tutorial — simple worked examples for the PDB (Protein Data Bank) routes.",
       "title": "Refinement Tutorial - MAPLE",
       "trail": [
         "Tutorials",
@@ -6193,7 +6193,7 @@
       "page_entry": true,
       "page_role": "landing",
       "section_order": 0,
-      "text": "Get to know ParmFit’s parameterization workflow by solving a few simple examples. Before you start: install AmberTools and Gaussian 16 Every case needs AmberTools. Every NCAA and MetalAA case, and Refinement Cases 2 and 3, also need Gaussian 16 for their RESP charges — the Refinement cases also for their QM reference; only Refinement Case 1 runs without it. MAPLE looks for Gaussian only when a run reaches its first Gaussian job, so a missing g16 stops the run partway through. Each tutorial lists its requirements and a one-line check at the top.",
+      "text": "Get to know ParmFit’s parameterization workflow by solving a few simple examples. Before you start: install AmberTools and Gaussian 16 Every case needs AmberTools. Every NCAA and MetalAA case, and Refinement Cases 2 and 3, also need Gaussian 16 for their RESP charges — the Refinement cases also for their QM reference; only Refinement Case 1 runs without it. MAPLE looks for Gaussian only when a run reaches its first Gaussian job, so a missing g16 stops the run partway through.",
       "title": "ParmFit Tutorials - MAPLE",
       "trail": [
         "Tutorials",
@@ -6273,7 +6273,7 @@
       "page_entry": false,
       "page_role": "landing",
       "section_order": 5,
-      "text": "Requirements. Software and input needs are summarized in the ParmFit hub’s Requirements section . Model. Every run in these tutorials uses the same checkpoint — UMA-S-1.1, selected with #model=uma(size=uma-s-1p1) (the Refinement launchers add task=omol ). Hardware. Every excerpt and timing in these tutorials comes from runs on an RTX 3060 Laptop GPU and an 8-core AMD CPU — sufficient for every run shown here. Every Gaussian job used the defaults qm_nproc=8 and qm_mem=24 (GB); set lower values in the sidecar config on a smaller machine (see General Settings ). Example files. Right after its Overview, each tutorial links every input and output file where it is used, followed by its complete Zenodo run archive.",
+      "text": "Requirements. Software and input needs are summarized in the ParmFit hub’s Requirements section . Model. Every run in these tutorials uses the same checkpoint — UMA-S-1.1, selected with #model=uma(size=uma-s-1p1) (the Refinement launchers add task=omol ). Hardware. Every excerpt and timing in these tutorials comes from runs on an RTX 3060 Laptop GPU and an 8-core AMD CPU — sufficient for every run shown here. Every Gaussian job used the defaults qm_nproc=8 and qm_mem=24 (GB); set lower values in the sidecar config on a smaller machine (see General Settings ).",
       "title": "ParmFit Tutorials - MAPLE",
       "trail": [
         "Tutorials",
