@@ -497,7 +497,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (open && !wasOpen) {
       var focusables = sidebarFocusables();
-      var current = focusables.find(function (element) { return element.matches('a.active'); });
+      // A parent link can also be active; the last active link is the current page.
+      var current = focusables.filter(function (element) { return element.matches('a.active'); }).pop();
       (current || sidebarClose).focus({ preventScroll: true });
     } else if (!open && returnFocus && lastSidebarTrigger && drawer) {
       lastSidebarTrigger.focus({ preventScroll: true });
