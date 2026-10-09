@@ -207,6 +207,7 @@ def build_index() -> str:
         if path.relative_to(ROOT).as_posix() not in EXCLUDED_PAGES
         and ".git" not in path.parts
         and ".omx" not in path.parts
+        and ".venv" not in path.parts
     ]
     documents = [document for page in pages for document in parse_page(page)]
     parent_labels = {

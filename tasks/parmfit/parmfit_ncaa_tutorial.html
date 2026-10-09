@@ -70,7 +70,7 @@
                 <li><a href="../../setup/model_custom.html">Custom Model</a></li>
               </ul>
             </li>
-            <li class="open">
+            <li>
               <span class="tree-section"><span class="chevron"></span> Tasks</span>
               <ul class="children">
                 <li><a href="../../tasks/singlepoint.html">Single Point</a></li>
@@ -115,7 +115,7 @@
                     <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
                   </ul>
                 </li>
-                <li class="open">
+                <li>
                   <span class="tree-label"><span class="chevron"></span> <a href="parmfit.html">ParmFit</a></span>
                   <ul class="children">
                     <li><a href="parmfit_refinement.html">Refinement</a></li>
@@ -154,17 +154,21 @@
       <nav class="breadcrumb">
         <a href="../../index.html">Home</a>
         <span class="separator">/</span>
-        <a href="../../tasks/singlepoint.html">Tasks</a>
+        <a href="parmfit_tutorial.html">Tutorials</a>
         <span class="separator">/</span>
-        <a href="parmfit.html">ParmFit</a>
+        <a href="parmfit_tutorial.html">ParmFit</a>
         <span class="separator">/</span>
-        <a href="parmfit_ncaa.html">NCAA</a>
-        <span class="separator">/</span>
-        <span class="current">Tutorial</span>
+        <span class="current">NCAA Tutorial</span>
       </nav>
 
       <article>
         <h1>NCAA Tutorial</h1>
+
+        <div class="admonition important" id="software">
+          <p class="admonition-title">Before you start: AmberTools and Gaussian&nbsp;16 for every case</p>
+          <p>Every case needs AmberTools and Gaussian&nbsp;16 (<code>g16</code>) on <code>PATH</code>. These inputs set <code>iqm=false</code>, but the charges still come from RESP &mdash; the default <code>chg_fit=resp</code> &mdash; and Gaussian evaluates the ESP. Check before the first run: <code>type tleap antechamber g16</code> must not report <code>not found</code>.</p>
+          <p>MAPLE does not check for Gaussian at launch; it looks for <code>g16</code> only when the first Gaussian job starts, so a missing <code>g16</code> stops a run partway through. Each Gaussian job requests <code>qm_nproc=8</code> cores and <code>qm_mem=24</code>&nbsp;GB by default; set lower values in the sidecar config on a smaller machine (see the hub&rsquo;s <a href="parmfit.html#general-settings">General Settings</a>). The hub&rsquo;s <a href="parmfit.html#requirements">Requirements</a> and <a href="parmfit.html#iqm">QM Reference</a> sections explain when each program is needed.</p>
+        </div>
 
         <h2 id="overview">Overview</h2>
         <p>This tutorial walks through the NCAA route of <code>parmfit(method=ncaa)</code> in three cases on <em>Morus alba</em> Diels&ndash;Alderase (MaDA; Protein Data Bank ID 6JQH), a flavin adenine dinucleotide (FAD)-dependent enzyme whose FAD cofactor is covalently linked to a histidine residue. The input structure <a class="file-link" href="https://raw.githubusercontent.com/AmiHaruka/MAPLE-Tutorial/main/parmfit/ncaa/MaDA.pdb" download><code>MaDA.pdb</code></a> carries that residue as <code>_89:HIF</code>; it has no force-field template and becomes the exported residue <code>HF1</code>. Case 1 builds the template with torsion fitting off; Case 2 switches torsion fitting on with explicit bonds; Case 3 declares a second residue alongside the first. Every excerpt below is taken from verified runs of the inputs shown here.</p>
@@ -175,9 +179,7 @@
         <p>Every run writes a <code>&lt;base&gt;.parmfitrun.in</code> file next to the output that echoes your configuration with defaults filled in; watch the log for <code>Unknown left-hand</code> warnings, which flag keys that no builder consumed. The reference definition of every key lives in the <a href="parmfit_ncaa.html">NCAA manual page</a> and the shared sections of the <a href="parmfit.html">ParmFit hub</a>; software and input requirements are summarized in the hub's <a href="parmfit.html#requirements">Requirements</a> section.</p>
 
         <h2 id="example-files">Example Files</h2>
-        <p>A linked file name on this page opens the original file from the verified runs, hosted in the <a href="https://github.com/AmiHaruka/MAPLE-Tutorial">MAPLE-Tutorial</a> repository; every input and output file is linked where it is used in the cases below. Save the input files of one case into one folder; Case&nbsp;1 starts from <code>NCAA1.inp</code>.</p>
-        <p>The complete run archive, including every <code>_work/</code> directory, is on Zenodo: <a href="https://zenodo.org/records/23126301" target="_blank" rel="noopener noreferrer">10.5281/zenodo.23126301</a>. It has one zip per case &mdash; <code>Case1.zip</code> (138&nbsp;MB), <code>Case2.zip</code> (139&nbsp;MB), and <code>Case3.zip</code> (151&nbsp;MB) &mdash; and each unpacks to a folder of the same name. The Refinement and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub&rsquo;s <a href="parmfit.html#scan-reuse">Scan Reuse</a>).</p>
-        <p><strong>Software.</strong> Every case needs AmberTools and Gaussian&nbsp;16 on <code>PATH</code>: charges are derived from a Gaussian ESP with the default <code>chg_fit=resp</code>, even though these inputs set <code>iqm=false</code> &mdash; see the hub's <a href="parmfit.html#requirements">Requirements</a> and <a href="parmfit.html#iqm">QM Reference</a> sections.</p>
+        <p>Follow the cases below and save the files you need from their links, or download the complete run archive, including every <code>_work/</code> directory, from Zenodo: <a href="https://zenodo.org/records/23126301" target="_blank" rel="noopener noreferrer">10.5281/zenodo.23126301</a>. It has one zip per case &mdash; <code>Case1.zip</code> (138&nbsp;MB), <code>Case2.zip</code> (139&nbsp;MB), and <code>Case3.zip</code> (151&nbsp;MB) &mdash; and each unpacks to a folder of the same name. The Refinement and MetalAA archives use the same zip names, so keep each tutorial in its own folder. To rerun a case, start from its input files in a new folder: inside an unpacked archive folder, TorsionFit would read the archived scans instead of running its own scan (see the hub&rsquo;s <a href="parmfit.html#scan-reuse">Scan Reuse</a>).</p>
         <!-- To be written by the preparer of MaDA.pdb: how the file was built from PDB 6JQH (programs and versions,
              protonation choices, merged or renamed residues, chain and numbering edits) and why the selector reads HIF89.
              Facts read from the file on 2026-10-06: no REMARK records; every residue carries hydrogens (4085 H atoms);
@@ -470,7 +472,6 @@ Main products:
           <li><a href="parmfit_ncaa.html">NCAA manual</a> &mdash; parameter reference, charge-fitting details, peptide boundary terms, and limits.</li>
           <li><a href="parmfit.html#chargefit">ChargeFit</a>, <a href="parmfit.html#iqm">QM reference</a>, and <a href="parmfit.html#torsionfit">TorsionFit</a> on the ParmFit hub &mdash; the stages these routes share, documented once on the hub.</li>
           <li><a href="parmfit_refinement_tutorial.html">Refinement tutorial</a> and <a href="parmfit_metalaa_tutorial.html">MetalAA tutorial</a> &mdash; simple worked examples for the other routes.</li>
-          <li><strong>Example files and run archive.</strong> See <a href="#example-files">Example Files</a> for the hosted files and the complete Zenodo archive.</li>
         </ul>
 
         <nav class="page-nav">

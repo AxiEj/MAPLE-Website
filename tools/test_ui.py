@@ -36,7 +36,8 @@ DOC_HTML = '''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <div class="page-layout"><aside class="sidebar" aria-label="Documentation"><nav class="sidebar-nav">
 <div class="sidebar-brand"><span>MAPLE</span></div><div class="sidebar-tree"><ul><li class="open">
 <div class="tree-section"><span class="chevron"></span>Tutorials</div><ul class="children">
-<li><a class="active" href="#first">Optimization</a></li><li><a href="#second">Frequency</a></li></ul></li>
+<li class="open"><span class="tree-label"><span class="chevron"></span> <a class="active" href="#first">Optimization</a></span>
+<ul class="children"><li><a class="active" href="#first">L-BFGS</a></li></ul></li><li><a href="#second">Frequency</a></li></ul></li>
 <li><div class="tree-section"><span class="chevron"></span>Hidden group</div><ul class="children">
 <li><a href="#third">Hidden link</a></li></ul></li></ul></div></nav></aside>
 <main class="content"><article style="position: relative"><h1>Optimization</h1>
@@ -233,6 +234,7 @@ class SharedUI(unittest.TestCase):
         fab.click()
         self.assertEqual(self.page.locator('.sidebar').get_attribute('aria-modal'), 'true')
         self.assertTrue(self.page.evaluate('document.querySelector(".sidebar").contains(document.activeElement)'))
+        self.assertEqual(self.page.evaluate('document.activeElement.textContent.trim()'), 'L-BFGS')
         self.assertTrue(self.page.locator('main').evaluate('el => el.inert'))
         self.page.locator('.sidebar-close').focus()
         self.page.keyboard.press('Shift+Tab')
